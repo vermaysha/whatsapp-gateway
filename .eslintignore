@@ -1,0 +1,9 @@
+node_modules/**/*
+package-lock.json
+.history/**/*
+dist/**/*
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
