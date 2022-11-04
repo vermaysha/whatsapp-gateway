@@ -11,7 +11,6 @@
     "serve": "node dist/server.js",
     "dev": "ts-node src/server.ts"
   },
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vermaysha/whatsapp-gateway.git"
