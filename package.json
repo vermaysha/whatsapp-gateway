@@ -4,7 +4,9 @@
   "description": "Simple & Lightweight Whatsapp Gateway",
   "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc --build --force",
+    "serve": "node dist/server.js",
+    "dev": "tsnd --respawn src/server.js"
   },
   "repository": {
     "type": "git",
