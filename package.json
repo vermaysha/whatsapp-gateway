@@ -9,7 +9,7 @@
     "format": "prettier --ignore-path .gitignore --write \"src/**/*.+(ts|json)\"",
     "build": "tsc --build --force",
     "serve": "node dist/server.js",
-    "dev": "tsnd --respawn src/server.ts"
+    "dev": "ts-node src/server.ts"
   },
   "type": "module",
   "repository": {
@@ -44,7 +44,7 @@
     "eslint-config-prettier": "^8.5.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
-    "ts-node-dev": "2.0.0",
+    "ts-node": "^10.9.1",
     "tslib": "2.4.1",
     "typescript": "^4.8.4"
   },
