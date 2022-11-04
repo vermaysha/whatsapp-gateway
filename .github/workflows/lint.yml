@@ -1,0 +1,35 @@
+name: Lint & Format
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  lint_build:
+    name: Lint & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout project repository
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Setup Node.js environment
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: yarn
+
+      # Lint application
+      - name: Lint
+        run: yarn run lint
+
+      # Format application
+      - name: Format
+        run: yarn run format
