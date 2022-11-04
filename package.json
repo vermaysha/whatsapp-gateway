@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --build --force",
     "serve": "node dist/server.js",
-    "dev": "tsnd --respawn src/server.js"
+    "dev": "tsnd --respawn src/server.ts"
   },
   "repository": {
     "type": "git",
