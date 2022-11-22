@@ -6,6 +6,7 @@
  */
 
 import User from 'App/Models/User'
+import { JWTGuardConfig, JWTGuardContract } from "@ioc:Adonis/Addons/Jwt";
 
 declare module '@ioc:Adonis/Addons/Auth' {
   /*
@@ -69,5 +70,9 @@ declare module '@ioc:Adonis/Addons/Auth' {
       config: OATGuardConfig<'user'>
       client: OATClientContract<'user'>
     }
+    jwt: {
+      implementation: JWTGuardContract<'user', 'api'>,
+      config: JWTGuardConfig<'user'>,
+    };
   }
 }
