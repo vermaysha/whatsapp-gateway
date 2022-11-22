@@ -21,6 +21,7 @@
 import './routes/auth'
 import './routes/device'
 import './routes/service'
+import './routes/chat'
 
 import Route from '@ioc:Adonis/Core/Route'
 
