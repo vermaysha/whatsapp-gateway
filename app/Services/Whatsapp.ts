@@ -76,7 +76,9 @@ class Whatsapp {
           case 'connecting':
             await device.merge({ status: 'CONNECTING', qr: null }).save()
             Logger.info(
-              `Device [${id}]: Trying to connecting whatsapp with version ${version}, is newer ? ${isLatest}`
+              `Device [${id}]: Trying to connecting whatsapp with version ${version}, is newer: ${
+                isLatest ? 'yes' : 'no'
+              }`
             )
             break
 
