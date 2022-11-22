@@ -37,7 +37,7 @@ export default class ServicesController {
       })
     }
 
-    console.log(Whatsapp.disconnect(device))
+    Whatsapp.disconnect(device)
 
     return response.ok({
       message: 'WHATSAPP_SESSION_STOPPED',
@@ -69,7 +69,7 @@ export default class ServicesController {
       })
     }
 
-    console.log(await Whatsapp.logout(id))
+    await Whatsapp.logout(id)
 
     return response.ok({
       message: 'WHATSAPP_SESSION_LOGOUTED',

@@ -2,6 +2,7 @@ import makeWASocket, {
   Browsers,
   DisconnectReason,
   fetchLatestWaWebVersion,
+  makeInMemoryStore,
   useMultiFileAuthState,
 } from '@adiwajshing/baileys'
 import Logger from '@ioc:Adonis/Core/Logger'
@@ -13,6 +14,7 @@ import { resolve } from 'path'
 import md5 from 'md5'
 import { existsSync, rmSync } from 'fs'
 import { DateTime } from 'luxon'
+import QRCode from 'qrcode-terminal'
 
 interface Response {
   status: boolean
@@ -31,10 +33,14 @@ class Whatsapp {
    * @param qrCallback Function
    * @returns Promise<Response>
    */
-  public connect(device: Device, qrCallback?: (qr: string) => {}): Promise<Response> {
+  public connect(
+    device: Device,
+    qrCallback?: (qr: string) => {},
+    reconnect: boolean = false
+  ): Promise<Response> {
     return new Promise<Response>(async (resolve) => {
       const { id, name } = device
-      if (this.get(id)) {
+      if (this.get(id) && reconnect === false) {
         return resolve({
           status: true,
           message: 'Connection Already Open',
@@ -43,89 +49,106 @@ class Whatsapp {
       const sessionPath = this.getSessionPath(id)
       const { version, isLatest } = await fetchLatestWaWebVersion()
       const { state, saveCreds } = await useMultiFileAuthState(sessionPath)
+
       const logger = P({
         level: 'error',
       }).child({ level: 'error' })
 
       Logger.info(`Device [${id}]: Starting device "${name}"`)
 
+      const store = makeInMemoryStore({
+        logger,
+      })
+
+      store.readFromFile('./baileys_store.json')
+
+      setInterval(() => {
+        store.writeToFile('./baileys_store.json')
+      }, 10_000)
+
       this.sessions[id] = makeWASocket({
         browser: Browsers.macOS('Chrome'),
         logger,
         auth: state,
-        downloadHistory: true,
+        // downloadHistory: true,
         printQRInTerminal: false,
-        syncFullHistory: true,
+        // syncFullHistory: true,
         version,
       })
 
       /* ################ Bailey's Event Emitter */
 
+      store.bind(this.sessions[id].ev)
+
       // Connection update event listener
       this.sessions[id].ev.on('connection.update', async (update) => {
-        const { connection, lastDisconnect, qr } = update
+        try {
+          const { connection, lastDisconnect, qr } = update
 
-        if (qr) {
-          Logger.info(`Device [${id}]: Got new QRCode`)
-          await device.merge({ status: 'RECEIVING_QR', qr: qr }).save()
-          if (qrCallback) qrCallback(qr)
-        }
-
-        switch (connection) {
-          case 'open':
-            Logger.info(`Device [${id}]: Connection open`)
-            await device.merge({ status: 'OPEN', qr: null, connectedAt: DateTime.now() }).save()
-            resolve({
-              status: true,
-              message: 'Connection Open',
+          if (qr) {
+            Logger.info(`Device [${id}]: Got new QRCode`)
+            QRCode.generate(qr, {
+              small: true,
             })
-            break
+            await device.merge({ status: 'RECEIVING_QR', qr: qr }).save()
+            if (qrCallback) qrCallback(qr)
+          }
 
-          case 'connecting':
-            await device.merge({ status: 'CONNECTING', qr: null }).save()
-            Logger.info(
-              `Device [${id}]: Trying to connecting whatsapp with version ${version}, is newer: ${
-                isLatest ? 'yes' : 'no'
-              }`
-            )
-            break
-
-          case 'close':
-            const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
-            const shouldReconnect =
-              statusCode !== DisconnectReason.loggedOut && statusCode !== undefined
-
-            // reconnect if not logged out
-            if (shouldReconnect) {
-              Logger.info(`Device [1]: Trying to reconnecting`)
-              this.reconnect(device, qrCallback).then((res) => {
-                resolve(res)
+          switch (connection) {
+            case 'open':
+              Logger.info(`Device [${id}]: Connection open`)
+              await device.merge({ status: 'OPEN', qr: null, connectedAt: DateTime.now() }).save()
+              resolve({
+                status: true,
+                message: 'Connection Open',
               })
-            } else if (statusCode === DisconnectReason.loggedOut) {
-              Logger.info(`Device [${id}]: Connection closed due to user logged out`)
-              rmSync(sessionPath, {
-                force: true,
-                recursive: true,
-              })
-              delete this.sessions[id]
-              await device
-                .merge({ status: 'LOGGED_OUT', qr: null, disconnectedAt: DateTime.now() })
-                .save()
-            } else if (statusCode === undefined) {
-              Logger.info(`Device [${id}]: Disconnected`)
-              delete this.sessions[id]
-              await device
-                .merge({ status: 'DISCONNECTED', qr: null, disconnectedAt: DateTime.now() })
-                .save()
-            } else {
-              Logger.info(`Device [${id}]: Connection closed`)
-              delete this.sessions[id]
-              await device
-                .merge({ status: 'CLOSE', qr: null, disconnectedAt: DateTime.now() })
-                .save()
-            }
+              break
 
-            break
+            case 'connecting':
+              await device.merge({ status: 'CONNECTING', qr: null }).save()
+              Logger.info(
+                `Device [${id}]: Trying to connecting whatsapp with version ${version}, is newer: ${
+                  isLatest ? 'yes' : 'no'
+                }`
+              )
+              break
+
+            case 'close':
+              const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
+              const shouldReconnect =
+                statusCode !== DisconnectReason.loggedOut && statusCode !== undefined
+
+              // reconnect if not logged out
+              if (shouldReconnect) {
+                Logger.info(`Device [1]: Trying to reconnecting`)
+                resolve(this.connect(device, qrCallback, true))
+              } else if (statusCode === DisconnectReason.loggedOut) {
+                Logger.info(`Device [${id}]: Connection closed due to user logged out`)
+                rmSync(sessionPath, {
+                  force: true,
+                  recursive: true,
+                })
+                delete this.sessions[id]
+                await device
+                  .merge({ status: 'LOGGED_OUT', qr: null, disconnectedAt: DateTime.now() })
+                  .save()
+              } else if (statusCode === undefined) {
+                Logger.info(`Device [${id}]: Disconnected`)
+                delete this.sessions[id]
+                await device
+                  .merge({ status: 'DISCONNECTED', qr: null, disconnectedAt: DateTime.now() })
+                  .save()
+              } else {
+                Logger.info(`Device [${id}]: Connection closed`)
+                delete this.sessions[id]
+                await device
+                  .merge({ status: 'CLOSE', qr: null, disconnectedAt: DateTime.now() })
+                  .save()
+              }
+              break
+          }
+        } catch (error) {
+          console.log(error)
         }
       })
 
