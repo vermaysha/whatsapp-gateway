@@ -32,8 +32,14 @@ class Whatsapp {
    * @returns Promise<Response>
    */
   public connect(device: Device, qrCallback?: (qr: string) => {}): Promise<Response> {
-    return new Promise<Response>(async (resolve, reject) => {
+    return new Promise<Response>(async (resolve) => {
       const { id, name } = device
+      if (this.get(id)) {
+        return resolve({
+          status: true,
+          message: 'Connection Already Open',
+        })
+      }
       const sessionPath = this.getSessionPath(id)
       const { version, isLatest } = await fetchLatestWaWebVersion()
       const { state, saveCreds } = await useMultiFileAuthState(sessionPath)
@@ -43,7 +49,7 @@ class Whatsapp {
 
       Logger.info(`Device [${id}]: Starting device "${name}"`)
 
-      const sock = makeWASocket({
+      this.sessions[id] = makeWASocket({
         browser: Browsers.macOS('Chrome'),
         logger,
         auth: state,
@@ -53,7 +59,7 @@ class Whatsapp {
         version,
       })
 
-      sock.ev.on('connection.update', async (update) => {
+      this.sessions[id].ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update
 
         if (qr) {
@@ -65,7 +71,6 @@ class Whatsapp {
         switch (connection) {
           case 'open':
             Logger.info(`Device [${id}]: Connection open`)
-            this.sessions[id] = sock
             await device.merge({ status: 'OPEN', qr: null, connectedAt: DateTime.now() }).save()
             resolve({
               status: true,
@@ -94,13 +99,9 @@ class Whatsapp {
             // reconnect if not logged out
             if (shouldReconnect) {
               Logger.info(`Device [1]: Trying to reconnecting`)
-              this.connect(device, qrCallback)
-                .then((res) => {
-                  resolve(res)
-                })
-                .catch((res) => {
-                  reject(res)
-                })
+              this.connect(device, qrCallback).then((res) => {
+                resolve(res)
+              })
             } else if (statusCode === DisconnectReason.loggedOut) {
               Logger.info(`Device [${id}]: Connection closed due to user logged out`)
               rmSync(sessionPath, {
@@ -111,7 +112,6 @@ class Whatsapp {
               await device
                 .merge({ status: 'LOGGED_OUT', qr: null, disconnectedAt: DateTime.now() })
                 .save()
-              reject('Connection closed due to user logged out.')
             } else {
               Logger.info(`Device [${id}]: Connection closed`)
               rmSync(sessionPath, {
@@ -122,15 +122,35 @@ class Whatsapp {
               await device
                 .merge({ status: 'CLOSE', qr: null, disconnectedAt: DateTime.now() })
                 .save()
-              reject('Connection closed.')
             }
 
             break
         }
       })
 
-      sock.ev.on('creds.update', saveCreds)
+      this.sessions[id].ev.on('creds.update', saveCreds)
     })
+  }
+
+  /**
+   * Disconnected & Invalidate selected session
+   *
+   * @param device Device
+   * @returns boolean
+   */
+  public disconnect(device: Device): boolean {
+    const { id } = device
+
+    if (this.sessions[id] === undefined) {
+      return false
+    }
+
+    Logger.info(`Device [${id}]: Disconnected`)
+
+    this.sessions[id].end(undefined)
+
+    delete this.sessions[id]
+    return true
   }
 
   /**

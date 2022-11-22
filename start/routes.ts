@@ -20,6 +20,7 @@
 
 import './routes/auth'
 import './routes/device'
+import './routes/service'
 
 import Route from '@ioc:Adonis/Core/Route'
 

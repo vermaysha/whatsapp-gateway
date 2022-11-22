@@ -16,19 +16,19 @@ export default class Device extends BaseModel {
   public name: string
 
   @column()
-  public description: string
+  public description: string | null
 
   @column()
-  public status: string
+  public status: string | null
 
   @column()
-  public qr: string
+  public qr: string | null
 
   @column.dateTime()
-  public connectedAt: DateTime
+  public connectedAt: DateTime | null
 
   @column.dateTime()
-  public disconnectedAt: DateTime
+  public disconnectedAt: DateTime | null
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
