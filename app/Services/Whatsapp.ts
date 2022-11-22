@@ -92,10 +92,6 @@ class Whatsapp {
             const shouldReconnect =
               statusCode !== DisconnectReason.loggedOut && statusCode !== undefined
 
-            Logger.info(
-              `Device [${id}]: Connection closed due to ${lastDisconnect?.error}, reconnecting ${shouldReconnect}, disconected reason ${statusCode}`
-            )
-
             // reconnect if not logged out
             if (shouldReconnect) {
               Logger.info(`Device [1]: Trying to reconnecting`)
@@ -112,12 +108,14 @@ class Whatsapp {
               await device
                 .merge({ status: 'LOGGED_OUT', qr: null, disconnectedAt: DateTime.now() })
                 .save()
+            } else if (statusCode === undefined) {
+              Logger.info(`Device [${id}]: Disconnected`)
+              delete this.sessions[id]
+              await device
+                .merge({ status: 'DISCONNECTED', qr: null, disconnectedAt: DateTime.now() })
+                .save()
             } else {
               Logger.info(`Device [${id}]: Connection closed`)
-              rmSync(sessionPath, {
-                force: true,
-                recursive: true,
-              })
               delete this.sessions[id]
               await device
                 .merge({ status: 'CLOSE', qr: null, disconnectedAt: DateTime.now() })
@@ -144,8 +142,6 @@ class Whatsapp {
     if (this.sessions[id] === undefined) {
       return false
     }
-
-    Logger.info(`Device [${id}]: Disconnected`)
 
     this.sessions[id].end(undefined)
 
