@@ -57,7 +57,7 @@ class Whatsapp {
         const { connection, lastDisconnect, qr } = update
 
         if (qr) {
-          Logger.info(`Device [${id}]: New QRCode`)
+          Logger.info(`Device [${id}]: Got new QRCode`)
           await device.merge({ status: 'RECEIVING_QR', qr: qr }).save()
           if (qrCallback) qrCallback(qr)
         }
