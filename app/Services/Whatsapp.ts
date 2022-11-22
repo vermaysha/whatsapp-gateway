@@ -95,7 +95,7 @@ class Whatsapp {
             // reconnect if not logged out
             if (shouldReconnect) {
               Logger.info(`Device [1]: Trying to reconnecting`)
-              this.connect(device, qrCallback).then((res) => {
+              this.reconnect(device, qrCallback).then((res) => {
                 resolve(res)
               })
             } else if (statusCode === DisconnectReason.loggedOut) {
@@ -147,6 +147,19 @@ class Whatsapp {
 
     delete this.sessions[id]
     return true
+  }
+
+  /**
+   * Reconnect session
+   *
+   * @param device Device
+   * @param qrCallback Function
+   * @returns Promise<Response>
+   */
+  public reconnect(device: Device, qrCallback?: (qr: string) => {}): Promise<Response> {
+    this.disconnect(device)
+
+    return this.connect(device, qrCallback)
   }
 
   /**
