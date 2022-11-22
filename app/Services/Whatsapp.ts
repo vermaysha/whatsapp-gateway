@@ -7,6 +7,7 @@ import makeWASocket, {
 import Logger from '@ioc:Adonis/Core/Logger'
 import P from 'pino'
 import { Boom } from '@hapi/boom'
+import Device from 'App/Models/Device'
 
 interface Response {
   status: boolean
@@ -25,13 +26,16 @@ class Whatsapp {
    * @param qrCallback Function
    * @returns Promise<Response>
    */
-  public connect(qrCallback?: (qr: string) => {}): Promise<Response> {
+  public connect(device: Device, qrCallback?: (qr: string) => {}): Promise<Response> {
     return new Promise<Response>(async (resolve, reject) => {
+      const { id, name } = device
       const { version, isLatest } = await fetchLatestWaWebVersion()
       const { state, saveCreds } = await useMultiFileAuthState('')
       const logger = P({
         level: 'error',
       }).child({ level: 'error' })
+
+      Logger.info(`Device [${id}]: Starting device "${name}"`)
 
       const sock = makeWASocket({
         browser: Browsers.macOS('Chrome'),
@@ -47,14 +51,14 @@ class Whatsapp {
         const { connection, lastDisconnect, qr } = update
 
         if (qr) {
-          Logger.info(`Device [1]: New QRCode`)
+          Logger.info(`Device [${id}]: New QRCode`)
           if (qrCallback) qrCallback(qr)
         }
 
         switch (connection) {
           case 'open':
-            Logger.info(`Device [1]: Connection open`)
-            this.sessions[1] = sock
+            Logger.info(`Device [${id}]: Connection open`)
+            this.sessions[id] = sock
             resolve({
               status: true,
               message: 'Connection Open',
@@ -63,7 +67,7 @@ class Whatsapp {
 
           case 'connecting':
             Logger.info(
-              `Device [1]: Trying to connecting whatsapp with version ${version}, is newer ? ${isLatest}`
+              `Device [${id}]: Trying to connecting whatsapp with version ${version}, is newer ? ${isLatest}`
             )
             break
 
@@ -73,13 +77,13 @@ class Whatsapp {
               statusCode !== DisconnectReason.loggedOut && statusCode !== undefined
 
             Logger.info(
-              `Device [1]: Connection closed due to ${lastDisconnect?.error}, reconnecting ${shouldReconnect}, disconected reason ${statusCode}`
+              `Device [${id}]: Connection closed due to ${lastDisconnect?.error}, reconnecting ${shouldReconnect}, disconected reason ${statusCode}`
             )
 
             // reconnect if not logged out
             if (shouldReconnect) {
               Logger.info(`Device [1]: Trying to reconnecting`)
-              this.connect()
+              this.connect(device, qrCallback)
                 .then((res) => {
                   resolve(res)
                 })
@@ -87,12 +91,13 @@ class Whatsapp {
                   reject(res)
                 })
             } else if (statusCode === DisconnectReason.loggedOut) {
-              Logger.info(`Device [1]: Connection closed due to user logged out`)
-              delete this.sessions[1]
-              reject('Connection closed')
+              Logger.info(`Device [${id}]: Connection closed due to user logged out`)
+              delete this.sessions[id]
+              reject('Connection closed due to user logged out.')
             } else {
-              delete this.sessions[1]
-              reject('Connection closed')
+              Logger.info(`Device [${id}]: Connection closed`)
+              delete this.sessions[id]
+              reject('Connection closed.')
             }
 
             break
