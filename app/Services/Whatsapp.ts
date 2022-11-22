@@ -5,9 +5,14 @@ import makeWASocket, {
   useMultiFileAuthState,
 } from '@adiwajshing/baileys'
 import Logger from '@ioc:Adonis/Core/Logger'
+import Application from '@ioc:Adonis/Core/Application'
 import P from 'pino'
 import { Boom } from '@hapi/boom'
 import Device from 'App/Models/Device'
+import { resolve } from 'path'
+import md5 from 'md5'
+import { rmSync } from 'fs'
+import { DateTime } from 'luxon'
 
 interface Response {
   status: boolean
@@ -29,8 +34,9 @@ class Whatsapp {
   public connect(device: Device, qrCallback?: (qr: string) => {}): Promise<Response> {
     return new Promise<Response>(async (resolve, reject) => {
       const { id, name } = device
+      const sessionPath = this.getSessionPath(id)
       const { version, isLatest } = await fetchLatestWaWebVersion()
-      const { state, saveCreds } = await useMultiFileAuthState('')
+      const { state, saveCreds } = await useMultiFileAuthState(sessionPath)
       const logger = P({
         level: 'error',
       }).child({ level: 'error' })
@@ -52,6 +58,7 @@ class Whatsapp {
 
         if (qr) {
           Logger.info(`Device [${id}]: New QRCode`)
+          await device.merge({ status: 'RECEIVING_QR', qr: qr }).save()
           if (qrCallback) qrCallback(qr)
         }
 
@@ -59,6 +66,7 @@ class Whatsapp {
           case 'open':
             Logger.info(`Device [${id}]: Connection open`)
             this.sessions[id] = sock
+            await device.merge({ status: 'OPEN', qr: null, connectedAt: DateTime.now() }).save()
             resolve({
               status: true,
               message: 'Connection Open',
@@ -66,6 +74,7 @@ class Whatsapp {
             break
 
           case 'connecting':
+            await device.merge({ status: 'CONNECTING', qr: null }).save()
             Logger.info(
               `Device [${id}]: Trying to connecting whatsapp with version ${version}, is newer ? ${isLatest}`
             )
@@ -92,11 +101,25 @@ class Whatsapp {
                 })
             } else if (statusCode === DisconnectReason.loggedOut) {
               Logger.info(`Device [${id}]: Connection closed due to user logged out`)
+              rmSync(sessionPath, {
+                force: true,
+                recursive: true,
+              })
               delete this.sessions[id]
+              await device
+                .merge({ status: 'LOGGED_OUT', qr: null, disconnectedAt: DateTime.now() })
+                .save()
               reject('Connection closed due to user logged out.')
             } else {
               Logger.info(`Device [${id}]: Connection closed`)
+              rmSync(sessionPath, {
+                force: true,
+                recursive: true,
+              })
               delete this.sessions[id]
+              await device
+                .merge({ status: 'CLOSE', qr: null, disconnectedAt: DateTime.now() })
+                .save()
               reject('Connection closed.')
             }
 
@@ -106,6 +129,16 @@ class Whatsapp {
 
       sock.ev.on('creds.update', saveCreds)
     })
+  }
+
+  /**
+   * Get Session default path
+   *
+   * @param id number
+   * @returns PathLike
+   */
+  private getSessionPath(id: number) {
+    return resolve(Application.appRoot, 'sessions', md5(`session:${id}`))
   }
 
   /**
