@@ -43,4 +43,36 @@ export default class ServicesController {
       message: 'WHATSAPP_SESSION_STOPPED',
     })
   }
+
+  public async restart({ request, response }: HttpContextContract) {
+    const id = request.input('id')
+    const device = await Device.query().where('id', id).first()
+    if (!device) {
+      return response.notFound({
+        message: 'E_DATA_NOT_FOUND',
+      })
+    }
+
+    Whatsapp.reconnect(device)
+
+    return response.ok({
+      message: 'WHATSAPP_SESSION_RESTARTED',
+    })
+  }
+
+  public async logout({ request, response }: HttpContextContract) {
+    const id = request.input('id')
+    const device = await Device.query().where('id', id).first()
+    if (!device) {
+      return response.notFound({
+        message: 'E_DATA_NOT_FOUND',
+      })
+    }
+
+    console.log(await Whatsapp.logout(id))
+
+    return response.ok({
+      message: 'WHATSAPP_SESSION_LOGOUTED',
+    })
+  }
 }

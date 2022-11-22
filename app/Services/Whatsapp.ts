@@ -11,7 +11,7 @@ import { Boom } from '@hapi/boom'
 import Device from 'App/Models/Device'
 import { resolve } from 'path'
 import md5 from 'md5'
-import { rmSync } from 'fs'
+import { existsSync, rmSync } from 'fs'
 import { DateTime } from 'luxon'
 
 interface Response {
@@ -160,6 +160,48 @@ class Whatsapp {
     this.disconnect(device)
 
     return this.connect(device, qrCallback)
+  }
+
+  /**
+   * Logout and remove session directory
+   *
+   * @param id number
+   * @returns Promise<boolean>
+   */
+  public logout(id: number): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      const session = this.get(id)
+
+      if (!session) {
+        resolve(false)
+        return false
+      }
+
+      const sessionPath = this.getSessionPath(id)
+
+      try {
+        await session.logout()
+        if (existsSync(sessionPath)) {
+          rmSync(sessionPath, {
+            recursive: true,
+            force: true,
+          })
+
+          const device = await Device.find(id)
+          await device
+            ?.merge({
+              status: 'LOGGED_OUT',
+              qr: null,
+              disconnectedAt: DateTime.now(),
+            })
+            .save()
+          delete this.sessions[id]
+        }
+        resolve(true)
+      } catch (err) {
+        reject(err)
+      }
+    })
   }
 
   /**
