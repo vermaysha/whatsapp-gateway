@@ -59,6 +59,9 @@ class Whatsapp {
         version,
       })
 
+      /* ################ Bailey's Event Emitter */
+
+      // Connection update event listener
       this.sessions[id].ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update
 
@@ -126,6 +129,7 @@ class Whatsapp {
         }
       })
 
+      // Creds update event listener
       this.sessions[id].ev.on('creds.update', saveCreds)
     })
   }
