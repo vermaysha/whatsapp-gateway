@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "@adiwajshing/baileys": "4.4.0",
+    "@adiwajshing/keyed-db": "0.2.4",
     "@adonisjs/auth": "^8.2.3",
     "@adonisjs/core": "^5.8.0",
     "@adonisjs/lucid": "^18.3.0",
@@ -68,6 +69,7 @@
     "pg": "^8.8.0",
     "pino": "8.7.0",
     "proxy-addr": "^2.0.7",
+    "qrcode-terminal": "0.12.0",
     "reflect-metadata": "^0.1.13",
     "source-map-support": "^0.5.21"
   }
