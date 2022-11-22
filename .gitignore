@@ -1,7 +1,10 @@
 node_modules
 build
 coverage
-.vscode
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.history
 .DS_STORE
 .env
 tmp
