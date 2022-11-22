@@ -1,6 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Device from 'App/Models/Device'
-import Whatsapp from 'App/Services/Whatsapp'
+import { Whatsapp } from 'App/Services/Whatsapp'
 
 export default class ChatController {
   public async sendMessage({ request, response, auth }: HttpContextContract) {
