@@ -107,6 +107,25 @@ class Whatsapp {
       sock.ev.on('creds.update', saveCreds)
     })
   }
+
+  /**
+   * Get all sessions
+   *
+   * @returns Record<number, ReturnType<typeof makeWASocket>
+   */
+  public getAll(): Record<number, ReturnType<typeof makeWASocket>> {
+    return this.sessions
+  }
+
+  /**
+   * Get single session
+   *
+   * @param id number
+   * @returns ReturnType<typeof makeWASocket> | undefiend
+   */
+  public get(id: number): ReturnType<typeof makeWASocket> | undefined {
+    return this.sessions[id]
+  }
 }
 
 export default new Whatsapp()
