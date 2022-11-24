@@ -15,6 +15,7 @@ import md5 from 'md5'
 import { existsSync, rmSync } from 'fs'
 import { DateTime } from 'luxon'
 import QRCode from 'qrcode-terminal'
+import DatabaseStore from './DatabaseStore'
 
 interface Response {
   status: boolean
@@ -79,6 +80,8 @@ class Whatsapp {
       /* ################ Bailey's Event Emitter */
 
       store.bind(this.sessions[id].ev)
+
+      DatabaseStore.bind(this.sessions[id].ev, device)
 
       // Connection update event listener
       this.sessions[id].ev.on('connection.update', async (update) => {

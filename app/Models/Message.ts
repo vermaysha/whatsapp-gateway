@@ -1,184 +1,159 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import Device from './Device'
+import { WAMessageStatus, WAMessageStubType } from '@adiwajshing/baileys'
+import MessageContent from './MessageContent'
+import MessageContext from './MessageContext'
 
 export default class Message extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
   @column()
-  public remoteJid: string
+  public keyRemoteJid: string
 
   @column()
-  public fromMe: boolean
+  public keyFromMe: boolean
 
   @column()
   public keyId: string
 
   @column()
-  public messageTimestamp: number
+  public keyParticipant: string | null
 
   @column()
-  public pushName: string
+  public agentId: string | null
 
   @column()
-  public status: number
+  public bizPrivacyStatus: number | null
 
   @column()
-  public type: string | null
+  public broadcast: boolean | null
 
   @column()
-  public senderKeyHash: string
+  public clearMedia: boolean | null
 
   @column()
-  public senderTimestamp: number
+  public duration: number | null
 
   @column()
-  public recepientKeyHash: string
+  public ephemeralDuration: number | null
 
   @column()
-  public recipientTimestamps: number
+  public ephemeralOffToOn: boolean | null
 
   @column()
-  public messageSecret: string | null
+  public ephemeralOutOfSync: boolean | null
 
   @column()
-  public messageType: string
+  public ephemeralStartTimestamp: Object | null
 
   @column()
-  public viewOnceMessage: boolean
+  public finalLiveLocation: Object | null
 
   @column()
-  public url: string | null
+  public futureproofData: Uint8Array | null
 
   @column()
-  public mimetype: string | null
+  public ignore: boolean | null
 
   @column()
-  public title: string | null
+  public keepInChat: Object | null
 
   @column()
-  public file_sha256: string | null
+  public labels: Object | null
 
   @column()
-  public file_length: number | null
+  public mediaCiphertextSha256: Uint8Array | null
 
   @column()
-  public page_count: number | null
+  public mediaData: Object | null
+
+  @column({
+    columnName: 'message_c2s_timestamp',
+  })
+  public messageC2STimestamp: Object | null
 
   @column()
-  public media_key: string | null
+  public messageSecret: Uint8Array | null
 
   @column()
-  public file_name: string | null
+  public messageStubParameters: Object | null
 
   @column()
-  public file_enc_sha256: string | null
+  public messageStubType: WAMessageStubType | null
 
   @column()
-  public direct_path: string | null
+  public messageTimestamp: Object | null
 
   @column()
-  public media_key_timestamp: number | null
+  public multicast: boolean | null
 
   @column()
-  public height: number | null
+  public originalSelfAuthorUserJidString: string | null
 
   @column()
-  public width: number | null
+  public participant: string | null
 
   @column()
-  public jpeg_thumbnail: string | null
+  public photoChange: Object | null
 
   @column()
-  public seconds: number | null
+  public pollAdditionalMetadata: Object | null
 
   @column()
-  public ptt: boolean | null
+  public pollUpdates: Object | null
 
   @column()
-  public waveform: string | null
+  public pushName: string | null
 
   @column()
-  public degrees_latitude: number | null
+  public quotedStickerData: Object | null
 
   @column()
-  public display_name: number | null
+  public reactions: Object | null
 
   @column()
-  public vcard: string | null
+  public revokeMessageTimestamp: Object | null
 
   @column()
-  public poll_name: string | null
+  public starred: boolean | null
 
   @column()
-  public poll_options: object | null
+  public status: WAMessageStatus | null
 
   @column()
-  public selectable_options_count: number | null
+  public statusAlreadyViewed: boolean | null
 
   @column()
-  public poll_remote_jid: string | null
+  public urlNumber: boolean | null
 
   @column()
-  public poll_from_me: boolean | null
+  public urlText: boolean | null
 
   @column()
-  public poll_id: string | null
+  public userReceipt: Object | null
 
   @column()
-  public poll_enc_payload: string | null
+  public verifiedBizName: string | null
 
   @column()
-  public poll_enc_iv: string | null
-
-  @column()
-  public senderTimestampMs: number | null
-
-  @column()
-  public text: string | null
-
-  @column()
-  public gif_playback: boolean | null
-
-  @column()
-  public gif_attribution: string | null
-
-  @column()
-  public is_animated: boolean | null
-
-  @column()
-  public scans_sidecar: string | null
-
-  @column()
-  public scan_lengths: object | null
-
-  @column()
-  public mid_quality_file_sha256: string | null
-
-  @column()
-  public preview_type: string | null
-
-  @column()
-  public footer_text: string | null
-
-  @column()
-  public buttons: string | null
-
-  @column()
-  public header_type: string | null
-
-  @column()
-  public device_id: number
+  public deviceId: number
 
   @belongsTo(() => Device)
   public device: BelongsTo<typeof Device>
 
   @column()
-  public message_id: number | null
+  public messageId: number | null
 
   @belongsTo(() => Message)
   public message: BelongsTo<typeof Message>
+
+  @hasOne(() => MessageContent)
+  public content: HasOne<typeof MessageContent>
+
+  @hasOne(() => MessageContext)
+  public context: HasOne<typeof MessageContext>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
