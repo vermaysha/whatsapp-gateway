@@ -4,6 +4,7 @@ import makeWASocket, {
   ConnectionState,
   Contact,
   downloadMediaMessage,
+  isJidGroup,
   jidNormalizedUser,
   proto,
 } from '@adiwajshing/baileys'
@@ -15,9 +16,11 @@ import { Logger, LoggerOptions } from 'pino'
 import Application from '@ioc:Adonis/Core/Application'
 import Mime from 'mime'
 import md5 from 'md5'
-import { existsSync, mkdirSync } from 'fs'
+import { createWriteStream, existsSync, mkdirSync, PathLike } from 'fs'
 import ChatModel from 'App/Models/Chat'
 import ContactModel from 'App/Models/Contact'
+import GroupModel from 'App/Models/Group'
+import axios from 'axios'
 
 class DatabaseStore {
   protected state: ConnectionState = { connection: 'close' }
@@ -57,16 +60,59 @@ class DatabaseStore {
           }
 
           if (msg.key.id && msg.key.remoteJid) {
+            const normalizeJid = jidNormalizedUser(msg.key.remoteJid)
+            // Save new Groups
+            if (isJidGroup(normalizeJid)) {
+              const isExists = await GroupModel.findBy('remote_jid', normalizeJid)
+              if (isExists === null) {
+                const groupMetaData = await sock.groupMetadata(normalizeJid)
+                const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
+                const mediaPath = Application.publicPath(`${normalizeJid}`)
+                if (!existsSync(mediaPath)) {
+                  mkdirSync(mediaPath, {
+                    recursive: true,
+                  })
+                }
+                let ppPath: string | undefined
+                if (ppUrl) {
+                  await this.downloadImage(ppUrl, `${mediaPath}/photoProfile.jpg`)
+                  ppPath = `${normalizeJid}/photoProfile.jpg`
+                }
+
+                await GroupModel.updateOrCreate(
+                  {
+                    remoteJid: normalizeJid,
+                  },
+                  {
+                    remoteJid: normalizeJid,
+                    subject: groupMetaData.subject,
+                    announce: groupMetaData.announce,
+                    creation: groupMetaData.creation,
+                    desc: groupMetaData.desc,
+                    descId: groupMetaData.descId,
+                    descOwner: groupMetaData.descOwner,
+                    ephemeralDuration: groupMetaData.ephemeralDuration,
+                    owner: groupMetaData.owner,
+                    restrict: groupMetaData.restrict,
+                    size: groupMetaData.size,
+                    subjectOwner: groupMetaData.subjectOwner,
+                    subjectTime: groupMetaData.subjectTime,
+                    photoProfile: ppPath,
+                  }
+                )
+              }
+            }
+
             const messageModel = await Message.create({
               keyId: msg.key.id,
-              remoteJid: jidNormalizedUser(msg.key.remoteJid),
+              remoteJid: normalizeJid,
               fromMe: msg.key.fromMe ?? false,
               participant: msg.key.participant,
               pushName: msg.pushName,
               messageStatus: this.getMessageStatus(msg.status),
               messageType: messageType,
               content: content,
-              mentionedJid: message?.contextInfo?.mentionedJid ?? [],
+              mentionedJid: JSON.stringify(message?.contextInfo?.mentionedJid ?? []),
               viewOnce: message?.viewOnce ?? false,
               IsForwarded: message?.contextInfo?.isForwarded ?? false,
               deviceId: device.id,
@@ -86,7 +132,6 @@ class DatabaseStore {
               )
 
               if (buffer) {
-                const normalizeJid = jidNormalizedUser(msg.key.remoteJid)
                 const ext = Mime.getExtension(message?.mimetype ?? '')
                 const fileName = md5(msg.key.id)
                 const mediaPath = Application.publicPath(`${normalizeJid}/${ext}`)
@@ -180,8 +225,26 @@ class DatabaseStore {
     sock.ev.on('contacts.upsert', this.contacts)
 
     sock.ev.on('contacts.update', this.contacts)
+
+    sock.ev.on('groups.update', (groups) => {
+      for (const group of groups) {
+        console.log(`Group Update: ${JSON.stringify(group)}`)
+      }
+    })
+
+    sock.ev.on('groups.upsert', (groups) => {
+      for (const group of groups) {
+        console.log(`Group Upsert: ${JSON.stringify(group)}`)
+      }
+    })
   }
 
+  /**
+   * Contacts
+   *
+   * @param contacts Partial<Contact>[]
+   * @returns void
+   */
   protected async contacts(contacts: Partial<Contact>[]) {
     for (const contact of contacts) {
       if (!contact.id) {
@@ -204,6 +267,11 @@ class DatabaseStore {
     }
   }
 
+  /**
+   * Chats
+   * @param chats Partial<Chat>[]
+   * @returns void
+   */
   protected async chats(chats: Partial<Chat>[]) {
     for (const chat of chats) {
       if (!chat.id) {
@@ -231,6 +299,29 @@ class DatabaseStore {
     }
   }
 
+  protected async downloadImage(url: string, path: PathLike) {
+    const writer = createWriteStream(path)
+
+    const response = await axios({
+      url,
+      method: 'GET',
+      responseType: 'stream',
+    })
+
+    response.data.pipe(writer)
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve)
+      writer.on('error', reject)
+    })
+  }
+
+  /**
+   * Get Message Status
+   *
+   * @param status proto.WebMessageInfo.Status | null | undefined
+   * @returns MessageStatus
+   */
   protected getMessageStatus(
     status: proto.WebMessageInfo.Status | null | undefined
   ): MessageStatus {
