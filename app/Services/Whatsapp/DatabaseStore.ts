@@ -283,26 +283,39 @@ class DatabaseStore {
       } catch {}
 
       try {
+        const updatePayload: { [k: string]: any } = {}
+        const updatedColumns = [
+          'subject',
+          'announce',
+          'creation',
+          'desc',
+          'descId',
+          'descOwner',
+          'ephemeralDuration',
+          'owner',
+          'restrict',
+          'size',
+          'subjectOwner',
+          'subjectTime',
+        ]
+
+        for (const column of updatedColumns) {
+          if (groupMetaData[column]) {
+            updatePayload[column] = groupMetaData[column]
+          }
+        }
+
+        updatePayload['remoteJid'] = normalizeJid
+
+        if (ppPath) {
+          updatePayload['photoProfile'] = ppPath
+        }
+
         await GroupModel.updateOrCreate(
           {
             remoteJid: normalizeJid,
           },
-          {
-            remoteJid: normalizeJid,
-            subject: groupMetaData.subject,
-            announce: groupMetaData.announce,
-            creation: groupMetaData.creation,
-            desc: groupMetaData.desc,
-            descId: groupMetaData.descId,
-            descOwner: groupMetaData.descOwner,
-            ephemeralDuration: groupMetaData.ephemeralDuration,
-            owner: groupMetaData.owner,
-            restrict: groupMetaData.restrict,
-            size: groupMetaData.size,
-            subjectOwner: groupMetaData.subjectOwner,
-            subjectTime: groupMetaData.subjectTime,
-            photoProfile: ppPath,
-          }
+          updatePayload
         )
       } catch (error) {
         logger.error(group, error)
@@ -409,7 +422,6 @@ class DatabaseStore {
         const updatedColumns = [
           'remoteJid',
           'archive',
-          'photoProfile',
           'description',
           'displayName',
           'mute',
@@ -427,6 +439,10 @@ class DatabaseStore {
 
         if (chat.conversationTimestamp) {
           updatePayload['conversationAt'] = DateTime.fromSeconds(chat.conversationTimestamp)
+        }
+
+        if (photoProfile) {
+          updatePayload['photoProfile'] = photoProfile
         }
 
         await ChatModel.updateOrCreate(
