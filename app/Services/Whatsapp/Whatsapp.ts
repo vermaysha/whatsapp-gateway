@@ -118,8 +118,6 @@ class Whatsapp {
               const shouldReconnect =
                 statusCode !== undefined && shouldReconnectCodes.includes(statusCode)
 
-              console.log(`${shouldReconnect} - ${statusCode}`)
-
               // reconnect if not logged out
               if (shouldReconnect) {
                 Logger.info(`Device [1]: Trying to reconnecting`)
