@@ -395,25 +395,35 @@ class DatabaseStore {
       } catch {}
 
       try {
+        const updatePayload: { [k: string]: any } = {}
+        const updatedColumns = [
+          'remoteJid',
+          'archive',
+          'photoProfile',
+          'description',
+          'displayName',
+          'mute',
+          'name',
+          'pin',
+          'readOnly',
+          'unreadCount',
+        ]
+
+        for (const column of updatedColumns) {
+          if (chat[column]) {
+            updatePayload[column] = chat[column]
+          }
+        }
+
+        if (chat.conversationTimestamp) {
+          updatePayload['conversationAt'] = DateTime.fromSeconds(chat.conversationTimestamp)
+        }
+
         await ChatModel.updateOrCreate(
           {
             remoteJid: chat.id,
           },
-          {
-            remoteJid: chat.id,
-            archive: chat.archive,
-            photoProfile: photoProfile,
-            description: chat.description,
-            displayName: chat.displayName,
-            mute: chat.mute,
-            name: chat.name,
-            pin: chat.pin,
-            readOnly: chat.readOnly ?? false,
-            unreadCount: chat.unreadCount,
-            unreadMentionCount: chat.unreadMentionCount,
-            conversationAt:
-              chat.conversationTimestamp && DateTime.fromSeconds(chat.conversationTimestamp),
-          }
+          updatePayload
         )
       } catch (error) {
         logger.error(chat, error)
