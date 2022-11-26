@@ -106,12 +106,12 @@ class Whatsapp {
             case 'close':
               const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
               const shouldReconnectCodes = [
-                DisconnectReason.badSession,
-                DisconnectReason.connectionLost,
-                DisconnectReason.connectionClosed,
-                DisconnectReason.connectionReplaced,
-                DisconnectReason.restartRequired,
-                DisconnectReason.timedOut,
+                DisconnectReason.badSession, // 500
+                DisconnectReason.connectionLost, // 408
+                // DisconnectReason.connectionClosed, // 428
+                DisconnectReason.connectionReplaced, // 440
+                DisconnectReason.restartRequired, // 515
+                DisconnectReason.timedOut, // 408
                 // DisconnectReason.loggedOut,
                 // DisconnectReason.multideviceMismatch
               ]
@@ -148,7 +148,7 @@ class Whatsapp {
               break
           }
         } catch (error) {
-          console.log(error)
+          logger.error(error, error)
         }
       })
 
