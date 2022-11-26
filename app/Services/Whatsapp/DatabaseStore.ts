@@ -164,7 +164,6 @@ class DatabaseStore {
           }
         } catch (error) {
           logger.error(msg, error)
-          console.error(error)
         }
       }
     })
@@ -193,7 +192,6 @@ class DatabaseStore {
           }
         } catch (error) {
           logger.error(msg, error)
-          console.error(error)
         }
       }
     })
@@ -354,7 +352,6 @@ class DatabaseStore {
         )
       } catch (error) {
         logger.error(chat, error)
-        console.error(error)
       }
     }
   }
