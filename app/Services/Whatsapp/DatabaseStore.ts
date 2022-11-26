@@ -44,43 +44,43 @@ class DatabaseStore {
     // Save new messages
     sock.ev.on('messages.upsert', async ({ messages }) => {
       for (const msg of messages) {
-        try {
-          const { messageType, message, content } = this.getMessages(msg)
+        const { messageType, message, content } = this.getMessages(msg)
 
-          // Skipping when its protocolMessage
-          if (messageType === 'protocolMessage' || messageType == null) {
-            return
-          }
+        // Skipping when its protocolMessage
+        if (messageType === 'protocolMessage' || messageType == null) {
+          return
+        }
 
-          let messageId: number | undefined | null
+        let messageId: number | undefined | null
 
-          if (message?.contextInfo?.stanzaId) {
-            messageId = (await Message.findBy('keyId', message.contextInfo.stanzaId))?.id
-          }
+        if (message?.contextInfo?.stanzaId) {
+          messageId = (await Message.findBy('keyId', message.contextInfo.stanzaId))?.id
+        }
 
-          if (msg.key.id && msg.key.remoteJid) {
-            const normalizeJid = jidNormalizedUser(msg.key.remoteJid)
-            // Save new Groups
-            if (isJidGroup(normalizeJid)) {
-              const isExists = await GroupModel.findBy('remote_jid', normalizeJid)
-              if (isExists === null) {
-                const groupMetaData = await sock.groupMetadata(normalizeJid)
-                const mediaPath = Application.publicPath(`${normalizeJid}`)
-                if (!existsSync(mediaPath)) {
-                  mkdirSync(mediaPath, {
-                    recursive: true,
-                  })
+        if (msg.key.id && msg.key.remoteJid) {
+          const normalizeJid = jidNormalizedUser(msg.key.remoteJid)
+          // Save new Groups
+          if (isJidGroup(normalizeJid)) {
+            const isExists = await GroupModel.findBy('remote_jid', normalizeJid)
+            if (isExists === null) {
+              const groupMetaData = await sock.groupMetadata(normalizeJid)
+              const mediaPath = Application.publicPath(`${normalizeJid}`)
+              if (!existsSync(mediaPath)) {
+                mkdirSync(mediaPath, {
+                  recursive: true,
+                })
+              }
+              let ppPath: string | undefined
+
+              try {
+                const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
+                if (ppUrl) {
+                  await this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
+                  ppPath = `${normalizeJid}/photoProfile.jpg`
                 }
-                let ppPath: string | undefined
+              } catch {}
 
-                try {
-                  const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
-                  if (ppUrl) {
-                    await this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
-                    ppPath = `${normalizeJid}/photoProfile.jpg`
-                  }
-                } catch {}
-
+              try {
                 await GroupModel.updateOrCreate(
                   {
                     remoteJid: normalizeJid,
@@ -102,9 +102,13 @@ class DatabaseStore {
                     photoProfile: ppPath,
                   }
                 )
+              } catch (error) {
+                logger.error(groupMetaData, error)
               }
             }
+          }
 
+          try {
             const messageModel = await Message.create({
               keyId: msg.key.id,
               remoteJid: normalizeJid,
@@ -162,9 +166,9 @@ class DatabaseStore {
                 await writeFile(`${mediaPath}/${fileName}.${ext}`, buffer)
               }
             }
+          } catch (error) {
+            logger.error(msg, error)
           }
-        } catch (error) {
-          logger.error(msg, error)
         }
       }
     })
@@ -256,29 +260,29 @@ class DatabaseStore {
     logger: Logger<LoggerOptions>
   ) {
     for (const group of groups) {
+      if (!group.id) {
+        return
+      }
+
+      const normalizeJid = jidNormalizedUser(group.id)
+      const groupMetaData = await sock.groupMetadata(normalizeJid)
+      const mediaPath = Application.publicPath(`${normalizeJid}`)
+      if (!existsSync(mediaPath)) {
+        mkdirSync(mediaPath, {
+          recursive: true,
+        })
+      }
+      let ppPath: string | undefined
+
       try {
-        if (!group.id) {
-          return
+        const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
+        if (ppUrl) {
+          await this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
+          ppPath = `${normalizeJid}/photoProfile.jpg`
         }
+      } catch {}
 
-        const normalizeJid = jidNormalizedUser(group.id)
-        const groupMetaData = await sock.groupMetadata(normalizeJid)
-        const mediaPath = Application.publicPath(`${normalizeJid}`)
-        if (!existsSync(mediaPath)) {
-          mkdirSync(mediaPath, {
-            recursive: true,
-          })
-        }
-        let ppPath: string | undefined
-
-        try {
-          const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
-          if (ppUrl) {
-            await this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
-            ppPath = `${normalizeJid}/photoProfile.jpg`
-          }
-        } catch {}
-
+      try {
         await GroupModel.updateOrCreate(
           {
             remoteJid: normalizeJid,
@@ -318,28 +322,28 @@ class DatabaseStore {
     logger: Logger<LoggerOptions>
   ) {
     for (const contact of contacts) {
+      if (!contact.id) {
+        return
+      }
+
+      const mediaPath = Application.publicPath(`${contact.id}`)
+      if (!existsSync(mediaPath)) {
+        mkdirSync(mediaPath, {
+          recursive: true,
+        })
+      }
+
+      let imgUrl: string | undefined
       try {
-        if (!contact.id) {
-          return
+        const ppUrl = await sock.profilePictureUrl(contact.id, 'image')
+        const downloadUrl = contact.imgUrl || ppUrl
+        if (downloadUrl) {
+          this.download(downloadUrl, `${mediaPath}/photoProfile.jpg`)
+          imgUrl = `${contact.id}/photoProfile.jpg`
         }
+      } catch (err) {}
 
-        const mediaPath = Application.publicPath(`${contact.id}`)
-        if (!existsSync(mediaPath)) {
-          mkdirSync(mediaPath, {
-            recursive: true,
-          })
-        }
-
-        let imgUrl: string | undefined
-        try {
-          const ppUrl = await sock.profilePictureUrl(contact.id, 'image')
-          const downloadUrl = contact.imgUrl || ppUrl
-          if (downloadUrl) {
-            this.download(downloadUrl, `${mediaPath}/photoProfile.jpg`)
-            imgUrl = `${contact.id}/photoProfile.jpg`
-          }
-        } catch (err) {}
-
+      try {
         await ContactModel.updateOrCreate(
           {
             remoteJid: jidNormalizedUser(contact.id),
@@ -370,27 +374,27 @@ class DatabaseStore {
     logger: Logger<LoggerOptions>
   ) {
     for (const chat of chats) {
+      if (!chat.id) {
+        return
+      }
+
+      const mediaPath = Application.publicPath(`${chat.id}`)
+      if (!existsSync(mediaPath)) {
+        mkdirSync(mediaPath, {
+          recursive: true,
+        })
+      }
+      let photoProfile: string | undefined
+
       try {
-        if (!chat.id) {
-          return
+        const ppUrl = await sock.profilePictureUrl(chat.id, 'image')
+        if (ppUrl) {
+          this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
+          photoProfile = `${chat.id}/photoProfile.jpg`
         }
+      } catch {}
 
-        const mediaPath = Application.publicPath(`${chat.id}`)
-        if (!existsSync(mediaPath)) {
-          mkdirSync(mediaPath, {
-            recursive: true,
-          })
-        }
-        let photoProfile: string | undefined
-
-        try {
-          const ppUrl = await sock.profilePictureUrl(chat.id, 'image')
-          if (ppUrl) {
-            this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
-            photoProfile = `${chat.id}/photoProfile.jpg`
-          }
-        } catch {}
-
+      try {
         await ChatModel.updateOrCreate(
           {
             remoteJid: chat.id,
@@ -407,7 +411,8 @@ class DatabaseStore {
             readOnly: chat.readOnly ?? false,
             unreadCount: chat.unreadCount,
             unreadMentionCount: chat.unreadMentionCount,
-            conversationAt: DateTime.fromSeconds(chat.conversationTimestamp),
+            conversationAt:
+              chat.conversationTimestamp && DateTime.fromSeconds(chat.conversationTimestamp),
           }
         )
       } catch (error) {
