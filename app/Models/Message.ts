@@ -1,141 +1,62 @@
 import { DateTime } from 'luxon'
 import { BaseModel, BelongsTo, belongsTo, column, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { compose } from '@ioc:Adonis/Core/Helpers'
+import { SoftDeletes } from '@ioc:Adonis/Addons/LucidSoftDeletes'
 import Device from './Device'
-import { WAMessageStatus, WAMessageStubType } from '@adiwajshing/baileys'
-import MessageContent from './MessageContent'
-import MessageContext from './MessageContext'
+import MessageMedia from './MessageMedia'
 
-export default class Message extends BaseModel {
+export type MessageStatus = 'ERROR' | 'PENDING' | 'DELIVERY_ACK' | 'SERVER_ACK' | 'READ' | 'PLAYED'
+export type MessageType =
+  | 'audioMessage'
+  | 'videoMessage'
+  | 'imageMessage'
+  | 'documentMessage'
+  | 'stickerMessage'
+  | 'locationMessage'
+  | 'liveLocationMessage'
+  | 'conversation'
+  | 'extendedTextMessage'
+  | 'protocolMessage'
+
+export default class Message extends compose(BaseModel, SoftDeletes) {
   @column({ isPrimary: true })
   public id: number
-
-  @column()
-  public keyRemoteJid: string
-
-  @column()
-  public keyFromMe: boolean
 
   @column()
   public keyId: string
 
   @column()
-  public keyParticipant: string | null
+  public remoteJid: string
 
   @column()
-  public agentId: string | null
-
-  @column()
-  public bizPrivacyStatus: number | null
-
-  @column()
-  public broadcast: boolean | null
-
-  @column()
-  public clearMedia: boolean | null
-
-  @column()
-  public duration: number | null
-
-  @column()
-  public ephemeralDuration: number | null
-
-  @column()
-  public ephemeralOffToOn: boolean | null
-
-  @column()
-  public ephemeralOutOfSync: boolean | null
-
-  @column()
-  public ephemeralStartTimestamp: Object | null
-
-  @column()
-  public finalLiveLocation: Object | null
-
-  @column()
-  public futureproofData: Uint8Array | null
-
-  @column()
-  public ignore: boolean | null
-
-  @column()
-  public keepInChat: Object | null
-
-  @column()
-  public labels: Object | null
-
-  @column()
-  public mediaCiphertextSha256: Uint8Array | null
-
-  @column()
-  public mediaData: Object | null
-
-  @column({
-    columnName: 'message_c2s_timestamp',
-  })
-  public messageC2STimestamp: Object | null
-
-  @column()
-  public messageSecret: Uint8Array | null
-
-  @column()
-  public messageStubParameters: Object | null
-
-  @column()
-  public messageStubType: WAMessageStubType | null
-
-  @column()
-  public messageTimestamp: Object | null
-
-  @column()
-  public multicast: boolean | null
-
-  @column()
-  public originalSelfAuthorUserJidString: string | null
+  public fromMe: boolean
 
   @column()
   public participant: string | null
 
   @column()
-  public photoChange: Object | null
-
-  @column()
-  public pollAdditionalMetadata: Object | null
-
-  @column()
-  public pollUpdates: Object | null
-
-  @column()
   public pushName: string | null
 
   @column()
-  public quotedStickerData: Object | null
+  public messageStatus: MessageStatus
 
   @column()
-  public reactions: Object | null
+  public messageType: MessageType
 
   @column()
-  public revokeMessageTimestamp: Object | null
+  public content: string | null
 
   @column()
-  public starred: boolean | null
+  public mentionedJid: Object | null
 
   @column()
-  public status: WAMessageStatus | null
+  public viewOnce: boolean
 
   @column()
-  public statusAlreadyViewed: boolean | null
+  public IsForwarded: boolean
 
   @column()
-  public urlNumber: boolean | null
-
-  @column()
-  public urlText: boolean | null
-
-  @column()
-  public userReceipt: Object | null
-
-  @column()
-  public verifiedBizName: string | null
+  public thumbnail: string | null
 
   @column()
   public deviceId: number
@@ -146,18 +67,21 @@ export default class Message extends BaseModel {
   @column()
   public messageId: number | null
 
-  @belongsTo(() => Message)
-  public message: BelongsTo<typeof Message>
+  @hasOne(() => Message)
+  public message: HasOne<typeof Message>
 
-  @hasOne(() => MessageContent)
-  public content: HasOne<typeof MessageContent>
+  @hasOne(() => MessageMedia)
+  public media: HasOne<typeof MessageMedia>
 
-  @hasOne(() => MessageContext)
-  public context: HasOne<typeof MessageContext>
+  @column.dateTime()
+  public sendAt: DateTime
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public updatedAt: DateTime
+
+  @column.dateTime()
+  public deletedAt: DateTime | null
 }

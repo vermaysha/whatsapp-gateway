@@ -31,7 +31,8 @@
       "@japa/preset-adonis/build/adonis-typings",
       "@adonisjs/lucid",
       "@adonisjs/auth",
-      "adonis5-jwt"
+      "adonis5-jwt",
+      "adonis-lucid-soft-deletes"
     ]
   }
 }

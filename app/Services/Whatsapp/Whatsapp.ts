@@ -2,7 +2,6 @@ import makeWASocket, {
   Browsers,
   DisconnectReason,
   fetchLatestWaWebVersion,
-  makeInMemoryStore,
   useMultiFileAuthState,
 } from '@adiwajshing/baileys'
 import Logger from '@ioc:Adonis/Core/Logger'
@@ -57,16 +56,6 @@ class Whatsapp {
 
       Logger.info(`Device [${id}]: Starting device "${name}"`)
 
-      const store = makeInMemoryStore({
-        logger,
-      })
-
-      store.readFromFile('./baileys_store.json')
-
-      setInterval(() => {
-        store.writeToFile('./baileys_store.json')
-      }, 10_000)
-
       this.sessions[id] = makeWASocket({
         browser: Browsers.macOS('Chrome'),
         logger,
@@ -79,9 +68,7 @@ class Whatsapp {
 
       /* ################ Bailey's Event Emitter */
 
-      store.bind(this.sessions[id].ev)
-
-      DatabaseStore.bind(this.sessions[id].ev, device)
+      DatabaseStore.bind(this.sessions[id], logger, device)
 
       // Connection update event listener
       this.sessions[id].ev.on('connection.update', async (update) => {
