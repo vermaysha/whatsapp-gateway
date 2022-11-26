@@ -64,7 +64,6 @@ class DatabaseStore {
               const isExists = await GroupModel.findBy('remote_jid', normalizeJid)
               if (isExists === null) {
                 const groupMetaData = await sock.groupMetadata(normalizeJid)
-                const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
                 const mediaPath = Application.publicPath(`${normalizeJid}`)
                 if (!existsSync(mediaPath)) {
                   mkdirSync(mediaPath, {
@@ -72,10 +71,14 @@ class DatabaseStore {
                   })
                 }
                 let ppPath: string | undefined
-                if (ppUrl) {
-                  await this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
-                  ppPath = `${normalizeJid}/photoProfile.jpg`
-                }
+
+                try {
+                  const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
+                  if (ppUrl) {
+                    await this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
+                    ppPath = `${normalizeJid}/photoProfile.jpg`
+                  }
+                } catch {}
 
                 await GroupModel.updateOrCreate(
                   {
@@ -269,13 +272,15 @@ class DatabaseStore {
           })
         }
 
-        const ppUrl = await sock.profilePictureUrl(contact.id, 'image')
-        const downloadUrl = contact.imgUrl ?? ppUrl ?? undefined
         let imgUrl: string | undefined
-        if (downloadUrl) {
-          this.download(downloadUrl, `${mediaPath}/photoProfile.jpg`)
-          imgUrl = `${contact.id}/photoProfile.jpg`
-        }
+        try {
+          const ppUrl = await sock.profilePictureUrl(contact.id, 'image')
+          const downloadUrl = contact.imgUrl || ppUrl
+          if (downloadUrl) {
+            this.download(downloadUrl, `${mediaPath}/photoProfile.jpg`)
+            imgUrl = `${contact.id}/photoProfile.jpg`
+          }
+        } catch (err) {}
 
         await ContactModel.updateOrCreate(
           {
@@ -292,7 +297,6 @@ class DatabaseStore {
         )
       } catch (error) {
         logger.error(contact, error)
-        console.error(error)
       }
     }
   }
@@ -319,13 +323,15 @@ class DatabaseStore {
             recursive: true,
           })
         }
-
-        const ppUrl = await sock.profilePictureUrl(chat.id, 'image')
         let photoProfile: string | undefined
-        if (ppUrl) {
-          this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
-          photoProfile = `${chat.id}/photoProfile.jpg`
-        }
+
+        try {
+          const ppUrl = await sock.profilePictureUrl(chat.id, 'image')
+          if (ppUrl) {
+            this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
+            photoProfile = `${chat.id}/photoProfile.jpg`
+          }
+        } catch {}
 
         await ChatModel.updateOrCreate(
           {

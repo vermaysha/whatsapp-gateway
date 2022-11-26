@@ -97,7 +97,7 @@ class Whatsapp {
             case 'connecting':
               await device.merge({ status: 'CONNECTING', qr: null }).save()
               Logger.info(
-                `Device [${id}]: Trying to connecting whatsapp with version ${version}, is newer: ${
+                `Device [${id}]: Connecting whatsapp with version ${version}, is newer: ${
                   isLatest ? 'yes' : 'no'
                 }`
               )
@@ -105,8 +105,18 @@ class Whatsapp {
 
             case 'close':
               const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
+              const shouldReconnectCodes = [
+                DisconnectReason.badSession,
+                DisconnectReason.connectionLost,
+                DisconnectReason.connectionClosed,
+                DisconnectReason.connectionReplaced,
+                DisconnectReason.restartRequired,
+                DisconnectReason.timedOut,
+                // DisconnectReason.loggedOut,
+                // DisconnectReason.multideviceMismatch
+              ]
               const shouldReconnect =
-                statusCode !== DisconnectReason.loggedOut && statusCode !== undefined
+                statusCode !== undefined && shouldReconnectCodes.includes(statusCode)
 
               console.log(`${shouldReconnect} - ${statusCode}`)
 
