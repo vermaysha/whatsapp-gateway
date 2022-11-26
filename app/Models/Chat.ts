@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column, HasMany, hasMany } from '@ioc:Adonis/Lucid/Orm'
 import { compose } from '@ioc:Adonis/Core/Helpers'
 import { SoftDeletes } from '@ioc:Adonis/Addons/LucidSoftDeletes'
 import Device from './Device'
+import Message from './Message'
 
 export default class Chat extends compose(BaseModel, SoftDeletes) {
   @column({ isPrimary: true })
@@ -40,6 +41,12 @@ export default class Chat extends compose(BaseModel, SoftDeletes) {
 
   @column()
   public unreadMentionCount?: number | null
+
+  @hasMany(() => Message, {
+    localKey: 'remoteJid',
+    foreignKey: 'remoteJid',
+  })
+  public messages: HasMany<typeof Message>
 
   @column()
   public deviceId: number
