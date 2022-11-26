@@ -66,7 +66,7 @@ class Whatsapp {
         version,
       })
 
-      DatabaseStore.bind(this.sessions[id], logger, device)
+      DatabaseStore.bind(this.sessions[id], logger, device.id)
 
       /* ################ Bailey's Event Emitter */
 

@@ -9,7 +9,6 @@ import makeWASocket, {
   jidNormalizedUser,
   proto,
 } from '@adiwajshing/baileys'
-import Device from 'App/Models/Device'
 import Message, { MessageStatus, MessageType } from 'App/Models/Message'
 import { writeFile } from 'fs/promises'
 import { DateTime } from 'luxon'
@@ -35,7 +34,7 @@ class DatabaseStore {
   public bind(
     sock: ReturnType<typeof makeWASocket>,
     logger: Logger<LoggerOptions>,
-    device: Device
+    deviceId: number
   ) {
     sock.ev.on('connection.update', (update) => {
       Object.assign(this.state, update)
@@ -84,8 +83,10 @@ class DatabaseStore {
                 await GroupModel.updateOrCreate(
                   {
                     remoteJid: normalizeJid,
+                    deviceId: deviceId,
                   },
                   {
+                    deviceId: deviceId,
                     remoteJid: normalizeJid,
                     subject: groupMetaData.subject,
                     announce: groupMetaData.announce,
@@ -121,7 +122,7 @@ class DatabaseStore {
               mentionedJid: JSON.stringify(message?.contextInfo?.mentionedJid ?? []),
               viewOnce: message?.viewOnce ?? false,
               IsForwarded: message?.contextInfo?.isForwarded ?? false,
-              deviceId: device.id,
+              deviceId: deviceId,
               messageId: messageId ?? null,
               sendAt: DateTime.fromSeconds(msg.messageTimestamp),
             })
@@ -150,8 +151,10 @@ class DatabaseStore {
                 await messageModel.related('media').updateOrCreate(
                   {
                     messageId: messageModel.id,
+                    deviceId: deviceId,
                   },
                   {
+                    deviceId: deviceId,
                     fileLength: JSON.parse(message?.fileLength),
                     fileName: message?.fileName,
                     filePath: `${normalizeJid}/${ext}/${fileName}.${ext}`,
@@ -219,11 +222,11 @@ class DatabaseStore {
     })
 
     sock.ev.on('chats.upsert', (chats) => {
-      this.chats(chats, sock, logger)
+      this.chats(chats, sock, logger, deviceId)
     })
 
     sock.ev.on('chats.update', (chats) => {
-      this.chats(chats, sock, logger)
+      this.chats(chats, sock, logger, deviceId)
     })
 
     sock.ev.on('chats.delete', async (remoteJid) => {
@@ -231,19 +234,19 @@ class DatabaseStore {
     })
 
     sock.ev.on('contacts.upsert', (contacts) => {
-      this.contacts(contacts, sock, logger)
+      this.contacts(contacts, sock, logger, deviceId)
     })
 
     sock.ev.on('contacts.update', (contacts) => {
-      this.contacts(contacts, sock, logger)
+      this.contacts(contacts, sock, logger, deviceId)
     })
 
     sock.ev.on('groups.update', (groups) => {
-      this.groups(groups, sock, logger)
+      this.groups(groups, sock, logger, deviceId)
     })
 
     sock.ev.on('groups.upsert', (groups) => {
-      this.groups(groups, sock, logger)
+      this.groups(groups, sock, logger, deviceId)
     })
   }
 
@@ -257,7 +260,8 @@ class DatabaseStore {
   protected async groups(
     groups: Partial<GroupMetadata>[],
     sock: ReturnType<typeof makeWASocket>,
-    logger: Logger<LoggerOptions>
+    logger: Logger<LoggerOptions>,
+    deviceId: number
   ) {
     for (const group of groups) {
       if (!group.id) {
@@ -306,6 +310,7 @@ class DatabaseStore {
         }
 
         updatePayload['remoteJid'] = normalizeJid
+        updatePayload['deviceId'] = deviceId
 
         if (ppPath) {
           updatePayload['photoProfile'] = ppPath
@@ -314,11 +319,12 @@ class DatabaseStore {
         await GroupModel.updateOrCreate(
           {
             remoteJid: normalizeJid,
+            deviceId: deviceId,
           },
           updatePayload
         )
       } catch (error) {
-        logger.error(group, error)
+        logger.error({}, error)
       }
     }
   }
@@ -332,7 +338,8 @@ class DatabaseStore {
   protected async contacts(
     contacts: Partial<Contact>[],
     sock: ReturnType<typeof makeWASocket>,
-    logger: Logger<LoggerOptions>
+    logger: Logger<LoggerOptions>,
+    deviceId: number
   ) {
     for (const contact of contacts) {
       if (!contact.id) {
@@ -369,6 +376,7 @@ class DatabaseStore {
         }
 
         updatePayload['remoteJid'] = normalizeJid
+        updatePayload['deviceId'] = deviceId
 
         if (imgUrl) {
           updatePayload['imgUrl'] = imgUrl
@@ -377,6 +385,7 @@ class DatabaseStore {
         await ContactModel.updateOrCreate(
           {
             remoteJid: normalizeJid,
+            deviceId: deviceId,
           },
           updatePayload
         )
@@ -394,7 +403,8 @@ class DatabaseStore {
   protected async chats(
     chats: Partial<Chat>[],
     sock: ReturnType<typeof makeWASocket>,
-    logger: Logger<LoggerOptions>
+    logger: Logger<LoggerOptions>,
+    deviceId: number
   ) {
     for (const chat of chats) {
       if (!chat.id) {
@@ -437,6 +447,8 @@ class DatabaseStore {
           }
         }
 
+        updatePayload['deviceId'] = deviceId
+
         if (chat.conversationTimestamp) {
           updatePayload['conversationAt'] = DateTime.fromSeconds(chat.conversationTimestamp)
         }
@@ -448,6 +460,7 @@ class DatabaseStore {
         await ChatModel.updateOrCreate(
           {
             remoteJid: chat.id,
+            deviceId: deviceId,
           },
           updatePayload
         )

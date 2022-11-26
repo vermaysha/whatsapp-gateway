@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
+import Device from './Device'
 
 export default class Group extends BaseModel {
   @column({ isPrimary: true })
@@ -46,6 +47,12 @@ export default class Group extends BaseModel {
 
   @column()
   public photoProfile?: string
+
+  @column()
+  public deviceId: number
+
+  @belongsTo(() => Device)
+  public device: BelongsTo<typeof Device>
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

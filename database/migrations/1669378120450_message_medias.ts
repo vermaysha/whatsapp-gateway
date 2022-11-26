@@ -13,6 +13,13 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('messages')
         .onDelete('CASCADE')
+      table
+        .integer('device_id')
+        .notNullable()
+        .unsigned()
+        .references('id')
+        .inTable('devices')
+        .onDelete('CASCADE')
 
       table.string('file_name').nullable()
       table.string('file_path').nullable()

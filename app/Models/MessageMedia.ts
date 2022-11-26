@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 import Message from './Message'
+import Device from './Device'
 
 export default class MessageMedia extends BaseModel {
   @column({ isPrimary: true })
@@ -11,6 +12,12 @@ export default class MessageMedia extends BaseModel {
 
   @belongsTo(() => Message)
   public message: BelongsTo<typeof Message>
+
+  @column()
+  public deviceId: number
+
+  @belongsTo(() => Device)
+  public device: BelongsTo<typeof Device>
 
   @column()
   public filePath: string | null
