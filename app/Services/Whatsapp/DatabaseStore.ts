@@ -4,6 +4,7 @@ import makeWASocket, {
   ConnectionState,
   Contact,
   downloadMediaMessage,
+  GroupMetadata,
   isJidGroup,
   jidNormalizedUser,
   proto,
@@ -234,16 +235,75 @@ class DatabaseStore {
     })
 
     sock.ev.on('groups.update', (groups) => {
-      for (const group of groups) {
-        console.log(`Group Update: ${JSON.stringify(group)}`)
-      }
+      this.groups(groups, sock, logger)
     })
 
     sock.ev.on('groups.upsert', (groups) => {
-      for (const group of groups) {
-        console.log(`Group Upsert: ${JSON.stringify(group)}`)
-      }
+      this.groups(groups, sock, logger)
     })
+  }
+
+  /**
+   * Groups
+   * @param groups Partial<GroupMetadata>[]
+   * @param sock ReturnType<typeof makeWASocket>
+   * @param logger Logger<LoggerOptions>
+   * @returns void
+   */
+  protected async groups(
+    groups: Partial<GroupMetadata>[],
+    sock: ReturnType<typeof makeWASocket>,
+    logger: Logger<LoggerOptions>
+  ) {
+    for (const group of groups) {
+      try {
+        if (!group.id) {
+          return
+        }
+
+        const normalizeJid = jidNormalizedUser(group.id)
+        const groupMetaData = await sock.groupMetadata(normalizeJid)
+        const mediaPath = Application.publicPath(`${normalizeJid}`)
+        if (!existsSync(mediaPath)) {
+          mkdirSync(mediaPath, {
+            recursive: true,
+          })
+        }
+        let ppPath: string | undefined
+
+        try {
+          const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
+          if (ppUrl) {
+            await this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
+            ppPath = `${normalizeJid}/photoProfile.jpg`
+          }
+        } catch {}
+
+        await GroupModel.updateOrCreate(
+          {
+            remoteJid: normalizeJid,
+          },
+          {
+            remoteJid: normalizeJid,
+            subject: groupMetaData.subject,
+            announce: groupMetaData.announce,
+            creation: groupMetaData.creation,
+            desc: groupMetaData.desc,
+            descId: groupMetaData.descId,
+            descOwner: groupMetaData.descOwner,
+            ephemeralDuration: groupMetaData.ephemeralDuration,
+            owner: groupMetaData.owner,
+            restrict: groupMetaData.restrict,
+            size: groupMetaData.size,
+            subjectOwner: groupMetaData.subjectOwner,
+            subjectTime: groupMetaData.subjectTime,
+            photoProfile: ppPath,
+          }
+        )
+      } catch (error) {
+        logger.error(group, error)
+      }
+    }
   }
 
   /**
