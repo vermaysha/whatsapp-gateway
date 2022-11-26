@@ -326,6 +326,8 @@ class DatabaseStore {
         return
       }
 
+      const normalizeJid = jidNormalizedUser(contact.id)
+
       const mediaPath = Application.publicPath(`${contact.id}`)
       if (!existsSync(mediaPath)) {
         mkdirSync(mediaPath, {
@@ -339,23 +341,31 @@ class DatabaseStore {
         const downloadUrl = contact.imgUrl || ppUrl
         if (downloadUrl) {
           this.download(downloadUrl, `${mediaPath}/photoProfile.jpg`)
-          imgUrl = `${contact.id}/photoProfile.jpg`
+          imgUrl = `${normalizeJid}/photoProfile.jpg`
         }
       } catch (err) {}
 
       try {
+        const updatePayload: { [k: string]: any } = {}
+        const updatedColumns = ['name', 'notify', 'status', 'verifiedName']
+
+        for (const column of updatedColumns) {
+          if (contact[column]) {
+            updatePayload[column] = contact[column]
+          }
+        }
+
+        updatePayload['remoteJid'] = normalizeJid
+
+        if (imgUrl) {
+          updatePayload['imgUrl'] = imgUrl
+        }
+
         await ContactModel.updateOrCreate(
           {
-            remoteJid: jidNormalizedUser(contact.id),
+            remoteJid: normalizeJid,
           },
-          {
-            remoteJid: jidNormalizedUser(contact.id),
-            imgUrl: imgUrl,
-            name: contact.name,
-            notify: contact.notify,
-            status: contact.status,
-            verifiedName: contact.verifiedName,
-          }
+          updatePayload
         )
       } catch (error) {
         logger.error(contact, error)
