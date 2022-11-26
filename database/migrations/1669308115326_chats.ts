@@ -8,6 +8,7 @@ export default class extends BaseSchema {
       table.increments('id')
       table.string('remote_jid').notNullable()
       table.boolean('archive').defaultTo(false)
+      table.string('photo_profile').nullable()
       table.string('description').nullable()
       table.string('display_name').nullable()
       table.string('name').nullable()

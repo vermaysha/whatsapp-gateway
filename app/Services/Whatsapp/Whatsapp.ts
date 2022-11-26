@@ -66,9 +66,9 @@ class Whatsapp {
         version,
       })
 
-      /* ################ Bailey's Event Emitter */
-
       DatabaseStore.bind(this.sessions[id], logger, device)
+
+      /* ################ Bailey's Event Emitter */
 
       // Connection update event listener
       this.sessions[id].ev.on('connection.update', async (update) => {
@@ -107,6 +107,8 @@ class Whatsapp {
               const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
               const shouldReconnect =
                 statusCode !== DisconnectReason.loggedOut && statusCode !== undefined
+
+              console.log(`${shouldReconnect} - ${statusCode}`)
 
               // reconnect if not logged out
               if (shouldReconnect) {

@@ -24,7 +24,6 @@ import axios from 'axios'
 
 class DatabaseStore {
   protected state: ConnectionState = { connection: 'close' }
-  protected logger: Logger<LoggerOptions>
 
   /**
    * Bind database store
@@ -37,7 +36,6 @@ class DatabaseStore {
     logger: Logger<LoggerOptions>,
     device: Device
   ) {
-    this.logger = logger
     sock.ev.on('connection.update', (update) => {
       Object.assign(this.state, update)
     })
@@ -75,7 +73,7 @@ class DatabaseStore {
                 }
                 let ppPath: string | undefined
                 if (ppUrl) {
-                  await this.downloadImage(ppUrl, `${mediaPath}/photoProfile.jpg`)
+                  await this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
                   ppPath = `${normalizeJid}/photoProfile.jpg`
                 }
 
@@ -126,7 +124,7 @@ class DatabaseStore {
                 'buffer',
                 {},
                 {
-                  logger: this.logger,
+                  logger: logger,
                   reuploadRequest: sock.updateMediaMessage,
                 }
               )
@@ -214,17 +212,25 @@ class DatabaseStore {
       }
     })
 
-    sock.ev.on('chats.upsert', this.chats)
+    sock.ev.on('chats.upsert', (chats) => {
+      this.chats(chats, sock, logger)
+    })
 
-    sock.ev.on('chats.update', this.chats)
+    sock.ev.on('chats.update', (chats) => {
+      this.chats(chats, sock, logger)
+    })
 
     sock.ev.on('chats.delete', async (remoteJid) => {
       ;(await ChatModel.findBy('remote_jid', remoteJid))?.delete()
     })
 
-    sock.ev.on('contacts.upsert', this.contacts)
+    sock.ev.on('contacts.upsert', (contacts) => {
+      this.contacts(contacts, sock, logger)
+    })
 
-    sock.ev.on('contacts.update', this.contacts)
+    sock.ev.on('contacts.update', (contacts) => {
+      this.contacts(contacts, sock, logger)
+    })
 
     sock.ev.on('groups.update', (groups) => {
       for (const group of groups) {
@@ -245,25 +251,49 @@ class DatabaseStore {
    * @param contacts Partial<Contact>[]
    * @returns void
    */
-  protected async contacts(contacts: Partial<Contact>[]) {
+  protected async contacts(
+    contacts: Partial<Contact>[],
+    sock: ReturnType<typeof makeWASocket>,
+    logger: Logger<LoggerOptions>
+  ) {
     for (const contact of contacts) {
-      if (!contact.id) {
-        return
-      }
-
-      await ContactModel.updateOrCreate(
-        {
-          remoteJid: jidNormalizedUser(contact.id),
-        },
-        {
-          remoteJid: jidNormalizedUser(contact.id),
-          imgUrl: contact.imgUrl,
-          name: contact.name,
-          notify: contact.notify,
-          status: contact.status,
-          verifiedName: contact.verifiedName,
+      try {
+        if (!contact.id) {
+          return
         }
-      )
+
+        const mediaPath = Application.publicPath(`${contact.id}`)
+        if (!existsSync(mediaPath)) {
+          mkdirSync(mediaPath, {
+            recursive: true,
+          })
+        }
+
+        const ppUrl = await sock.profilePictureUrl(contact.id, 'image')
+        const downloadUrl = contact.imgUrl ?? ppUrl ?? undefined
+        let imgUrl: string | undefined
+        if (downloadUrl) {
+          this.download(downloadUrl, `${mediaPath}/photoProfile.jpg`)
+          imgUrl = `${contact.id}/photoProfile.jpg`
+        }
+
+        await ContactModel.updateOrCreate(
+          {
+            remoteJid: jidNormalizedUser(contact.id),
+          },
+          {
+            remoteJid: jidNormalizedUser(contact.id),
+            imgUrl: imgUrl,
+            name: contact.name,
+            notify: contact.notify,
+            status: contact.status,
+            verifiedName: contact.verifiedName,
+          }
+        )
+      } catch (error) {
+        logger.error(contact, error)
+        console.error(error)
+      }
     }
   }
 
@@ -272,34 +302,65 @@ class DatabaseStore {
    * @param chats Partial<Chat>[]
    * @returns void
    */
-  protected async chats(chats: Partial<Chat>[]) {
+  protected async chats(
+    chats: Partial<Chat>[],
+    sock: ReturnType<typeof makeWASocket>,
+    logger: Logger<LoggerOptions>
+  ) {
     for (const chat of chats) {
-      if (!chat.id) {
-        return
-      }
-
-      await ChatModel.updateOrCreate(
-        {
-          remoteJid: chat.id,
-        },
-        {
-          remoteJid: chat.id,
-          archive: chat.archive,
-          description: chat.description,
-          displayName: chat.displayName,
-          mute: chat.mute,
-          name: chat.name,
-          pin: chat.pin,
-          readOnly: chat.readOnly ?? false,
-          unreadCount: chat.unreadCount,
-          unreadMentionCount: chat.unreadMentionCount,
-          conversationAt: DateTime.fromSeconds(chat.conversationTimestamp),
+      try {
+        if (!chat.id) {
+          return
         }
-      )
+
+        const mediaPath = Application.publicPath(`${chat.id}`)
+        if (!existsSync(mediaPath)) {
+          mkdirSync(mediaPath, {
+            recursive: true,
+          })
+        }
+
+        const ppUrl = await sock.profilePictureUrl(chat.id, 'image')
+        let photoProfile: string | undefined
+        if (ppUrl) {
+          this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
+          photoProfile = `${chat.id}/photoProfile.jpg`
+        }
+
+        await ChatModel.updateOrCreate(
+          {
+            remoteJid: chat.id,
+          },
+          {
+            remoteJid: chat.id,
+            archive: chat.archive,
+            photoProfile: photoProfile,
+            description: chat.description,
+            displayName: chat.displayName,
+            mute: chat.mute,
+            name: chat.name,
+            pin: chat.pin,
+            readOnly: chat.readOnly ?? false,
+            unreadCount: chat.unreadCount,
+            unreadMentionCount: chat.unreadMentionCount,
+            conversationAt: DateTime.fromSeconds(chat.conversationTimestamp),
+          }
+        )
+      } catch (error) {
+        logger.error(chat, error)
+        console.error(error)
+      }
     }
   }
 
-  protected async downloadImage(url: string, path: PathLike) {
+  /**
+   * Download
+   *
+   * @param url Url
+   * @param path Path
+   * @returns Promise
+   */
+  protected async download(url: string, path: PathLike) {
     const writer = createWriteStream(path)
 
     const response = await axios({

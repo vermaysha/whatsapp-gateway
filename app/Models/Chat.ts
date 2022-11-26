@@ -14,6 +14,9 @@ export default class Chat extends compose(BaseModel, SoftDeletes) {
   public archive: boolean
 
   @column()
+  public photoProfile?: string
+
+  @column()
   public description?: string | null
 
   @column()
