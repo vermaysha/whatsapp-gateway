@@ -25,6 +25,8 @@ yarn docs
 To run the application on the production server, make sure you have compiled this application according to the guide above, then use the following command to run
 
 ```sh
+cd build
+yarn install --production
 yarn start
 ```
 
