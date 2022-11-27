@@ -2,8 +2,26 @@
   "name": "waway-backend",
   "version": "1.0.0",
   "private": true,
+  "author": {
+    "name": "Ashary Vermaysha",
+    "email": "vermaysha@gmail.com",
+    "url": "https://vermaysha.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vermaysha/whatsapp-gateway.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vermaysha/whatsapp-gateway/issues"
+  },
+  "homepage": "https://github.com/vermaysha/whatsapp-gateway#readme",
+  "keywords": [
+    "Whatsapp-Gateway",
+    "Whatsapp-API"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
   "scripts": {
-    "dev": "node ace serve --watch",
+    "dev": "node ace serve | pino-pretty",
     "build": "node ace build --production",
     "start": "node server.js",
     "lint": "eslint . --ext=.ts",
