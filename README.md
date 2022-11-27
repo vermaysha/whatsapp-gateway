@@ -30,6 +30,9 @@ yarn install --production
 yarn start
 ```
 
+**Dont forget to setup your ENV based on .env file**
+**Using .env file in production is not recommended, USE REAL ENV !!**
+
 It is recommended to use a process manager when managing a Node.js application on a basic server.
 
 A process manager ensures to restart the application if it crashes during runtime. In addition, some process managers like PM2 can also perform graceful restarts when re-deploying the application.
