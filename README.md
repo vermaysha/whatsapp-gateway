@@ -30,7 +30,7 @@ yarn install --production
 yarn start
 ```
 
-**Dont forget to setup your ENV based on .env file**
+**Dont forget to setup your ENV based on .env file** <br>
 **Using .env file in production is not recommended, USE REAL ENV !!**
 
 It is recommended to use a process manager when managing a Node.js application on a basic server.
