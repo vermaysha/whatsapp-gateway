@@ -24,6 +24,7 @@
     "dev": "node ace serve | pino-pretty",
     "build": "node ace build --production",
     "start": "node server.js",
+    "docs": "serve ./docs",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write ."
   },
@@ -71,6 +72,7 @@
     "openapi-types": ">=7",
     "pino-pretty": "^9.1.1",
     "prettier": "^2.7.1",
+    "serve": "14.1.2",
     "typescript": "~4.6",
     "youch": "^3.2.2",
     "youch-terminal": "^2.1.5"
