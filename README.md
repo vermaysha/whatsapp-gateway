@@ -9,8 +9,10 @@ This application is made using TypeScript so it needs to be compiled into JavaSc
 1. Clone this repository using command `git clone https://github.com/vermaysha/whatsapp-gateway.git`
 2. Install required package `yarn`
 3. Create an .env file whose contents match the example in the .env.example file
-4. Run the following command to compile `yarn build`
-5. If you want to run the development server on a local network, you can run the following command `yarn dev`
+4. Make sure to do the migration to ensure that the connection is correct and the necessary tables have been created with the following command `node ace migration:run`
+5. Run the seeder database to fill it with the default data with the command `node ace db:seed`
+6. Run the following command to compile `yarn build`
+7. If you want to run the development server on a local network, you can run the following command `yarn dev`
 
 ## API Documentation
 
