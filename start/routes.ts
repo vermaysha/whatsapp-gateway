@@ -24,6 +24,7 @@ import './routes/service'
 import './routes/chat'
 import './routes/contact'
 import './routes/group'
+import './routes/message'
 
 import Route from '@ioc:Adonis/Core/Route'
 

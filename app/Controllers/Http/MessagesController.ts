@@ -1,11 +1,11 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Device from 'App/Models/Device'
-import Group from 'App/Models/Group'
-import IndexValidator from 'App/Validators/Group/IndexValidator'
+import Message from 'App/Models/Message'
 import { validator, schema, rules } from '@ioc:Adonis/Core/Validator'
-import ShowValidator from 'App/Validators/Group/ShowValidator'
+import IndexValidator from 'App/Validators/Message/IndexValidator'
+import ShowValidator from 'App/Validators/Message/ShowValidator'
 
-export default class GroupsController {
+export default class MessagesController {
   public async index({ response, auth, request }: HttpContextContract) {
     const { deviceId, page, perPage, orderBy, direction } = await request.validate(IndexValidator)
 
@@ -14,12 +14,15 @@ export default class GroupsController {
       .where('user_id', auth.use('jwt').user?.id!)
       .first()
 
-    const groups = await Group.query()
+    const message = await Message.query()
+      .preload('media', (media) => {
+        media.select('filePath')
+      })
       .where('device_id', device?.id!)
       .orderBy(orderBy ?? 'id', direction)
       .paginate(page ?? 1, perPage ?? 10)
 
-    response.ok(groups)
+    response.ok(message)
   }
 
   public async store({}: HttpContextContract) {}
@@ -31,7 +34,7 @@ export default class GroupsController {
         id: schema.number([
           rules.unsigned(),
           rules.exists({
-            table: 'groups',
+            table: 'messages',
             column: 'id',
           }),
         ]),
@@ -44,9 +47,13 @@ export default class GroupsController {
       .where('user_id', auth.use('jwt').user?.id!)
       .first()
 
-    const group = await Group.query().where('device_id', device?.id!).where('id', id).firstOrFail()
+    const message = await Message.query()
+      .preload('media')
+      .where('device_id', device?.id!)
+      .where('id', id)
+      .firstOrFail()
 
-    response.ok(group)
+    response.ok(message)
   }
 
   public async update({}: HttpContextContract) {}
