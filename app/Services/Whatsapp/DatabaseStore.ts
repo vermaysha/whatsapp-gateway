@@ -110,22 +110,27 @@ class DatabaseStore {
           }
 
           try {
-            const messageModel = await Message.create({
-              keyId: msg.key.id,
-              remoteJid: normalizeJid,
-              fromMe: msg.key.fromMe ?? false,
-              participant: msg.key.participant,
-              pushName: msg.pushName,
-              messageStatus: this.getMessageStatus(msg.status),
-              messageType: messageType,
-              content: content,
-              mentionedJid: JSON.stringify(message?.contextInfo?.mentionedJid ?? []),
-              viewOnce: message?.viewOnce ?? false,
-              IsForwarded: message?.contextInfo?.isForwarded ?? false,
-              deviceId: deviceId,
-              messageId: messageId ?? null,
-              sendAt: DateTime.fromSeconds(msg.messageTimestamp),
-            })
+            const messageModel = await Message.updateOrCreate(
+              {
+                keyId: msg.key.id,
+              },
+              {
+                keyId: msg.key.id,
+                remoteJid: normalizeJid,
+                fromMe: msg.key.fromMe ?? false,
+                participant: msg.key.participant,
+                pushName: msg.pushName,
+                messageStatus: this.getMessageStatus(msg.status),
+                messageType: messageType,
+                content: content,
+                mentionedJid: JSON.stringify(message?.contextInfo?.mentionedJid ?? []),
+                viewOnce: message?.viewOnce ?? false,
+                IsForwarded: message?.contextInfo?.isForwarded ?? false,
+                deviceId: deviceId,
+                messageId: messageId ?? null,
+                sendAt: DateTime.fromSeconds(msg.messageTimestamp),
+              }
+            )
 
             if (msg && ['extendedTextMessage', 'conversation'].includes(messageType) === false) {
               const buffer = await downloadMediaMessage(

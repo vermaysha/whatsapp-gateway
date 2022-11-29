@@ -42,11 +42,16 @@ const databaseConfig: DatabaseConfig = {
         password: Env.get('PG_PASSWORD', ''),
         database: Env.get('PG_DB_NAME'),
       },
+      pool: {
+        max: Env.get('PG_POOL_MAX', undefined),
+        min: Env.get('PG_POOL_MIN', undefined),
+        acquireTimeoutMillis: 60 * 1000, // 60 Seconds
+      },
       migrations: {
         naturalSort: true,
       },
       healthCheck: false,
-      debug: false,
+      debug: Env.get('PG_DEBUG', false),
       seeders: {
         paths: ['./database/seeders/MainSeeder'],
       },

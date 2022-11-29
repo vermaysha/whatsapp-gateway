@@ -26,7 +26,7 @@ export default class AuthController {
       } else {
         response.unprocessableEntity({
           message: 'E_VALIDATION_FAILURE',
-          errors: error.messages,
+          errors: error,
         })
       }
     }
@@ -54,7 +54,7 @@ export default class AuthController {
       } else {
         response.unprocessableEntity({
           message: 'E_VALIDATION_FAILURE',
-          errors: error.messages,
+          errors: error.messages.errors || error.messages,
         })
       }
     }
