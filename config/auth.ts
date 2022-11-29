@@ -52,7 +52,7 @@ const authConfig: AuthConfig = {
       tokenProvider: {
         type: 'api',
         driver: 'database',
-        table: 'api_tokens',
+        table: 'tokens',
         foreignKey: 'user_id',
       },
 
@@ -114,7 +114,7 @@ const authConfig: AuthConfig = {
       tokenProvider: {
         type: 'api',
         driver: 'database',
-        table: 'jwt_tokens',
+        table: 'tokens',
         foreignKey: 'user_id',
       },
       provider: {

@@ -92,6 +92,16 @@ Route.group(() => {
   })
     .prefix('services')
     .middleware('auth:jwt')
+
+  /**
+   * Token Controller
+   */
+  Route.group(() => {
+    Route.get('/', 'TokensController.index')
+    Route.post('/generate', 'TokensController.generate')
+  })
+    .middleware('auth:jwt')
+    .prefix('token')
 }).prefix('private')
 
 /**
