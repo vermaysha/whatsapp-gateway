@@ -71,7 +71,7 @@ export class MyReporter implements ErrorReporterContract<{ errors: ErrorNode[] }
    */
   public toJSON() {
     return {
-      message: 'E_VALIDATION_ERROR',
+      message: 'Validation error',
       errors: this.errors,
     }
   }
