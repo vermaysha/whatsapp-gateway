@@ -1,5 +1,6 @@
 import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../Reporters/MyReporter'
 
 export default class IndexValidator {
   constructor(protected ctx: HttpContextContract) {}
@@ -47,5 +48,14 @@ export default class IndexValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'page.number': 'Page number only accepts number',
+    'page.unsigned': 'Page number only accepts positive numbers',
+    'perPage.number': 'Page number only accepts number',
+    'perPage.unsigned': 'Per page only accepts positive numbers',
+    'orderBy.enum': 'Order by only accepts id, name, connected_at, created_at and updated_at',
+    'direction.enum': 'Direction only accepts desc and asc',
+  }
+
+  public reporter = MyReporter
 }
