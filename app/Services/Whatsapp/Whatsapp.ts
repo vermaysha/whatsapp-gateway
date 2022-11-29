@@ -25,7 +25,11 @@ class Whatsapp {
   /**
    * Whatsapp connection sessions
    */
-  protected sessions: Record<string, ReturnType<typeof makeWASocket>> = {}
+  protected sessions: Map<number, ReturnType<typeof makeWASocket>>
+
+  constructor() {
+    this.sessions = new Map<number, ReturnType<typeof makeWASocket>>()
+  }
 
   /**
    * Create connection to whatsapp server
@@ -56,22 +60,25 @@ class Whatsapp {
 
       Logger.info(`Device [${id}]: Starting device "${name}"`)
 
-      this.sessions[id] = makeWASocket({
-        browser: Browsers.macOS('Chrome'),
-        logger,
-        auth: state,
-        // downloadHistory: true,
-        printQRInTerminal: false,
-        // syncFullHistory: true,
-        version,
-      })
+      this.sessions.set(
+        id,
+        makeWASocket({
+          browser: Browsers.macOS('Chrome'),
+          logger,
+          auth: state,
+          // downloadHistory: true,
+          printQRInTerminal: false,
+          // syncFullHistory: true,
+          version,
+        })
+      )
 
-      DatabaseStore.bind(this.sessions[id], logger, device.id)
+      DatabaseStore.bind(this.sessions.get(id)!, logger, device.id)
 
       /* ################ Bailey's Event Emitter */
 
       // Connection update event listener
-      this.sessions[id].ev.on('connection.update', async (update) => {
+      this.sessions.get(id)?.ev.on('connection.update', async (update) => {
         try {
           const { connection, lastDisconnect, qr } = update
 
@@ -108,12 +115,12 @@ class Whatsapp {
               const shouldReconnectCodes = [
                 DisconnectReason.badSession, // 500
                 DisconnectReason.connectionLost, // 408
-                // DisconnectReason.connectionClosed, // 428
+                DisconnectReason.connectionClosed, // 428
                 DisconnectReason.connectionReplaced, // 440
                 DisconnectReason.restartRequired, // 515
                 DisconnectReason.timedOut, // 408
                 // DisconnectReason.loggedOut,
-                // DisconnectReason.multideviceMismatch
+                DisconnectReason.multideviceMismatch,
               ]
               const shouldReconnect =
                 statusCode !== undefined && shouldReconnectCodes.includes(statusCode)
@@ -128,19 +135,19 @@ class Whatsapp {
                   force: true,
                   recursive: true,
                 })
-                delete this.sessions[id]
+                this.sessions.delete(id)
                 await device
                   .merge({ status: 'LOGGED_OUT', qr: null, disconnectedAt: DateTime.now() })
                   .save()
               } else if (statusCode === undefined) {
                 Logger.info(`Device [${id}]: Disconnected`)
-                delete this.sessions[id]
+                this.sessions.delete(id)
                 await device
                   .merge({ status: 'DISCONNECTED', qr: null, disconnectedAt: DateTime.now() })
                   .save()
               } else {
                 Logger.info(`Device [${id}]: Connection closed`)
-                delete this.sessions[id]
+                this.sessions.delete(id)
                 await device
                   .merge({ status: 'CLOSE', qr: null, disconnectedAt: DateTime.now() })
                   .save()
@@ -153,7 +160,7 @@ class Whatsapp {
       })
 
       // Creds update event listener
-      this.sessions[id].ev.on('creds.update', saveCreds)
+      this.sessions.get(id)?.ev.on('creds.update', saveCreds)
     })
   }
 
@@ -166,13 +173,13 @@ class Whatsapp {
   public disconnect(device: Device): boolean {
     const { id } = device
 
-    if (this.sessions[id] === undefined) {
+    if (this.sessions.get(id) === undefined) {
       return false
     }
 
-    this.sessions[id].end(undefined)
+    this.sessions.get(id)?.end(undefined)
 
-    delete this.sessions[id]
+    this.sessions.delete(id)
     return true
   }
 
@@ -222,7 +229,7 @@ class Whatsapp {
               disconnectedAt: DateTime.now(),
             })
             .save()
-          delete this.sessions[id]
+          this.sessions.delete(id)
         }
         resolve(true)
       } catch (err) {
@@ -246,7 +253,7 @@ class Whatsapp {
    *
    * @returns Record<number, ReturnType<typeof makeWASocket>
    */
-  public getAll(): Record<number, ReturnType<typeof makeWASocket>> {
+  public getAll(): Map<number, ReturnType<typeof makeWASocket>> {
     return this.sessions
   }
 
@@ -257,7 +264,7 @@ class Whatsapp {
    * @returns ReturnType<typeof makeWASocket> | undefiend
    */
   public get(id: number): ReturnType<typeof makeWASocket> | undefined {
-    return this.sessions[id]
+    return this.sessions.get(id)
   }
 }
 
