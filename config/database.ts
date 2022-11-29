@@ -51,7 +51,7 @@ const databaseConfig: DatabaseConfig = {
         naturalSort: true,
       },
       healthCheck: false,
-      debug: true,
+      debug: Env.get('PG_DEBUG', false),
       seeders: {
         paths: ['./database/seeders/MainSeeder'],
       },

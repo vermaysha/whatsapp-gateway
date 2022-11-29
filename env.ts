@@ -33,4 +33,6 @@ export default Env.rules({
   PG_POOL_MAX: Env.schema.number.optional(),
   // Postgres minimum pool connection
   PG_POOL_MIN: Env.schema.number.optional(),
+  // Postgres debug query
+  PG_DEBUG: Env.schema.boolean.optional(),
 })
