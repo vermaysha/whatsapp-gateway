@@ -10,17 +10,18 @@ import makeWASocket, {
   proto,
 } from '@adiwajshing/baileys'
 import Message, { MessageStatus, MessageType } from 'App/Models/Message'
-import { writeFile } from 'fs/promises'
+// import { writeFile } from 'fs/promises'
 import { DateTime } from 'luxon'
 import { Logger, LoggerOptions } from 'pino'
-import Application from '@ioc:Adonis/Core/Application'
 import Mime from 'mime'
 import md5 from 'md5'
-import { createWriteStream, existsSync, mkdirSync, PathLike } from 'fs'
+import { PathLike } from 'fs'
 import ChatModel from 'App/Models/Chat'
 import ContactModel from 'App/Models/Contact'
 import GroupModel from 'App/Models/Group'
 import axios from 'axios'
+import Drive from '@ioc:Adonis/Core/Drive'
+import { Readable } from 'stream'
 
 class DatabaseStore {
   protected state: ConnectionState = { connection: 'close' }
@@ -63,19 +64,13 @@ class DatabaseStore {
             const isExists = await GroupModel.findBy('remote_jid', normalizeJid)
             if (isExists === null) {
               const groupMetaData = await sock.groupMetadata(normalizeJid)
-              const mediaPath = Application.publicPath(`${normalizeJid}`)
-              if (!existsSync(mediaPath)) {
-                mkdirSync(mediaPath, {
-                  recursive: true,
-                })
-              }
               let ppPath: string | undefined
 
               try {
                 const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
                 if (ppUrl) {
-                  await this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
-                  ppPath = `${normalizeJid}/photoProfile.jpg`
+                  await this.download(ppUrl, `device-${deviceId}/${normalizeJid}/photoProfile.jpg`)
+                  ppPath = `device-${deviceId}/${normalizeJid}/photoProfile.jpg`
                 }
               } catch {}
 
@@ -146,12 +141,7 @@ class DatabaseStore {
               if (buffer) {
                 const ext = Mime.getExtension(message?.mimetype ?? '')
                 const fileName = md5(msg.key.id)
-                const mediaPath = Application.publicPath(`${normalizeJid}/${ext}`)
-                if (!existsSync(mediaPath)) {
-                  mkdirSync(mediaPath, {
-                    recursive: true,
-                  })
-                }
+                const filePath = `device-${deviceId}/${normalizeJid}/${ext}/${fileName}.${ext}`
 
                 await messageModel.related('media').updateOrCreate(
                   {
@@ -162,7 +152,7 @@ class DatabaseStore {
                     deviceId: deviceId,
                     fileLength: JSON.parse(message?.fileLength),
                     fileName: message?.fileName,
-                    filePath: `${normalizeJid}/${ext}/${fileName}.${ext}`,
+                    filePath: filePath,
                     height: message?.height,
                     width: message?.width,
                     isAnimated: message?.isAnimated ?? false,
@@ -171,7 +161,7 @@ class DatabaseStore {
                     seconds: message?.seconds,
                   }
                 )
-                await writeFile(`${mediaPath}/${fileName}.${ext}`, buffer)
+                await Drive.putStream(filePath, Readable.from(buffer))
               }
             }
           } catch (error) {
@@ -275,19 +265,13 @@ class DatabaseStore {
 
       const normalizeJid = jidNormalizedUser(group.id)
       const groupMetaData = await sock.groupMetadata(normalizeJid)
-      const mediaPath = Application.publicPath(`${normalizeJid}`)
-      if (!existsSync(mediaPath)) {
-        mkdirSync(mediaPath, {
-          recursive: true,
-        })
-      }
       let ppPath: string | undefined
 
       try {
         const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
         if (ppUrl) {
-          await this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
-          ppPath = `${normalizeJid}/photoProfile.jpg`
+          await this.download(ppUrl, `device-${deviceId}/${normalizeJid}/photoProfile.jpg`)
+          ppPath = `device-${deviceId}/${normalizeJid}/photoProfile.jpg`
         }
       } catch {}
 
@@ -352,21 +336,14 @@ class DatabaseStore {
       }
 
       const normalizeJid = jidNormalizedUser(contact.id)
-
-      const mediaPath = Application.publicPath(`${contact.id}`)
-      if (!existsSync(mediaPath)) {
-        mkdirSync(mediaPath, {
-          recursive: true,
-        })
-      }
-
       let imgUrl: string | undefined
+
       try {
         const ppUrl = await sock.profilePictureUrl(contact.id, 'image')
         const downloadUrl = contact.imgUrl || ppUrl
         if (downloadUrl) {
-          this.download(downloadUrl, `${mediaPath}/photoProfile.jpg`)
-          imgUrl = `${normalizeJid}/photoProfile.jpg`
+          await this.download(downloadUrl, `device-${deviceId}/${normalizeJid}/photoProfile.jpg`)
+          imgUrl = `device-${deviceId}/${normalizeJid}/photoProfile.jpg`
         }
       } catch (err) {}
 
@@ -416,19 +393,13 @@ class DatabaseStore {
         return
       }
 
-      const mediaPath = Application.publicPath(`${chat.id}`)
-      if (!existsSync(mediaPath)) {
-        mkdirSync(mediaPath, {
-          recursive: true,
-        })
-      }
       let photoProfile: string | undefined
 
       try {
         const ppUrl = await sock.profilePictureUrl(chat.id, 'image')
         if (ppUrl) {
-          this.download(ppUrl, `${mediaPath}/photoProfile.jpg`)
-          photoProfile = `${chat.id}/photoProfile.jpg`
+          await this.download(ppUrl, `device-${deviceId}/${chat.id}/photoProfile.jpg`)
+          photoProfile = `device-${deviceId}/${chat.id}/photoProfile.jpg`
         }
       } catch {}
 
@@ -483,7 +454,7 @@ class DatabaseStore {
    * @returns Promise
    */
   protected async download(url: string, path: PathLike) {
-    const writer = createWriteStream(path)
+    // const writer = createWriteStream(path)
 
     const response = await axios({
       url,
@@ -491,12 +462,14 @@ class DatabaseStore {
       responseType: 'stream',
     })
 
-    response.data.pipe(writer)
+    // response.data.pipe(writer)
 
-    return new Promise((resolve, reject) => {
-      writer.on('finish', resolve)
-      writer.on('error', reject)
-    })
+    await Drive.putStream(path.toString(), Readable.from(response.data))
+
+    // return new Promise((resolve, reject) => {
+    //   writer.on('finish', resolve)
+    //   writer.on('error', reject)
+    // })
   }
 
   /**

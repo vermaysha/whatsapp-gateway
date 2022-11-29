@@ -11,3 +11,4 @@ tmp
 sessions
 baileys_store.json
 yarn-error.log
+storage/**/*
