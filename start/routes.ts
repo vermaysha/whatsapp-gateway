@@ -18,15 +18,96 @@
 |
 */
 
-import './routes/auth'
-import './routes/device'
-import './routes/service'
-import './routes/chat'
-import './routes/contact'
-import './routes/group'
-import './routes/message'
-
 import Route from '@ioc:Adonis/Core/Route'
+
+/**
+ * Private API
+ */
+Route.group(() => {
+  /**
+   * Authentication Routes
+   */
+  Route.group(() => {
+    Route.post('login', 'AuthController.login')
+    Route.post('refreshToken', 'AuthController.refreshToken')
+  }).prefix('auth')
+
+  /**
+   * Chat Controller
+   */
+  Route.group(() => {
+    Route.get('/', 'ChatController.index')
+    Route.get('/:id', 'ChatController.show')
+  })
+    .middleware('auth:jwt')
+    .prefix('chat')
+
+  /**
+   * Contact Controller
+   */
+  Route.group(() => {
+    Route.get('/', 'ContactController.index')
+    Route.get('/:id', 'ContactController.show')
+  })
+    .middleware('auth:jwt')
+    .prefix('contact')
+
+  /**
+   * Devices Controller
+   */
+  Route.group(() => {
+    Route.get('/', 'DevicesController.index')
+  })
+    .middleware('auth:jwt')
+    .prefix('devices')
+
+  /**
+   * Group Controller
+   */
+  Route.group(() => {
+    Route.get('/', 'GroupsController.index')
+    Route.get('/:id', 'GroupsController.show')
+  })
+    .middleware('auth:jwt')
+    .prefix('group')
+
+  /**
+   * Messages Controller
+   */
+  Route.group(() => {
+    Route.get('/', 'MessagesController.index')
+    Route.get('/:id', 'MessagesController.show')
+  })
+    .middleware('auth:jwt')
+    .prefix('message')
+
+  /**
+   * Services Controller
+   */
+  Route.group(() => {
+    Route.get('/start', 'ServicesController.start')
+    Route.get('/stop', 'ServicesController.stop')
+    Route.get('/restart', 'ServicesController.restart')
+    Route.get('/logout', 'ServicesController.logout')
+  })
+    .prefix('services')
+    .middleware('auth:jwt')
+}).prefix('private')
+
+/**
+ * Public API
+ */
+Route.group(() => {
+  /**
+   * Chat Controller
+   */
+  Route.group(() => {
+    Route.post('/sendMessage', 'ChatController.sendMessage')
+    Route.post('/sendMessageGroup', 'ChatController.sendMessageGroup')
+  })
+    .middleware('auth:api')
+    .prefix('chat')
+}).prefix('public')
 
 Route.get('/', async () => {
   return { hello: 'world' }

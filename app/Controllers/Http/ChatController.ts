@@ -12,7 +12,7 @@ export default class ChatController {
 
     const device = await Device.query()
       .where('id', deviceId)
-      .where('user_id', auth.use('jwt').user?.id!)
+      .where('user_id', auth.user?.id!)
       .first()
 
     const contacts = await Chat.query()
@@ -40,7 +40,7 @@ export default class ChatController {
 
     const device = await Device.query()
       .where('id', deviceId)
-      .where('user_id', auth.use('jwt').user?.id!)
+      .where('user_id', auth.user?.id!)
       .first()
 
     const contact = await Chat.query()
@@ -58,7 +58,7 @@ export default class ChatController {
     const number = request.input('number')
     const message = request.input('message')
     const device = await Device.query()
-      .where('user_id', auth.use('jwt').user?.id!)
+      .where('user_id', auth.user?.id!)
       .where('status', 'OPEN')
       .firstOrFail()
 
@@ -92,7 +92,7 @@ export default class ChatController {
     const number = request.input('number')
     const message = request.input('message')
     const device = await Device.query()
-      .where('user_id', auth.use('jwt').user?.id!)
+      .where('user_id', auth.user?.id!)
       .where('status', 'OPEN')
       .firstOrFail()
 
