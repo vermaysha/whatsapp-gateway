@@ -57,6 +57,7 @@ Route.group(() => {
    */
   Route.group(() => {
     Route.get('/', 'DevicesController.index')
+    Route.get('/:id', 'DevicesController.show')
   })
     .middleware('auth:jwt')
     .prefix('devices')
