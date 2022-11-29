@@ -31,7 +31,7 @@ export default class Device extends BaseModel {
   public name: string
 
   @column()
-  public description: string | null
+  public description?: string | null
 
   @column()
   public status: string | null

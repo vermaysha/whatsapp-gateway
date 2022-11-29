@@ -31,7 +31,7 @@ export default class StoreDeviceValidator {
       }),
       rules.maxLength(50),
     ]),
-    description: schema.string.optional([rules.maxLength(200)]),
+    description: schema.string.nullableAndOptional([rules.maxLength(200)]),
   })
 
   /**
