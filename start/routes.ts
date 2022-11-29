@@ -60,6 +60,7 @@ Route.group(() => {
     Route.get('/:id', 'DevicesController.show')
     Route.post('/', 'DevicesController.store')
     Route.put('/:id', 'DevicesController.update')
+    Route.delete('/:id', 'DevicesController.destroy')
   })
     .middleware('auth:jwt')
     .prefix('devices')

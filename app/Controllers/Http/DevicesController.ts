@@ -116,7 +116,7 @@ export default class DevicesController {
     try {
       device.name = name
       device.description = description
-      device.save()
+      await device.save()
 
       return response.ok({
         message: 'Device data has been updated',
@@ -130,5 +130,34 @@ export default class DevicesController {
     }
   }
 
-  public async destroy({}: HttpContextContract) {}
+  /**
+   * Delete device by id
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
+  public async destroy({ params, auth, response, logger }: HttpContextContract) {
+    const device = await Device.query()
+      .where('id', params.id)
+      .where('user_id', auth.use('jwt').user?.id!)
+      .first()
+
+    if (!device) {
+      return response.notFound({
+        message: 'Requested device not exist',
+      })
+    }
+
+    try {
+      await device.delete()
+      return response.ok({
+        message: 'Device data has been deleted',
+      })
+    } catch (error) {
+      logger.error('Failed to delete device', error)
+      return response.badRequest({
+        message: 'Failed to delete new device',
+      })
+    }
+  }
 }
