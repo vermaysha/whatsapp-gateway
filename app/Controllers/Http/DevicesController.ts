@@ -1,20 +1,20 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Device from 'App/Models/Device'
-import IndexValidator from 'App/Validators/Device/IndexValidator'
-import { validator, schema, rules } from '@ioc:Adonis/Core/Validator'
+import IndexDeviceValidator from 'App/Validators/Device/IndexDeviceValidator'
 import Contact from 'App/Models/Contact'
 import Message from 'App/Models/Message'
 import Group from 'App/Models/Group'
+import StoreDeviceValidator from 'App/Validators/Device/StoreDeviceValidator'
 
 export default class DevicesController {
   /**
    * Get all devices data with pagination
    *
    * @param param0 HttpContextContract
-   * @returns
+   * @returns Promise<void>
    */
   public async index({ request, response, auth }: HttpContextContract) {
-    const { page, perPage, orderBy, direction } = await request.validate(IndexValidator)
+    const { page, perPage, orderBy, direction } = await request.validate(IndexDeviceValidator)
 
     const devices = await Device.query()
       .where('user_id', auth.use('jwt').user?.id!)
@@ -24,30 +24,42 @@ export default class DevicesController {
     return response.ok(devices)
   }
 
-  public async store({}: HttpContextContract) {}
+  /**
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
+  public async store({ request, auth, response, logger }: HttpContextContract) {
+    const { description, name } = await request.validate(StoreDeviceValidator)
+
+    try {
+      const device = await Device.create({
+        name,
+        description,
+        status: 'CLOSE',
+        userId: auth.use('jwt').user?.id!,
+      })
+
+      return response.ok({
+        message: 'Device data has been saved',
+        device,
+      })
+    } catch (error) {
+      logger.error('Failed to store device', error)
+      return response.badRequest({
+        message: 'Failed to save new device',
+      })
+    }
+  }
 
   /**
    * Show single data of device
    *
-   * @param param0 HttpContextContact
+   * @param param0 HttpContextContract
    * @returns Promise<void>
    */
   public async show({ params, response, auth }: HttpContextContract) {
-    const { id } = await validator.validate({
-      schema: schema.create({
-        id: schema.number([
-          rules.exists({
-            table: Device.table,
-            column: 'id',
-          }),
-        ]),
-      }),
-      data: params,
-      messages: {
-        'id.exists': 'Requested devices not found',
-      },
-      bail: true,
-    })
+    const { id } = params
 
     const device = await Device.query()
       .select([
@@ -71,6 +83,12 @@ export default class DevicesController {
       .where('id', id)
       .where('user_id', auth.use('jwt').user?.id!)
       .first()
+
+    if (!device) {
+      return response.notFound({
+        message: 'Requested device not exist',
+      })
+    }
 
     return response.ok(device)
   }
