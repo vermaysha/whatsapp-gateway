@@ -206,15 +206,15 @@ class Whatsapp {
     return new Promise(async (resolve, reject) => {
       const session = this.get(id)
 
-      if (!session) {
-        resolve(false)
-        return false
-      }
-
       const sessionPath = this.getSessionPath(id)
 
       try {
-        await session.logout()
+        // Logout from server when connection exists
+        if (session) {
+          await session.logout()
+        }
+
+        // Delete session
         if (existsSync(sessionPath)) {
           rmSync(sessionPath, {
             recursive: true,
