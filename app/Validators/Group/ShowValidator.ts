@@ -1,5 +1,6 @@
 import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../Reporters/MyReporter'
 
 export default class ShowValidator {
   constructor(protected ctx: HttpContextContract) {}
@@ -24,13 +25,7 @@ export default class ShowValidator {
    *    ```
    */
   public schema = schema.create({
-    deviceId: schema.number([
-      rules.unsigned(),
-      rules.exists({
-        table: 'devices',
-        column: 'id',
-      }),
-    ]),
+    deviceId: schema.number([rules.unsigned()]),
   })
 
   /**
@@ -44,5 +39,11 @@ export default class ShowValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'deviceId.required': 'Device ID is required',
+    'deviceId.number': 'Device ID only accepts number',
+    'deviceId.unsigned': 'Device ID only accepts positive numbers',
+  }
+
+  public reporter = MyReporter
 }

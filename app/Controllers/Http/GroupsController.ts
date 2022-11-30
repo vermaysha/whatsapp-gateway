@@ -2,10 +2,15 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Device from 'App/Models/Device'
 import Group from 'App/Models/Group'
 import IndexValidator from 'App/Validators/Group/IndexValidator'
-import { validator, schema, rules } from '@ioc:Adonis/Core/Validator'
 import ShowValidator from 'App/Validators/Group/ShowValidator'
 
 export default class GroupsController {
+  /**
+   * Get all groups by device
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
   public async index({ response, auth, request }: HttpContextContract) {
     const { deviceId, page, perPage, orderBy, direction } = await request.validate(IndexValidator)
 
@@ -14,42 +19,49 @@ export default class GroupsController {
       .where('user_id', auth.use('jwt').user?.id!)
       .first()
 
+    if (!device) {
+      return response.notFound({
+        message: 'Requested device not exist',
+      })
+    }
+
     const groups = await Group.query()
       .where('device_id', device?.id!)
       .orderBy(orderBy ?? 'id', direction)
       .paginate(page ?? 1, perPage ?? 10)
 
-    response.ok(groups)
+    return response.ok(groups)
   }
 
-  public async store({}: HttpContextContract) {}
-
+  /**
+   * Get single group
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
   public async show({ response, auth, request, params }: HttpContextContract) {
     const { deviceId } = await request.validate(ShowValidator)
-    const { id } = await validator.validate({
-      schema: schema.create({
-        id: schema.number([
-          rules.unsigned(),
-          rules.exists({
-            table: 'groups',
-            column: 'id',
-          }),
-        ]),
-      }),
-      data: params,
-    })
+    const { id } = params
 
     const device = await Device.query()
       .where('id', deviceId)
       .where('user_id', auth.use('jwt').user?.id!)
       .first()
 
-    const group = await Group.query().where('device_id', device?.id!).where('id', id).firstOrFail()
+    if (!device) {
+      return response.notFound({
+        message: 'Requested device not exist',
+      })
+    }
 
-    response.ok(group)
+    const group = await Group.query().where('device_id', device?.id!).where('id', id).first()
+
+    if (!group) {
+      return response.notFound({
+        message: 'Requested group not exist',
+      })
+    }
+
+    return response.ok(group)
   }
-
-  public async update({}: HttpContextContract) {}
-
-  public async destroy({}: HttpContextContract) {}
 }
