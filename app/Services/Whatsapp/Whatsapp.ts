@@ -69,10 +69,9 @@ class Whatsapp {
           browser: Browsers.macOS('Chrome'),
           logger,
           auth: state,
-          // downloadHistory: true,
           printQRInTerminal: false,
-          // syncFullHistory: true,
           version,
+          markOnlineOnConnect: true,
         })
       )
 
