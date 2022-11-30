@@ -1,5 +1,6 @@
 import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../Reporters/MyReporter'
 
 export default class LoginValidator {
   constructor(protected ctx: HttpContextContract) {}
@@ -24,13 +25,7 @@ export default class LoginValidator {
    *    ```
    */
   public schema = schema.create({
-    email: schema.string({}, [
-      rules.email(),
-      rules.exists({
-        table: 'users',
-        column: 'email',
-      }),
-    ]),
+    email: schema.string({}, [rules.email()]),
     password: schema.string({}, [rules.minLength(8)]),
   })
 
@@ -45,5 +40,12 @@ export default class LoginValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'email.required': 'Email field is required',
+    'email.email': 'The email field must contain a valid email address',
+    'password.required': 'Password field is required',
+    'password.minLength': 'The password field must have at least 8 characters',
+  }
+
+  public reporter = MyReporter
 }

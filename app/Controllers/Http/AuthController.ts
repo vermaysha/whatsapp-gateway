@@ -12,23 +12,15 @@ export default class AuthController {
    * @returns
    */
   public async login({ request, auth, response }: HttpContextContract) {
+    const { email, password } = await request.validate(LoginValidator)
+
     try {
-      const { email, password } = await request.validate(LoginValidator)
-
       const token = await auth.use('jwt').attempt(email, password)
-
       return response.created(this._formatToken(token))
-    } catch (error) {
-      if (error.messages === undefined) {
-        response.unauthorized({
-          message: 'E_PASSWORD_WRONG',
-        })
-      } else {
-        response.unprocessableEntity({
-          message: 'E_VALIDATION_FAILURE',
-          errors: error,
-        })
-      }
+    } catch {
+      return response.unauthorized({
+        message: 'Email/password wrong',
+      })
     }
   }
 
@@ -40,23 +32,15 @@ export default class AuthController {
    * @returns
    */
   public async refreshToken({ request, auth, response }: HttpContextContract) {
+    const { refreshToken } = await request.validate(RefreshTokenValidator)
+
     try {
-      const { refreshToken } = await request.validate(RefreshTokenValidator)
-
       const token = await auth.use('jwt').loginViaRefreshToken(refreshToken)
-
       return response.created(this._formatToken(token))
-    } catch (error) {
-      if (error.messages === undefined) {
-        response.unauthorized({
-          message: 'E_INVALID_REFRESH_TOKEN',
-        })
-      } else {
-        response.unprocessableEntity({
-          message: 'E_VALIDATION_FAILURE',
-          errors: error.messages.errors || error.messages,
-        })
-      }
+    } catch {
+      return response.unauthorized({
+        message: 'Invalid refresh token',
+      })
     }
   }
 

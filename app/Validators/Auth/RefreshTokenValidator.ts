@@ -1,5 +1,6 @@
-import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
+import { schema, CustomMessages } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../Reporters/MyReporter'
 
 export default class RefreshTokenValidator {
   constructor(protected ctx: HttpContextContract) {}
@@ -24,7 +25,7 @@ export default class RefreshTokenValidator {
    *    ```
    */
   public schema = schema.create({
-    refreshToken: schema.string({}, [rules.required()]),
+    refreshToken: schema.string(),
   })
 
   /**
@@ -38,5 +39,9 @@ export default class RefreshTokenValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'refreshToken.required': 'refreshToken field is required',
+  }
+
+  public reporter = MyReporter
 }
