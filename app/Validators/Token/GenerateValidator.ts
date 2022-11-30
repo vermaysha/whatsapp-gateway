@@ -1,5 +1,6 @@
 import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../Reporters/MyReporter'
 
 export default class GenerateValidator {
   constructor(protected ctx: HttpContextContract) {}
@@ -47,5 +48,16 @@ export default class GenerateValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'name.required': 'Device name is required',
+    'name.alphaNum':
+      'Device name may only contain alphanumeric characters, spaces, underscores, and dashes',
+    'name.maxLength': 'The maximum length of a device name is 50 characters',
+    'description.maxLength': 'The maximum length of a device description is 200 characters',
+  }
+
+  /**
+   * Custom Error Reporter
+   */
+  public reporter = MyReporter
 }

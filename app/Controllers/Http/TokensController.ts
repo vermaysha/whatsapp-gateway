@@ -4,6 +4,12 @@ import GenerateValidator from 'App/Validators/Token/GenerateValidator'
 import IndexValidator from 'App/Validators/Token/IndexValidator'
 
 export default class TokensController {
+  /**
+   * Get all API Tokens
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
   public async index({ request, response, auth }: HttpContextContract) {
     const { page, perPage, orderBy, direction } = await request.validate(IndexValidator)
 
@@ -14,9 +20,15 @@ export default class TokensController {
       .orderBy(orderBy ?? 'id', direction)
       .paginate(page ?? 1, perPage ?? 10)
 
-    response.ok(tokens)
+    return response.ok(tokens)
   }
 
+  /**
+   * Generate new API Token
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
   public async generate({ request, response, auth }: HttpContextContract) {
     const { name, description, expiresAt } = await request.validate(GenerateValidator)
 
@@ -26,7 +38,7 @@ export default class TokensController {
       expiresIn: expiresAt?.toSeconds() ?? undefined,
     })
 
-    response.ok({
+    return response.ok({
       message: 'TOKEN_GENERATED',
       data: token,
     })
