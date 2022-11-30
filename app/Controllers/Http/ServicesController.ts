@@ -1,20 +1,26 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Device from 'App/Models/Device'
 import { Whatsapp } from 'App/Services/Whatsapp'
+import MainValidator from 'App/Validators/Service/MainValidator'
 
 export default class ServicesController {
   /**
-   * Start session when no session
+   * Start session
    *
    * @param param0 HttpContextContract
-   * @returns
+   * @returns Promise<void>
    */
-  public async start({ request, response }: HttpContextContract) {
-    const id = request.input('id')
-    const device = await Device.query().where('id', id).first()
+  public async start({ request, response, auth }: HttpContextContract) {
+    const { id } = await request.validate(MainValidator)
+
+    const device = await Device.query()
+      .where('id', id)
+      .where('user_id', auth.use('jwt').user?.id!)
+      .first()
+
     if (!device) {
       return response.notFound({
-        message: 'E_DATA_NOT_FOUND',
+        message: 'Requested device not found',
       })
     }
 
@@ -23,56 +29,90 @@ export default class ServicesController {
     }
 
     return response.ok({
-      message: 'WHATSAPP_SESSION_STARTED',
+      message: 'Whatsapp has been started',
     })
   }
 
-  public async stop({ request, response }: HttpContextContract) {
-    const id = request.input('id')
-    const device = await Device.query().where('id', id).first()
+  /**
+   * Stop session
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
+  public async stop({ request, response, auth }: HttpContextContract) {
+    const { id } = await request.validate(MainValidator)
+
+    const device = await Device.query()
+      .where('id', id)
+      .where('user_id', auth.use('jwt').user?.id!)
+      .first()
 
     if (!device) {
       return response.notFound({
-        message: 'E_DATA_NOT_FOUND',
+        message: 'Requested device not found',
       })
     }
 
     Whatsapp.disconnect(device)
 
     return response.ok({
-      message: 'WHATSAPP_SESSION_STOPPED',
+      message: 'Whatsapp has been stopped',
     })
   }
 
-  public async restart({ request, response }: HttpContextContract) {
-    const id = request.input('id')
-    const device = await Device.query().where('id', id).first()
+  /**
+   * Restart session
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
+  public async restart({ request, response, auth }: HttpContextContract) {
+    const { id } = await request.validate(MainValidator)
+
+    const device = await Device.query()
+      .where('id', id)
+      .where('user_id', auth.use('jwt').user?.id!)
+      .first()
+
     if (!device) {
       return response.notFound({
-        message: 'E_DATA_NOT_FOUND',
+        message: 'Requested device not found',
       })
     }
 
     Whatsapp.reconnect(device)
 
     return response.ok({
-      message: 'WHATSAPP_SESSION_RESTARTED',
+      message: 'Whatsapp has been reconnected',
     })
   }
 
-  public async logout({ request, response }: HttpContextContract) {
-    const id = request.input('id')
-    const device = await Device.query().where('id', id).first()
+  /**
+   * Logout session
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
+  public async logout({ request, response, auth }: HttpContextContract) {
+    const { id } = await request.validate(MainValidator)
+
+    const device = await Device.query()
+      .where('id', id)
+      .where('user_id', auth.use('jwt').user?.id!)
+      .first()
+
     if (!device) {
       return response.notFound({
-        message: 'E_DATA_NOT_FOUND',
+        message: 'Requested device not found',
       })
     }
 
-    await Whatsapp.logout(id)
+    if (!Whatsapp.get(id)) {
+      Whatsapp.logout(id)
+    }
 
     return response.ok({
-      message: 'WHATSAPP_SESSION_LOGOUTED',
+      message: 'Whatsapp has been logout',
     })
   }
 }
