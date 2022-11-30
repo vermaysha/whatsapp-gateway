@@ -4,9 +4,14 @@ import Device from 'App/Models/Device'
 import { Whatsapp } from 'App/Services/Whatsapp'
 import IndexValidator from 'App/Validators/Chat/IndexValidator'
 import ShowValidator from 'App/Validators/Chat/ShowValidator'
-import { validator, schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class ChatController {
+  /**
+   * Get all chat by user & device
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
   public async index({ response, auth, request }: HttpContextContract) {
     const { deviceId, page, perPage, orderBy, direction } = await request.validate(IndexValidator)
 
@@ -15,33 +20,40 @@ export default class ChatController {
       .where('user_id', auth.user?.id!)
       .first()
 
+    if (!device) {
+      return response.notFound({
+        message: 'Requested device not exist',
+      })
+    }
+
     const contacts = await Chat.query()
       .where('device_id', device?.id!)
       .orderBy(orderBy ?? 'id', direction)
       .paginate(page ?? 1, perPage ?? 10)
 
-    response.ok(contacts)
+    return response.ok(contacts)
   }
 
+  /**
+   * Get single chat
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
   public async show({ response, auth, request, params }: HttpContextContract) {
     const { deviceId } = await request.validate(ShowValidator)
-    const { id } = await validator.validate({
-      schema: schema.create({
-        id: schema.number([
-          rules.unsigned(),
-          rules.exists({
-            table: 'chats',
-            column: 'id',
-          }),
-        ]),
-      }),
-      data: params,
-    })
+    const { id } = params
 
     const device = await Device.query()
       .where('id', deviceId)
       .where('user_id', auth.user?.id!)
       .first()
+
+    if (!device) {
+      return response.notFound({
+        message: 'Requested device not exist',
+      })
+    }
 
     const contact = await Chat.query()
       .preload('messages', (message) => {
@@ -49,9 +61,15 @@ export default class ChatController {
       })
       .where('device_id', device?.id!)
       .where('id', id)
-      .firstOrFail()
+      .first()
 
-    response.ok(contact)
+    if (!contact) {
+      return response.notFound({
+        message: 'Requested chat not exist',
+      })
+    }
+
+    return response.ok(contact)
   }
 
   public async sendMessage({ request, response, auth }: HttpContextContract) {

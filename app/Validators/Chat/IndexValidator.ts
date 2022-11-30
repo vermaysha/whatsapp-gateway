@@ -1,5 +1,6 @@
 import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MyReporter } from '../Reporters/MyReporter'
 
 export default class IndexValidator {
   constructor(protected ctx: HttpContextContract) {}
@@ -24,13 +25,7 @@ export default class IndexValidator {
    *    ```
    */
   public schema = schema.create({
-    deviceId: schema.number([
-      rules.unsigned(),
-      rules.exists({
-        table: 'chats',
-        column: 'id',
-      }),
-    ]),
+    deviceId: schema.number([rules.unsigned()]),
     page: schema.number.optional([rules.unsigned()]),
     perPage: schema.number.optional([rules.unsigned()]),
     orderBy: schema.enum.optional([
@@ -55,5 +50,18 @@ export default class IndexValidator {
    * }
    *
    */
-  public messages: CustomMessages = {}
+  public messages: CustomMessages = {
+    'deviceId.required': 'Device ID is required',
+    'deviceId.number': 'Device ID only accepts number',
+    'deviceId.unsigned': 'Device ID only accepts positive numbers',
+    'page.number': 'Page number only accepts number',
+    'page.unsigned': 'Page number only accepts positive numbers',
+    'perPage.number': 'Page number only accepts number',
+    'perPage.unsigned': 'Per page only accepts positive numbers',
+    'orderBy.enum':
+      'Order by only accepts id, name, unread_count, unread_mention_count, created_at and updated_at',
+    'direction.enum': 'Direction only accepts desc and asc',
+  }
+
+  public reporter = MyReporter
 }
