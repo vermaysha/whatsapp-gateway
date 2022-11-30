@@ -26,12 +26,12 @@ export default class ChatController {
       })
     }
 
-    const contacts = await Chat.query()
+    const chat = await Chat.query()
       .where('device_id', device?.id!)
       .orderBy(orderBy ?? 'id', direction)
       .paginate(page ?? 1, perPage ?? 10)
 
-    return response.ok(contacts)
+    return response.ok(chat)
   }
 
   /**
@@ -55,7 +55,7 @@ export default class ChatController {
       })
     }
 
-    const contact = await Chat.query()
+    const chat = await Chat.query()
       .preload('messages', (message) => {
         message.limit(10).orderBy('id', 'desc')
       })
@@ -63,13 +63,13 @@ export default class ChatController {
       .where('id', id)
       .first()
 
-    if (!contact) {
+    if (!chat) {
       return response.notFound({
         message: 'Requested chat not exist',
       })
     }
 
-    return response.ok(contact)
+    return response.ok(chat)
   }
 
   public async sendMessage({ request, response, auth }: HttpContextContract) {
