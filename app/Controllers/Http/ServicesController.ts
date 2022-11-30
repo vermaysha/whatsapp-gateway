@@ -24,9 +24,7 @@ export default class ServicesController {
       })
     }
 
-    if (!Whatsapp.get(id)) {
-      Whatsapp.connect(device)
-    }
+    Whatsapp.connect(device)
 
     return response.ok({
       message: 'Whatsapp has been started',
@@ -107,9 +105,7 @@ export default class ServicesController {
       })
     }
 
-    if (!Whatsapp.get(id)) {
-      Whatsapp.logout(id)
-    }
+    Whatsapp.logout(id)
 
     return response.ok({
       message: 'Whatsapp has been logout',
