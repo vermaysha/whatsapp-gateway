@@ -1,2 +1,2 @@
 export { default as Whatsapp } from './Whatsapp'
-export { default as DatabaseStore } from './DatabaseStore'
+export { default as WhatsappStore } from './WhatsappStore'

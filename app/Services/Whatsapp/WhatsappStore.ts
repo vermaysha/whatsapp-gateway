@@ -8,9 +8,9 @@ import makeWASocket, {
   isJidGroup,
   jidNormalizedUser,
   proto,
+  WAMessageUpdate,
 } from '@adiwajshing/baileys'
 import Message, { MessageStatus, MessageType } from 'App/Models/Message'
-// import { writeFile } from 'fs/promises'
 import { DateTime } from 'luxon'
 import { Logger, LoggerOptions } from 'pino'
 import Mime from 'mime'
@@ -23,7 +23,7 @@ import axios from 'axios'
 import Drive from '@ioc:Adonis/Core/Drive'
 import { Readable } from 'stream'
 
-class DatabaseStore {
+class WhatsappStore {
   protected state: ConnectionState = { connection: 'close' }
 
   /**
@@ -43,160 +43,11 @@ class DatabaseStore {
 
     // Save new messages
     sock.ev.on('messages.upsert', async ({ messages }) => {
-      for (const msg of messages) {
-        const { messageType, message, content } = this.getMessages(msg)
-
-        // Skipping when its protocolMessage
-        if (messageType === 'protocolMessage' || messageType == null) {
-          return
-        }
-
-        let messageId: number | undefined | null
-
-        if (message?.contextInfo?.stanzaId) {
-          messageId = (await Message.findBy('keyId', message.contextInfo.stanzaId))?.id
-        }
-
-        if (msg.key.id && msg.key.remoteJid) {
-          const normalizeJid = jidNormalizedUser(msg.key.remoteJid)
-          // Save new Groups
-          if (isJidGroup(normalizeJid)) {
-            const isExists = await GroupModel.findBy('remote_jid', normalizeJid)
-            if (isExists === null) {
-              const groupMetaData = await sock.groupMetadata(normalizeJid)
-              let ppPath: string | undefined
-
-              try {
-                const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
-                if (ppUrl) {
-                  await this.download(ppUrl, `device-${deviceId}/${normalizeJid}/photoProfile.jpg`)
-                  ppPath = `device-${deviceId}/${normalizeJid}/photoProfile.jpg`
-                }
-              } catch {}
-
-              try {
-                await GroupModel.updateOrCreate(
-                  {
-                    remoteJid: normalizeJid,
-                    deviceId: deviceId,
-                  },
-                  {
-                    deviceId: deviceId,
-                    remoteJid: normalizeJid,
-                    subject: groupMetaData.subject,
-                    announce: groupMetaData.announce,
-                    creation: groupMetaData.creation,
-                    desc: groupMetaData.desc,
-                    descId: groupMetaData.descId,
-                    descOwner: groupMetaData.descOwner,
-                    ephemeralDuration: groupMetaData.ephemeralDuration,
-                    owner: groupMetaData.owner,
-                    restrict: groupMetaData.restrict,
-                    size: groupMetaData.size,
-                    subjectOwner: groupMetaData.subjectOwner,
-                    subjectTime: groupMetaData.subjectTime,
-                    photoProfile: ppPath,
-                  }
-                )
-              } catch (error) {
-                logger.error(groupMetaData, error)
-              }
-            }
-          }
-
-          try {
-            const messageModel = await Message.updateOrCreate(
-              {
-                keyId: msg.key.id,
-              },
-              {
-                keyId: msg.key.id,
-                remoteJid: normalizeJid,
-                fromMe: msg.key.fromMe ?? false,
-                participant: msg.key.participant,
-                pushName: msg.pushName,
-                messageStatus: this.getMessageStatus(msg.status),
-                messageType: messageType,
-                content: content,
-                mentionedJid: JSON.stringify(message?.contextInfo?.mentionedJid ?? []),
-                viewOnce: message?.viewOnce ?? false,
-                IsForwarded: message?.contextInfo?.isForwarded ?? false,
-                deviceId: deviceId,
-                messageId: messageId ?? null,
-                sendAt: DateTime.fromSeconds(msg.messageTimestamp),
-              }
-            )
-
-            if (msg && ['extendedTextMessage', 'conversation'].includes(messageType) === false) {
-              const buffer = await downloadMediaMessage(
-                msg,
-                'buffer',
-                {},
-                {
-                  logger: logger,
-                  reuploadRequest: sock.updateMediaMessage,
-                }
-              )
-
-              if (buffer) {
-                const ext = Mime.getExtension(message?.mimetype ?? '')
-                const fileName = md5(msg.key.id)
-                const filePath = `device-${deviceId}/${normalizeJid}/${ext}/${fileName}.${ext}`
-
-                await messageModel.related('media').updateOrCreate(
-                  {
-                    messageId: messageModel.id,
-                    deviceId: deviceId,
-                  },
-                  {
-                    deviceId: deviceId,
-                    fileLength: JSON.parse(message?.fileLength),
-                    fileName: message?.fileName,
-                    filePath: filePath,
-                    height: message?.height,
-                    width: message?.width,
-                    isAnimated: message?.isAnimated ?? false,
-                    mimetype: message?.mimetype,
-                    pageCount: message?.pageCount,
-                    seconds: message?.seconds,
-                  }
-                )
-                await Drive.putStream(filePath, Readable.from(buffer))
-              }
-            }
-          } catch (error) {
-            logger.error(msg, error)
-          }
-        }
-      }
+      this.messageUpsert(messages, sock, logger, deviceId)
     })
 
     sock.ev.on('messages.update', async (messages) => {
-      for (const msg of messages) {
-        try {
-          const { message } = this.getMessages(msg.update)
-
-          if (msg.key.id && msg.key.remoteJid) {
-            if (
-              msg.update.messageStubType == proto.WebMessageInfo.StubType.REVOKE ||
-              message?.type == proto.Message.ProtocolMessage.Type.REVOKE
-            ) {
-              ;(await Message.findBy('keyId', msg.key.id))?.delete()
-            }
-
-            await Message.query()
-              .where({
-                keyId: msg.key.id,
-              })
-              .update({
-                remoteJid: jidNormalizedUser(msg.key.remoteJid),
-                messageStatus: this.getMessageStatus(msg.update.status),
-              })
-          }
-        } catch (error) {
-          logger.error(msg, error)
-        }
-      }
+      this.messageUpdate(messages, logger)
     })
 
     sock.ev.on('messages.delete', async (item) => {
@@ -243,6 +94,184 @@ class DatabaseStore {
     sock.ev.on('groups.upsert', (groups) => {
       this.groups(groups, sock, logger, deviceId)
     })
+  }
+
+  /**
+   * Message upsert
+   *
+   * @param messages proto.IWebMessageInfo[]
+   * @param sock ReturnType<typeof makeWASocket>
+   * @param logger Logger<LoggerOptions>
+   * @param deviceId number
+   * @returns Promise<void>
+   */
+  protected async messageUpsert(
+    messages: proto.IWebMessageInfo[],
+    sock: ReturnType<typeof makeWASocket>,
+    logger: Logger<LoggerOptions>,
+    deviceId: number
+  ) {
+    for (const msg of messages) {
+      const { messageType, message, content } = this.getMessages(msg)
+
+      // Skipping when its protocolMessage
+      if (messageType === 'protocolMessage' || messageType == null) {
+        return
+      }
+
+      let messageId: number | undefined | null
+
+      if (message?.contextInfo?.stanzaId) {
+        messageId = (await Message.findBy('keyId', message.contextInfo.stanzaId))?.id
+      }
+
+      if (msg.key.id && msg.key.remoteJid) {
+        const normalizeJid = jidNormalizedUser(msg.key.remoteJid)
+        // Save new Groups
+        if (isJidGroup(normalizeJid)) {
+          const isExists = await GroupModel.findBy('remote_jid', normalizeJid)
+          if (isExists === null) {
+            const groupMetaData = await sock.groupMetadata(normalizeJid)
+            let ppPath: string | undefined
+
+            try {
+              const ppUrl = await sock.profilePictureUrl(normalizeJid, 'image')
+              if (ppUrl) {
+                await this.download(ppUrl, `device-${deviceId}/${normalizeJid}/photoProfile.jpg`)
+                ppPath = `device-${deviceId}/${normalizeJid}/photoProfile.jpg`
+              }
+            } catch {}
+
+            try {
+              await GroupModel.updateOrCreate(
+                {
+                  remoteJid: normalizeJid,
+                  deviceId: deviceId,
+                },
+                {
+                  deviceId: deviceId,
+                  remoteJid: normalizeJid,
+                  subject: groupMetaData.subject,
+                  announce: groupMetaData.announce,
+                  creation: groupMetaData.creation,
+                  desc: groupMetaData.desc,
+                  descId: groupMetaData.descId,
+                  descOwner: groupMetaData.descOwner,
+                  ephemeralDuration: groupMetaData.ephemeralDuration,
+                  owner: groupMetaData.owner,
+                  restrict: groupMetaData.restrict,
+                  size: groupMetaData.size,
+                  subjectOwner: groupMetaData.subjectOwner,
+                  subjectTime: groupMetaData.subjectTime,
+                  photoProfile: ppPath,
+                }
+              )
+            } catch (error) {
+              logger.error(groupMetaData, `Failed to save group metadata: ${error}`)
+            }
+          }
+        }
+
+        try {
+          const messageModel = await Message.updateOrCreate(
+            {
+              keyId: msg.key.id,
+            },
+            {
+              keyId: msg.key.id,
+              remoteJid: normalizeJid,
+              fromMe: msg.key.fromMe ?? false,
+              participant: msg.key.participant,
+              pushName: msg.pushName,
+              messageStatus: this.getMessageStatus(msg.status),
+              messageType: messageType,
+              content: content,
+              mentionedJid: JSON.stringify(message?.contextInfo?.mentionedJid ?? []),
+              viewOnce: message?.viewOnce ?? false,
+              IsForwarded: message?.contextInfo?.isForwarded ?? false,
+              deviceId: deviceId,
+              messageId: messageId ?? null,
+              sendAt: DateTime.fromSeconds(msg.messageTimestamp),
+            }
+          )
+
+          if (msg && ['extendedTextMessage', 'conversation'].includes(messageType) === false) {
+            const buffer = await downloadMediaMessage(
+              msg,
+              'buffer',
+              {},
+              {
+                logger: logger,
+                reuploadRequest: sock.updateMediaMessage,
+              }
+            )
+
+            if (buffer) {
+              const ext = Mime.getExtension(message?.mimetype ?? '')
+              const fileName = md5(msg.key.id)
+              const filePath = `device-${deviceId}/${normalizeJid}/${ext}/${fileName}.${ext}`
+
+              await messageModel.related('media').updateOrCreate(
+                {
+                  messageId: messageModel.id,
+                  deviceId: deviceId,
+                },
+                {
+                  deviceId: deviceId,
+                  fileLength: JSON.parse(message?.fileLength),
+                  fileName: message?.fileName,
+                  filePath: filePath,
+                  height: message?.height,
+                  width: message?.width,
+                  isAnimated: message?.isAnimated ?? false,
+                  mimetype: message?.mimetype,
+                  pageCount: message?.pageCount,
+                  seconds: message?.seconds,
+                }
+              )
+              await Drive.putStream(filePath, Readable.from(buffer))
+            }
+          }
+        } catch (error) {
+          logger.error(msg, `Failed to save group metadata: ${error}`)
+        }
+      }
+    }
+  }
+
+  /**
+   * Message Updated
+   *
+   * @param messages WAMessageUpdate[]
+   * @param logger Logger<LoggerOptions>
+   * @returns Promise<void>
+   */
+  protected async messageUpdate(messages: WAMessageUpdate[], logger: Logger<LoggerOptions>) {
+    for (const msg of messages) {
+      try {
+        const { message } = this.getMessages(msg.update)
+
+        if (msg.key.id && msg.key.remoteJid) {
+          if (
+            msg.update.messageStubType == proto.WebMessageInfo.StubType.REVOKE ||
+            message?.type == proto.Message.ProtocolMessage.Type.REVOKE
+          ) {
+            ;(await Message.findBy('keyId', msg.key.id))?.delete()
+          }
+
+          await Message.query()
+            .where({
+              keyId: msg.key.id,
+            })
+            .update({
+              remoteJid: jidNormalizedUser(msg.key.remoteJid),
+              messageStatus: this.getMessageStatus(msg.update.status),
+            })
+        }
+      } catch (error) {
+        logger.error(msg, `Failed to save message: ${error}`)
+      }
+    }
   }
 
   /**
@@ -313,7 +342,7 @@ class DatabaseStore {
           updatePayload
         )
       } catch (error) {
-        logger.error({}, error)
+        logger.error({}, `Failed to save group: ${error}`)
       }
     }
   }
@@ -372,7 +401,7 @@ class DatabaseStore {
           updatePayload
         )
       } catch (error) {
-        logger.error(contact, error)
+        logger.error(contact, `Failed to save contact: ${error}`)
       }
     }
   }
@@ -441,7 +470,7 @@ class DatabaseStore {
           updatePayload
         )
       } catch (error) {
-        logger.error(chat, error)
+        logger.error(chat, `Failed to save group chat: ${error}`)
       }
     }
   }
@@ -451,25 +480,16 @@ class DatabaseStore {
    *
    * @param url Url
    * @param path Path
-   * @returns Promise
+   * @returns Promise<void>
    */
   protected async download(url: string, path: PathLike) {
-    // const writer = createWriteStream(path)
-
     const response = await axios({
       url,
       method: 'GET',
       responseType: 'stream',
     })
 
-    // response.data.pipe(writer)
-
     await Drive.putStream(path.toString(), Readable.from(response.data))
-
-    // return new Promise((resolve, reject) => {
-    //   writer.on('finish', resolve)
-    //   writer.on('error', reject)
-    // })
   }
 
   /**
@@ -722,4 +742,4 @@ class DatabaseStore {
   }
 }
 
-export default new DatabaseStore()
+export default new WhatsappStore()

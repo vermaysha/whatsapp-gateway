@@ -14,7 +14,7 @@ import md5 from 'md5'
 import { existsSync, rmSync } from 'fs'
 import { DateTime } from 'luxon'
 import QRCode from 'qrcode-terminal'
-import DatabaseStore from './DatabaseStore'
+import DatabaseStore from './WhatsappStore'
 
 interface Response {
   status: boolean
