@@ -95,6 +95,7 @@
     "proxy-addr": "^2.0.7",
     "qrcode-terminal": "0.12.0",
     "reflect-metadata": "^0.1.13",
+    "socket.io": "^4.5.4",
     "source-map-support": "^0.5.21"
   }
 }

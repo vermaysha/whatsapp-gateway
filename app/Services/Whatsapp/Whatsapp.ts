@@ -117,7 +117,7 @@ class Whatsapp {
               const shouldReconnectCodes = [
                 DisconnectReason.badSession, // 500
                 DisconnectReason.connectionLost, // 408
-                DisconnectReason.connectionClosed, // 428
+                // DisconnectReason.connectionClosed, // 428
                 DisconnectReason.connectionReplaced, // 440
                 DisconnectReason.restartRequired, // 515
                 DisconnectReason.timedOut, // 408
@@ -129,7 +129,7 @@ class Whatsapp {
 
               // reconnect if not logged out
               if (shouldReconnect) {
-                Logger.info(`Device [1]: Trying to reconnecting`)
+                Logger.info(`Device [1]: Reconnecting Reason ${statusCode}`)
                 resolve(this.connect(device, qrCallback, true))
               } else if (statusCode === DisconnectReason.loggedOut) {
                 Logger.info(`Device [${id}]: Connection closed due to user logged out`)

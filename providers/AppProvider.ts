@@ -12,7 +12,11 @@ export default class AppProvider {
   }
 
   public async ready() {
-    await import('../start/events')
+    if (this.app.environment === 'web') {
+      await import('../start/events')
+      await import('../start/socket')
+    }
+
     const { default: Device } = await import('App/Models/Device')
     const { DateTime } = await import('luxon')
 
