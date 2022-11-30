@@ -27,6 +27,9 @@ class Whatsapp {
    */
   protected sessions: Map<number, ReturnType<typeof makeWASocket>>
 
+  /**
+   * Constructor
+   */
   constructor() {
     this.sessions = new Map<number, ReturnType<typeof makeWASocket>>()
   }
@@ -55,8 +58,8 @@ class Whatsapp {
       const { state, saveCreds } = await useMultiFileAuthState(sessionPath)
 
       const logger = P({
-        level: 'error',
-      }).child({ level: 'error' })
+        level: 'fatal',
+      }).child({ level: 'fatal' })
 
       Logger.info(`Device [${id}]: Starting device "${name}"`)
 
