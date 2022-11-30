@@ -3,9 +3,14 @@ import Contact from 'App/Models/Contact'
 import Device from 'App/Models/Device'
 import IndexValidator from 'App/Validators/Contact/IndexValidator'
 import ShowValidator from 'App/Validators/Contact/ShowValidator'
-import { validator, schema, rules } from '@ioc:Adonis/Core/Validator'
 
 export default class ContactController {
+  /**
+   * Get all contacts by device
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
   public async index({ response, auth, request }: HttpContextContract) {
     const { deviceId, page, perPage, orderBy, direction } = await request.validate(IndexValidator)
 
@@ -14,45 +19,49 @@ export default class ContactController {
       .where('user_id', auth.use('jwt').user?.id!)
       .first()
 
+    if (!device) {
+      return response.notFound({
+        message: 'Requested device not exist',
+      })
+    }
+
     const contacts = await Contact.query()
-      .where('device_id', device?.id!)
+      .where('device_id', device.id!)
       .orderBy(orderBy ?? 'id', direction)
       .paginate(page ?? 1, perPage ?? 10)
 
-    response.ok(contacts)
+    return response.ok(contacts)
   }
 
-  public async store({}: HttpContextContract) {}
-
+  /**
+   * Get single contact
+   *
+   * @param param0 HttpContextContract
+   * @returns Promise<void>
+   */
   public async show({ response, auth, request, params }: HttpContextContract) {
     const { deviceId } = await request.validate(ShowValidator)
-    const { id } = await validator.validate({
-      schema: schema.create({
-        id: schema.number([
-          rules.unsigned(),
-          rules.exists({
-            table: 'chats',
-            column: 'id',
-          }),
-        ]),
-      }),
-      data: params,
-    })
+    const { id } = params
 
     const device = await Device.query()
       .where('id', deviceId)
       .where('user_id', auth.use('jwt').user?.id!)
       .first()
 
-    const contact = await Contact.query()
-      .where('device_id', device?.id!)
-      .where('id', id)
-      .firstOrFail()
+    if (!device) {
+      return response.notFound({
+        message: 'Requested device not exist',
+      })
+    }
 
-    response.ok(contact)
+    const contact = await Contact.query().where('device_id', device?.id!).where('id', id).first()
+
+    if (!contact) {
+      return response.notFound({
+        message: 'Requested contact not exist',
+      })
+    }
+
+    return response.ok(contact)
   }
-
-  public async update({}: HttpContextContract) {}
-
-  public async destroy({}: HttpContextContract) {}
 }
