@@ -13,17 +13,3 @@ updates:
     schedule:
       interval: 'daily'
     open-pull-requests-limit: 20
-
-  # Maintain dependencies for api packages
-  - package-ecosystem: 'npm'
-    directory: '/apps/api'
-    schedule:
-      interval: 'daily'
-    open-pull-requests-limit: 20
-
-  # Maintain dependencies for web packages
-  - package-ecosystem: 'npm'
-    directory: '/apps/web'
-    schedule:
-      interval: 'daily'
-    open-pull-requests-limit: 20
