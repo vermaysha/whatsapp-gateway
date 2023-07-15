@@ -32,6 +32,6 @@
   },
   "devDependencies": {
     "tsx": "^3.12.7",
-    "turbo": "^1.9.3"
+    "turbo": "^1.10.7"
   }
 }
