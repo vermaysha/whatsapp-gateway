@@ -7,7 +7,8 @@
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
-    "format": "turbo run format"
+    "format": "turbo run format",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,10 @@
     "node": ">=16.8.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^17.6.6",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
     "tsx": "^3.12.7",
     "turbo": "^1.10.7"
   }
