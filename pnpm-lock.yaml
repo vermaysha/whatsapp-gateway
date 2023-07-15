@@ -46,8 +46,8 @@ importers:
         specifier: ^10.1.8
         version: 10.1.8
       '@nestjs/schematics':
-        specifier: ^10.0.0
-        version: 10.0.0(typescript@5.1.6)
+        specifier: ^10.0.1
+        version: 10.0.1(chokidar@3.5.3)(typescript@5.1.6)
       '@nestjs/testing':
         specifier: ^10.0.5
         version: 10.0.5(@nestjs/common@10.0.0)(@nestjs/core@10.0.0)
@@ -1297,21 +1297,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: false
-
-  /@nestjs/schematics@10.0.0(typescript@5.1.6):
-    resolution: {integrity: sha512-gfUy/N1m1paN33BXq4d7HoCM+zM4rFxYjqAb8jkrBfBHiwyEhHHozfX/aRy/kOnAcy/VP8v4Zs4HKKrbRRlHnw==}
-    peerDependencies:
-      typescript: '>=4.8.2'
-    dependencies:
-      '@angular-devkit/core': 16.1.0(chokidar@3.5.3)
-      '@angular-devkit/schematics': 16.1.0(chokidar@3.5.3)
-      comment-json: 4.2.3
-      jsonc-parser: 3.2.0
-      pluralize: 8.0.0
-      typescript: 5.1.6
-    transitivePeerDependencies:
-      - chokidar
-    dev: true
 
   /@nestjs/schematics@10.0.1(chokidar@3.5.3)(typescript@5.1.6):
     resolution: {integrity: sha512-buxpYtSwOmWyf0nUJWJCkCkYITwbOfIEKHTnGS7sDbcfaajrOFXb5pPAGD2E1CUb3C1+NkQIURPKzs0IouZTQg==}
