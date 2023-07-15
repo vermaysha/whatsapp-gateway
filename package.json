@@ -1,0 +1,37 @@
+{
+  "name": "whatsapp-gateway",
+  "version": "0.0.0",
+  "description": "Whatsapp Gateway",
+  "main": "index.js",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "format": "turbo run format"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/vermaysha/whatsapp-gateway.git"
+  },
+  "keywords": [
+    "whatsapp",
+    "whatsapp-api",
+    "whatsapp-gateway"
+  ],
+  "author": {
+    "name": "Ashary Vermaysha",
+    "email": "vermaysha@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vermaysha/whatsapp-gateway/issues"
+  },
+  "homepage": "https://github.com/vermaysha/whatsapp-gateway#readme",
+  "engines": {
+    "node": ">=16.8.0"
+  },
+  "devDependencies": {
+    "tsx": "^3.12.7",
+    "turbo": "^1.9.3"
+  }
+}
