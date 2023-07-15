@@ -49,8 +49,8 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0(typescript@5.1.6)
       '@nestjs/testing':
-        specifier: ^10.0.0
-        version: 10.0.0(@nestjs/common@10.0.0)(@nestjs/core@10.0.0)
+        specifier: ^10.0.5
+        version: 10.0.5(@nestjs/common@10.0.0)(@nestjs/core@10.0.0)
       '@types/express':
         specifier: ^4.17.17
         version: 4.17.17
@@ -1298,8 +1298,8 @@ packages:
       - chokidar
     dev: true
 
-  /@nestjs/testing@10.0.0(@nestjs/common@10.0.0)(@nestjs/core@10.0.0):
-    resolution: {integrity: sha512-U5q3+svkddpdSk51ZFCEnFpQuWxAwE4ahsX77FrqqCAYidr7HUtL/BHYOVzI5H9vUH6BvJxMbfo3tiUXQl/2aA==}
+  /@nestjs/testing@10.0.5(@nestjs/common@10.0.0)(@nestjs/core@10.0.0):
+    resolution: {integrity: sha512-TQcFOxR+kIibMbYg71yajic3289/Iw7B5LliYiZ4Pz36BZvU0TRMYqpxaGAlX/Srk0BCpP99ZHoofm8dqZKmxw==}
     peerDependencies:
       '@nestjs/common': ^10.0.0
       '@nestjs/core': ^10.0.0
@@ -1313,7 +1313,7 @@ packages:
     dependencies:
       '@nestjs/common': 10.0.0(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 10.0.0(@nestjs/common@10.0.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      tslib: 2.5.3
+      tslib: 2.6.0
     dev: true
 
   /@next/env@13.4.10:
