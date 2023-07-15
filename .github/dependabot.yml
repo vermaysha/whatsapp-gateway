@@ -1,0 +1,25 @@
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+
+  # Maintain dependencies for main repository
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+
+  # Maintain dependencies for api packages
+  - package-ecosystem: 'npm'
+    directory: '/apps/api'
+    schedule:
+      interval: 'daily'
+
+  # Maintain dependencies for web packages
+  - package-ecosystem: 'npm'
+    directory: '/apps/web'
+    schedule:
+      interval: 'daily'
