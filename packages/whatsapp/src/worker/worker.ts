@@ -1,14 +1,17 @@
 import process from 'process'
-import { InputMessage } from './worker.interface'
+import type { InputMessage } from './worker.interface'
 import { sendMessage } from './worker.helper'
-import whatsapp from '../whatsapp/whatsapp'
-import { AnyMessageContent } from '@whiskeysockets/baileys'
+import type { AnyMessageContent } from '@whiskeysockets/baileys'
+import type { Whatapp } from '../whatsapp'
+
+let whatsapp: Whatapp | null = null
 
 process.on('message', async (message: InputMessage) => {
   const { command, params } = message
   switch (command) {
     case 'START_SERVICE':
-      whatsapp.start(params.deviceId)
+      whatsapp = (await import('../whatsapp/whatsapp')).default
+      whatsapp?.start(params.deviceId)
       sendMessage({
         command: 'START_SERVICE',
         status: true,
@@ -18,7 +21,7 @@ process.on('message', async (message: InputMessage) => {
       break
 
     case 'STOP_SERVICE':
-      whatsapp.stop()
+      whatsapp?.stop()
       sendMessage({
         command: 'STOP_SERVICE',
         status: true,
@@ -27,7 +30,7 @@ process.on('message', async (message: InputMessage) => {
       process.exit(1)
 
     case 'RESTART_SERVICE':
-      whatsapp.restart(params.deviceId)
+      whatsapp?.restart(params.deviceId)
       sendMessage({
         command: 'RESTART_SERVICE',
         status: true,
@@ -54,7 +57,7 @@ process.on('message', async (message: InputMessage) => {
 
     case 'SEND_MESSAGE':
       const id = params.id
-      const result = await whatsapp.socket?.onWhatsApp(id)
+      const result = await whatsapp?.socket?.onWhatsApp(id)
 
       if (!result?.[0].exists) {
         return sendMessage({
@@ -69,7 +72,7 @@ process.on('message', async (message: InputMessage) => {
 
       const content: AnyMessageContent = params.content
       try {
-        await whatsapp.socket?.sendMessage(jid, content)
+        await whatsapp?.socket?.sendMessage(jid, content)
         sendMessage({
           command: 'SEND_MESSAGE',
           status: false,
