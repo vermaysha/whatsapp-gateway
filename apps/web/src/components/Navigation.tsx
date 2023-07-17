@@ -20,13 +20,19 @@ export function Navigation({ navLinks }: INavigation) {
   return (
     <>
       {navLinks.map((link, i) => {
-        const isActive = pathname.startsWith(link.href)
+        const isActive =
+          link.href === "/"
+            ? link.href.toLowerCase() === pathname.toLowerCase()
+            : pathname.startsWith(link.href)
+
         return (
           <li key={i} className="mb-2">
-            <Link href={link.href} className={isActive ? 'active' : ''} target={link.newTab ? '_blank' : '_self'}>
-              <span>
-                {link.icon}
-              </span>
+            <Link
+              href={link.href}
+              className={isActive ? "active" : ""}
+              target={link.newTab ? "_blank" : "_self"}
+            >
+              <span>{link.icon}</span>
               <span className="capitalize">{link.name}</span>
             </Link>
           </li>
