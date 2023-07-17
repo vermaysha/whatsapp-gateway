@@ -1,0 +1,13 @@
+{
+  "name": "tsconfig",
+  "version": "1.0.0",
+  "private": false,
+  "author": {
+    "name": "Ashary Vermaysha",
+    "email": "vermaysha@gmail.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "UNLICENSED"
+}
