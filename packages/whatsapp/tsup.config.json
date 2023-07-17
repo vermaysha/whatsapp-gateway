@@ -3,7 +3,7 @@
   "dts": true,
   "entry": [
     "src/index.ts",
-    "src/cli.ts"
+    "src/bin.ts"
   ],
   "format": [
     "cjs"
