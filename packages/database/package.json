@@ -1,0 +1,45 @@
+{
+  "name": "database",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "private": true,
+  "scripts": {
+    "build": "tsup",
+    "clean": "rimraf .turbo node_modules dist",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:seed": "tsx src/seed.ts",
+    "dev": "tsup --watch",
+    "format": "prisma format && prettier --write \"src/**/*.ts\"",
+    "generate": "prisma generate",
+    "lint": "eslint \"src/**/*.ts\"",
+    "prebuild": "npm run generate",
+    "predev": "npm run generate",
+    "studio": "prisma studio"
+  },
+  "author": {
+    "name": "Ashary Vermaysha",
+    "email": "vermaysha@gmail.com"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@prisma/client": "^5.0.0",
+    "tsconfig": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.2",
+    "eslint": "^8.45.0",
+    "prettier": "^3.0.0",
+    "prisma": "^5.0.0",
+    "rimraf": "^5.0.1",
+    "tsup": "^7.1.0",
+    "tsx": "^3.12.7",
+    "typescript": "^5.1.6"
+  }
+}
