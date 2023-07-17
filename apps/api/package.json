@@ -23,11 +23,13 @@
     "@nestjs/common": "^10.0.5",
     "@nestjs/core": "^10.0.5",
     "@nestjs/platform-fastify": "^10.0.5",
+    "database": "workspace:^",
     "reflect-metadata": "^0.1.13",
     "run-script-webpack-plugin": "^0.2.0",
     "rxjs": "^7.8.1",
     "webpack": "^5.88.1",
-    "webpack-node-externals": "^3.0.0"
+    "webpack-node-externals": "^3.0.0",
+    "whatsapp": "workspace:^"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.1.8",
