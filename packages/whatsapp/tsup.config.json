@@ -1,0 +1,13 @@
+{
+  "clean": true,
+  "dts": true,
+  "entry": [
+    "src/index.ts",
+    "src/cli.ts"
+  ],
+  "format": [
+    "cjs"
+  ],
+  "minify": false,
+  "sourcemap": false
+}
