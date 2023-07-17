@@ -24,21 +24,7 @@ export default function RootLayout({
           <div className="drawer-content flex flex-col bg-base-100">
             <Navbar />
             <div className="m-10">
-              <div className="flex justify-between items-center border-b p-4 bg-base-100 rounded">
-                <h1 className="prose prose-xl font-bold">Dashboard</h1>
-                <div className="text-sm breadcrumbs">
-                  <ul>
-                    <li>
-                      <a>Home</a>
-                    </li>
-                    <li>
-                      <a>Documents</a>
-                    </li>
-                    <li>Add Document</li>
-                  </ul>
-                </div>
-              </div>
-              <div className="mt-5 bg-base-100 p-4 rounded">{children}</div>
+              {children}
             </div>
             <footer className="footer footer-center p-4 bg-neutral text-neutral-content">
               <div className="">
