@@ -2,6 +2,3 @@
 . "$(dirname "$0")/_/husky.sh"
 
 pnpm format
-git add .
-git commit -m "refactor: format code style"
-git push
