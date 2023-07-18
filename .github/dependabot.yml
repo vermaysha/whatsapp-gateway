@@ -14,16 +14,30 @@ updates:
       interval: 'daily'
     open-pull-requests-limit: 20
 
-  # Maintain dependencies for apps
+  # Maintain dependencies for api apps
   - package-ecosystem: 'npm'
-    directory: '/apps'
+    directory: '/apps/api'
     schedule:
       interval: 'daily'
     open-pull-requests-limit: 20
 
-  # Maintain dependencies for packages
+  # Maintain dependencies for web apps
   - package-ecosystem: 'npm'
-    directory: '/packages'
+    directory: '/apps/web'
+    schedule:
+      interval: 'daily'
+    open-pull-requests-limit: 20
+
+  # Maintain dependencies for database packages
+  - package-ecosystem: 'npm'
+    directory: '/packages/database'
+    schedule:
+      interval: 'daily'
+    open-pull-requests-limit: 20
+
+  # Maintain dependencies for whatsapp packages
+  - package-ecosystem: 'npm'
+    directory: '/packages/whatsapp'
     schedule:
       interval: 'daily'
     open-pull-requests-limit: 20
