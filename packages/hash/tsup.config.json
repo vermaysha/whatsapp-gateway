@@ -1,0 +1,13 @@
+{
+  "clean": true,
+  "dts": true,
+  "entry": [
+    "src/hash.ts"
+  ],
+  "format": [
+    "cjs",
+    "esm"
+  ],
+  "minify": false,
+  "sourcemap": false
+}
