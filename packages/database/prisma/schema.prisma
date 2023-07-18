@@ -7,13 +7,46 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Device {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  name       String
+enum Gender {
+  Male
+  Female
+}
+
+model Users {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  firstName String
+  lastName  String?
+  gender    Gender?
+  avatar    String?
+
+  username String @unique
+  password String
+
   updated_at DateTime @updatedAt
 }
 
-model Session {
+model Contacts {
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  verifiedName String?
+  avatar       String?
+  phoneNumber  String  @unique
+
+  updated_at DateTime @updatedAt
+  Device     Devices[]
+}
+
+model Devices {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  owner     Contacts? @relation(fields: [contactId], references: [id])
+  contactId String?   @db.ObjectId
+
+  updated_at DateTime @updatedAt
+  Logs       Logs[]
+}
+
+model Sessions {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   deviceId   String   @db.ObjectId
   creds      String
@@ -21,4 +54,22 @@ model Session {
   updated_at DateTime @updatedAt
 
   @@unique([deviceId, creds])
+}
+
+model Logs {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  device   Devices @relation(fields: [deviceId], references: [id])
+  deviceId String @db.ObjectId
+
+  //
+  level    Int
+  time     DateTime
+  pid      Int
+  hostname String
+  class    String
+  node     Json?
+  msg      String
+
+  //
+  updated_at DateTime @updatedAt
 }

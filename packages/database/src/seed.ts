@@ -1,49 +1,32 @@
 import { PrismaClient } from '@prisma/client'
+import { hash } from 'hash'
 
 const prisma = new PrismaClient()
 
 async function main() {
   // Device seeders
-  await prisma.device.create({
-    data: {
+  await prisma.devices.upsert({
+    where: {
+      id: '64b4b3616ab8705e17bc68a3',
+    },
+    create: {
       name: 'Default',
     },
+    update: {},
   })
 
   // Users Seeders
-  // await prisma.user.upsert({
-  //   where: {
-  //     username: 'admin',
-  //   },
-  //   update: {},
-  //   create: {
-  //     username: 'admin',
-  //     email: 'admin@gmail.com',
-  //     password: 'password',
-
-  //     firstName: 'Administrator',
-  //     birthday: new Date(),
-
-  //     createdAt: new Date(),
-  //     updatedAt: new Date(),
-
-  //     device: {
-  //       connectOrCreate: [
-  //         {
-  //           where: {
-  //             id: 'clgz9gjdp00003p6jef3u93cv',
-  //           },
-  //           create: {
-  //             id: 'clgz9gjdp00003p6jef3u93cv',
-  //             name: 'Default',
-  //             createdAt: new Date(),
-  //             updatedAt: new Date(),
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   },
-  // })
+  await prisma.users.upsert({
+    where: {
+      username: 'admin',
+    },
+    update: {},
+    create: {
+      firstName: 'Administrator',
+      username: 'admin',
+      password: await hash('password'),
+    },
+  })
 }
 
 main()

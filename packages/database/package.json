@@ -30,6 +30,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@prisma/client": "^5.0.0",
+    "hash": "workspace:^",
     "tsconfig": "workspace:^"
   },
   "devDependencies": {
