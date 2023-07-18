@@ -32,8 +32,10 @@
     "@hapi/boom": "^10.0.1",
     "@whiskeysockets/baileys": "^6.3.1",
     "database": "workspace:^",
+    "ffmpeg": "^0.0.4",
     "link-preview-js": "^3.0.4",
     "rimraf": "^5.0.1",
+    "sharp": "^0.32.3",
     "tsconfig": "workspace:^",
     "tsup": "^7.1.0"
   },
