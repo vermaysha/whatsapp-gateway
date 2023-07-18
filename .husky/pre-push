@@ -4,3 +4,4 @@
 pnpm format
 git add .
 git commit -m "refactor: format code style"
+git push
