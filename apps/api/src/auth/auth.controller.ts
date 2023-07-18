@@ -12,7 +12,7 @@ import {
 import { AuthService } from './auth.service'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { AuthGuard } from './auth.guard'
-import { Users } from 'database'
+import { SignInDto } from './auth.dto'
 
 @Controller('auth')
 export class AuthController {
@@ -23,10 +23,10 @@ export class AuthController {
   /**
    * Sign in with the provided signInDto.
    *
-   * @param {Record<string, any>} signInDto - The signInDto object containing the username and password.
+   * @param {SignInDto} signInDto - The signInDto object containing the username and password.
    * @return {any} The result of the authentication process.
    */
-  signIn(@Body() signInDto: Record<string, any>) {
+  signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto.username, signInDto.password)
   }
 

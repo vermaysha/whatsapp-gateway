@@ -23,12 +23,12 @@ export class AuthGuard implements CanActivate {
    * @return {Promise<boolean>} Returns `true` if the user is authenticated, otherwise throws an `UnauthorizedException`.
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ])
+    const mustAuthenticated = this.reflector.getAllAndOverride<boolean>(
+      IS_PUBLIC_KEY,
+      [context.getHandler(), context.getClass()],
+    )
 
-    if (isPublic) {
+    if (!mustAuthenticated) {
       return true
     }
 
