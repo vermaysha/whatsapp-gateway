@@ -27,7 +27,7 @@ export async function useMongoDBAuthState(
 
     const data = JSON.stringify(value, BufferJSON.replacer)
 
-    return await prisma.session.upsert({
+    return await prisma.sessions.upsert({
       where: {
         deviceId_creds: {
           deviceId,
@@ -46,7 +46,7 @@ export async function useMongoDBAuthState(
   }
 
   const readData = async (creds: string) => {
-    const result = await prisma.session.findUnique({
+    const result = await prisma.sessions.findUnique({
       select: {
         data: true,
       },
@@ -66,7 +66,7 @@ export async function useMongoDBAuthState(
   }
 
   const removeData = async (creds: string) => {
-    await prisma.session.delete({
+    await prisma.sessions.delete({
       where: {
         deviceId_creds: {
           deviceId,
@@ -77,7 +77,7 @@ export async function useMongoDBAuthState(
   }
 
   const clearData = async () => {
-    await prisma.session.deleteMany({
+    await prisma.sessions.deleteMany({
       where: {
         deviceId,
       },
