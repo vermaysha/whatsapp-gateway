@@ -22,8 +22,11 @@
   "dependencies": {
     "@nestjs/common": "^10.0.5",
     "@nestjs/core": "^10.0.5",
+    "@nestjs/jwt": "^10.1.0",
     "@nestjs/platform-fastify": "^10.0.5",
     "database": "workspace:^",
+    "fastify": "^4.20.0",
+    "hash": "workspace:^",
     "reflect-metadata": "^0.1.13",
     "run-script-webpack-plugin": "^0.2.0",
     "rxjs": "^7.8.1",
