@@ -40,16 +40,16 @@ model ApiTokens {
 model Contacts {
   id           String  @id @default(auto()) @map("_id") @db.ObjectId
   jid          String  @unique
-  name         String
-  notify       String
-  status       String
+  name         String?
+  notify       String?
+  status       String?
   verifiedName String?
   avatar       String?
 
   updated_at DateTime   @updatedAt
   device     Devices[]
-  Messages   Messages[]
-  Chats      Chats[]
+  messages   Messages[]
+  chats      Chats[]
 }
 
 type Participant {
@@ -84,8 +84,7 @@ model Chats {
 
   participant Participant[]
 
-  messages   Messages @relation(fields: [messagesId], references: [id])
-  messagesId String   @db.ObjectId
+  messages Messages[]
 }
 
 type Reaction {
@@ -100,25 +99,26 @@ model Messages {
 
   keyId     String
   remoteJid String
-  fromMe    Boolean
-  type      String
-  contact   Contacts @relation(fields: [contactsId], references: [id])
+  fromMe    Boolean?
+  type      String?
+  contact   Contacts? @relation(fields: [contactsId], references: [id])
 
   title     String?
   text      String?
   media     String?
   mediaType String?
 
-  mediaCiphertextSha256  Bytes
-  messageSecret          Bytes
+  mediaCiphertextSha256  Bytes?
+  messageSecret          Bytes?
   stubType               Int?
   pushName               String?
   status                 Int?
   reactions              Reaction[]
   revokeMessageTimestamp Int?
   updated_at             DateTime   @updatedAt
-  contactsId             String     @db.ObjectId
-  Chats                  Chats[]
+  contactsId             String?     @db.ObjectId
+  chats                  Chats?     @relation(fields: [chatsId], references: [id])
+  chatsId                String?    @db.ObjectId
 
   @@unique([keyId, remoteJid])
 }
@@ -129,7 +129,13 @@ model Devices {
   owner     Contacts? @relation(fields: [contactId], references: [id])
   contactId String?   @db.ObjectId
 
-  updated_at DateTime @updatedAt
+  // Devices dynamic data
+  qr     String?
+  status String?
+
+  startedAt  DateTime?
+  stoppedAt  DateTime?
+  updated_at DateTime  @updatedAt
   Logs       Logs[]
 }
 
