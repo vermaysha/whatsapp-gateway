@@ -5,6 +5,8 @@ import {
 } from '@whiskeysockets/baileys'
 import { Boom } from '@hapi/boom'
 import { useMongoDBAuthState } from './whatsapp.storage'
+import { sendMessage } from '../worker/worker.helper'
+import { listenWhatsappEvent } from './whatsapp.event'
 
 type Socket = ReturnType<typeof makeWASocket>
 
@@ -30,7 +32,23 @@ export class Whatapp {
     })
 
     sock.ev.on('connection.update', (update) => {
-      const { connection, lastDisconnect } = update
+      const { connection, lastDisconnect, qr } = update
+
+      if (connection) {
+        sendMessage({
+          status: true,
+          command: 'CONNECTION_UPDATE',
+          data: connection,
+        })
+      }
+
+      if (qr) {
+        sendMessage({
+          status: true,
+          command: 'QR_RECEIVED',
+          data: qr,
+        })
+      }
 
       if (connection === 'close') {
         const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
@@ -41,8 +59,6 @@ export class Whatapp {
           return this.start(deviceId)
         } else if (DisconnectReason.loggedOut === statusCode) {
           clearCreds()
-        } else if (statusCode === 400) {
-          // Service stoped
         }
         return
       }
@@ -53,6 +69,9 @@ export class Whatapp {
     })
 
     sock.ev.on('creds.update', saveCreds)
+
+    // Listen another events
+    listenWhatsappEvent(sock)
   }
 
   /**
@@ -70,7 +89,7 @@ export class Whatapp {
    *
    * @return {Promise<void>} Promise that resolves when the function is stopped.
    */
-  async stop() {
+  async stop(): Promise<void> {
     this.socket?.end(
       new Boom('Service Stopped', {
         statusCode: 400,
@@ -85,12 +104,8 @@ export class Whatapp {
    *
    * @return {Promise<void>} - This function does not accept any parameters and does not return any value.
    */
-  async logout() {
-    this.socket?.end(
-      new Boom('Logged Out', {
-        statusCode: DisconnectReason.loggedOut,
-      }),
-    )
+  async logout(): Promise<void> {
+    await this.socket?.logout('Logged Out')
 
     this.socket = null
   }
