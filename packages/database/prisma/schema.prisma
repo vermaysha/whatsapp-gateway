@@ -116,7 +116,7 @@ model Messages {
   reactions              Reaction[]
   revokeMessageTimestamp Int?
   updated_at             DateTime   @updatedAt
-  contactsId             String?     @db.ObjectId
+  contactsId             String?    @db.ObjectId
   chats                  Chats?     @relation(fields: [chatsId], references: [id])
   chatsId                String?    @db.ObjectId
 
