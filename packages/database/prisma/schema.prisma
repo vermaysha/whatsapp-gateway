@@ -27,17 +27,92 @@ model Users {
 
 model Contacts {
   id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  jid          String  @unique
   name         String
+  notify       String
+  status       String
   verifiedName String?
   avatar       String?
-  phoneNumber  String  @unique
 
-  updated_at DateTime @updatedAt
-  Device     Devices[]
+  updated_at DateTime   @updatedAt
+  device     Devices[]
+  Messages   Messages[]
+  Chats      Chats[]
+}
+
+type Participant {
+  jid  String
+  rank Int?
+}
+
+model Chats {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  jid         String    @unique
+  newJid      String?
+  oldJid      String?
+  pnJid       String?
+  displayName String?
+  name        String?
+  pHash       String?
+  contact     Contacts? @relation(fields: [contactsId], references: [id])
+
+  contactsId  String? @db.ObjectId
+  createdAt   Int?
+  createdBy   String?
+  description String?
+
+  readOnly   Boolean?
+  support    Boolean?
+  shareOwnPn Boolean?
+  suspended  Boolean?
+  terminated Boolean?
+
+  unreadCount        Int?
+  unreadMentionCount Int?
+
+  participant Participant[]
+
+  messages   Messages @relation(fields: [messagesId], references: [id])
+  messagesId String   @db.ObjectId
+}
+
+type Reaction {
+  groupingKey       String?
+  text              String?
+  unread            Boolean?
+  senderTimestampMs Int?
+}
+
+model Messages {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  keyId     String
+  remoteJid String
+  fromMe    Boolean
+  type      String
+  contact   Contacts @relation(fields: [contactsId], references: [id])
+
+  title     String?
+  text      String?
+  media     String?
+  mediaType String?
+
+  mediaCiphertextSha256  Bytes
+  messageSecret          Bytes
+  stubType               Int?
+  pushName               String?
+  status                 Int?
+  reactions              Reaction[]
+  revokeMessageTimestamp Int?
+  updated_at             DateTime   @updatedAt
+  contactsId             String     @db.ObjectId
+  Chats                  Chats[]
+
+  @@unique([keyId, remoteJid])
 }
 
 model Devices {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   owner     Contacts? @relation(fields: [contactId], references: [id])
   contactId String?   @db.ObjectId
@@ -57,9 +132,9 @@ model Sessions {
 }
 
 model Logs {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
   device   Devices @relation(fields: [deviceId], references: [id])
-  deviceId String @db.ObjectId
+  deviceId String  @db.ObjectId
 
   //
   level    Int
@@ -69,6 +144,8 @@ model Logs {
   class    String
   node     Json?
   msg      String
+  trace    String?
+  meta     Json?
 
   //
   updated_at DateTime @updatedAt
