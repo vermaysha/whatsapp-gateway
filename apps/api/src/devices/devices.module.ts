@@ -13,5 +13,6 @@ import { AuthGuard } from 'src/auth/auth.guard'
     },
   ],
   controllers: [DevicesController],
+  exports: [DevicesService],
 })
 export class DevicesModule {}
