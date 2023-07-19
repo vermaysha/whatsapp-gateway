@@ -2,13 +2,8 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "dist/**",
-        ".next/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
     },
     "lint": {
       "outputs": []
@@ -20,6 +15,10 @@
       "cache": false,
       "persistent": true
     },
+    "start": {
+      "dependsOn": ["^start"],
+      "outputs": ["dist/**", ".next/**"]
+    },
     "test:ci": {
       "cache": false
     },
@@ -27,9 +26,7 @@
     "db:push": {},
     "db:seed": {},
     "generate": {
-      "dependsOn": [
-        "^generate"
-      ]
+      "dependsOn": ["^generate"]
     }
   }
 }

@@ -4,6 +4,7 @@
   "description": "Whatsapp Gateway",
   "main": "index.js",
   "scripts": {
+    "start": "turbo run start",
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
