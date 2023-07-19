@@ -30,7 +30,7 @@ export class WhatsappsService {
     }
 
     const child = fork('../../packages/whatsapp/dist/bin.js', [], {
-      stdio: ['pipe', 'pipe', 'inherit', 'ipc'],
+      stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
     })
 
     child.send({
@@ -77,6 +77,10 @@ export class WhatsappsService {
       } catch (error) {
         Logger.warn(error.message)
       }
+    })
+
+    child.stderr?.on('data', (data) => {
+      console.log(data.toString())
     })
 
     this.workers.set(id, child)
