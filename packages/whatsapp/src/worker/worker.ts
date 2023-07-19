@@ -21,7 +21,7 @@ process.on('message', async (message: InputMessage) => {
       break
 
     case 'STOP_SERVICE':
-      whatsapp?.stop()
+      await whatsapp?.stop()
       sendMessage({
         command: 'STOP_SERVICE',
         status: true,
