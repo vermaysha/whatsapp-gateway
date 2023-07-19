@@ -22,7 +22,19 @@ model Users {
   username String @unique
   password String
 
-  updated_at DateTime @updatedAt
+  updated_at DateTime   @updatedAt
+  ApiToken   ApiTokens[]
+}
+
+model ApiTokens {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  usersId     String    @db.ObjectId
+  name        String
+  token       String
+  description String?
+  expiredAt   DateTime?
+
+  user Users @relation(fields: [usersId], references: [id])
 }
 
 model Contacts {
