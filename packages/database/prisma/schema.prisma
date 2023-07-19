@@ -22,7 +22,7 @@ model Users {
   username String @unique
   password String
 
-  updated_at DateTime   @updatedAt
+  updated_at DateTime    @updatedAt
   ApiToken   ApiTokens[]
 }
 
