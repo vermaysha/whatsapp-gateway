@@ -10,6 +10,7 @@ export type OutputCommand =
   | 'QR_RECEIVED'
   | 'CONNECTION_UPDATE'
   | 'MESSAGE_RECEIVED'
+  | 'DB_CONNECTION_ERROR'
 
 export interface InputMessage {
   command: InputCommand
