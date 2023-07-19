@@ -6,9 +6,11 @@ import { AuthModule } from './auth/auth.module'
 import { DevicesModule } from './devices/devices.module'
 import { ContactsModule } from './contacts/contacts.module'
 import { MessagesModule } from './messages/messages.module'
-import { DevicesService } from './devices/devices.service'
 import { APP_GUARD } from '@nestjs/core'
 import { AuthGuard } from './auth/auth.guard'
+import { ChatsModule } from './chats/chats.module'
+import { WhatsappsModule } from './whatsapps/whatsapps.module'
+import { LogsModule } from './logs/logs.module'
 
 @Module({
   imports: [
@@ -17,6 +19,9 @@ import { AuthGuard } from './auth/auth.guard'
     DevicesModule,
     ContactsModule,
     MessagesModule,
+    ChatsModule,
+    WhatsappsModule,
+    LogsModule,
   ],
   controllers: [AppController],
   providers: [
