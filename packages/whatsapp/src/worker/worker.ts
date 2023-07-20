@@ -90,3 +90,7 @@ process.on('message', async (message: InputMessage) => {
       break
   }
 })
+
+process.on('beforeExit', async () => {
+  await whatsapp?.stop()
+})
