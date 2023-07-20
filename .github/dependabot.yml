@@ -1,26 +1,6 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    directory: "/apps/api"  # Path to the API directory
-    schedule:
-      interval: "daily"    
-      
-  - package-ecosystem: "npm"
-    directory: "/apps/web"  # Path to the web directory
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "npm"
-    directory: "/packages/database"  # Path to the database directory
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "npm"
-    directory: "/packages/hash"  # Path to the hash directory
-    schedule:
-      interval: "daily"
-  
-  - package-ecosystem: "npm"
-    directory: "/packages/whatsapp"  # Path to the whatsapp directory
+    directory: "/"
     schedule:
       interval: "daily"
