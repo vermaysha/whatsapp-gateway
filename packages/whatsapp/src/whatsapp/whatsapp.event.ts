@@ -137,7 +137,7 @@ async function messagesCallback(
 ) {
   if (
     message.key.remoteJid === 'status@broadcast' &&
-    !(await sock.onWhatsApp(message.key.remoteJid))?.[0].exists
+    !(await sock.onWhatsApp(message.key.remoteJid))?.[0]?.exists
   ) {
     return
   }
