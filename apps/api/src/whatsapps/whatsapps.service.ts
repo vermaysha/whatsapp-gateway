@@ -12,11 +12,19 @@ interface IMemoryUsage {
   arrayBuffers: number
 }
 
+export type WhatsappWorker = {
+  process: ChildProcess
+  meta: {
+    status: string | null
+    qr: string | null
+  }
+}
+
 @Injectable()
 export class WhatsappsService {
   constructor(private logsService: LogsService) {}
 
-  private workers = new Map<string, ChildProcess>()
+  private workers = new Map<string, WhatsappWorker>()
 
   /**
    * Starts the specified process with the given ID.
@@ -83,7 +91,25 @@ export class WhatsappsService {
       console.log(data.toString())
     })
 
-    this.workers.set(id, child)
+    child.on('message', (message) => {
+      const data = message as OutputMessage
+      const meta = this.workers.get(id)?.meta
+      if (data.command === 'CONNECTION_UPDATE' && meta) {
+        meta.status = data.data
+      }
+
+      if (data.command === 'QR_RECEIVED' && meta) {
+        meta.qr = data.data
+      }
+    })
+
+    this.workers.set(id, {
+      process: child,
+      meta: {
+        status: null,
+        qr: null,
+      },
+    })
 
     return true
   }
@@ -92,10 +118,34 @@ export class WhatsappsService {
    * Retrieves a worker by its ID.
    *
    * @param {string} id - The ID of the worker to retrieve.
-   * @return {ChildProcess | undefined} The worker object associated with the given ID.
+   * @return {WhatsappWorker | undefined} The worker object associated with the given ID.
    */
-  public get(id: string): ChildProcess | undefined {
+  public get(id: string): WhatsappWorker | undefined {
     return this.workers.get(id)
+  }
+
+  /**
+   * Retrieves the status of an item with the given ID.
+   *
+   * @param {string} id - The ID of the item to retrieve the status for.
+   * @return {string} The status of the item. Returns 'close' if the item or its metadata is not found.
+   */
+  public getStatus(id: string): string {
+    const child = this.get(id)?.meta
+
+    return child?.status ?? 'close'
+  }
+
+  /**
+   * Retrieves the QR code for the specified ID.
+   *
+   * @param {string} id - The ID of the item to retrieve the QR code for.
+   * @returns {string | null} The QR code corresponding to the specified ID, or null if it doesn't exist.
+   */
+  public getQr(id: string): string | null {
+    const child = this.get(id)?.meta
+
+    return child?.qr ?? null
   }
 
   /**
@@ -144,14 +194,14 @@ export class WhatsappsService {
 
       function handleResponse(response: OutputMessage) {
         if (response.command === command) {
-          child?.removeListener('message', handleResponse)
+          child?.process.removeListener('message', handleResponse)
           resolve(response.data)
         }
       }
 
-      child.on('message', handleResponse)
+      child.process.on('message', handleResponse)
 
-      child.send({
+      child.process.send({
         command,
         params: { deviceId: id },
       })
