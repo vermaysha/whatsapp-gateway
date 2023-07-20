@@ -1,8 +1,8 @@
 import {
-  AuthenticationCreds,
-  AuthenticationState,
+  type AuthenticationCreds,
+  type AuthenticationState,
   BufferJSON,
-  SignalDataTypeMap,
+  type SignalDataTypeMap,
   initAuthCreds,
   proto,
 } from '@whiskeysockets/baileys'

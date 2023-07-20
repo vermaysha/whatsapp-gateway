@@ -1,20 +1,15 @@
 import {
-  downloadMediaMessage,
-  type BaileysEventEmitter,
   type Chat,
   type Contact,
   type WASocket,
   type proto,
 } from '@whiskeysockets/baileys'
-import { prisma, Prisma } from 'database'
-import { createWriteStream, mkdirSync, writeFileSync } from 'fs'
+import { prisma } from 'database'
 import { sendMessage } from '../worker/worker.helper'
-import pino from 'pino'
-import { randomBytes } from 'crypto'
-import { extension } from 'mime-types'
 
-function logsToFile(title: string, data: any) {
+async function logsToFile(title: string, data: any) {
   const json = JSON.stringify(data)
+  const { writeFileSync } = await import('fs')
   writeFileSync('whatsapp.log', `${title}: ${json}\n`, {
     flag: 'a+',
   })
@@ -26,6 +21,11 @@ async function downloadMedia(
   extension: string,
 ) {
   return new Promise<string>(async (resolve, reject) => {
+    const { default: pino } = await import('pino')
+    const { randomBytes } = await import('crypto')
+    const { mkdirSync, createWriteStream } = await import('fs')
+    const { downloadMediaMessage } = await import('@whiskeysockets/baileys')
+
     const buffer = await downloadMediaMessage(
       message,
       'buffer',
@@ -135,6 +135,7 @@ async function messagesCallback(
   message: proto.IWebMessageInfo,
   sock: WASocket,
 ) {
+  const { extension } = await import('mime-types')
   if (
     message.key.remoteJid === 'status@broadcast' &&
     !(await sock.onWhatsApp(message.key.remoteJid))?.[0]?.exists
