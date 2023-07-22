@@ -20,18 +20,16 @@ export default function NotFound() {
                 Sorry about that! Please visit our hompage to get where you need
                 to go.
               </p>
-              <Link href={"/"} className="sm:w-full lg:w-auto my-2 border rounded md py-4 px-8 text-center bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50">
+              <Link
+                href={"/"}
+                className="sm:w-full lg:w-auto my-2 border rounded md py-4 px-8 text-center bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-opacity-50"
+              >
                 Take me there!
               </Link>
             </div>
           </div>
           <div>
-            <Image
-              src="/404-2.png"
-              alt="404 Page"
-              width={400}
-              height={400}
-            />
+            <Image src="/404-2.png" alt="404 Page" width={400} height={400} />
           </div>
         </div>
       </div>
