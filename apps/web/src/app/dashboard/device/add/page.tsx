@@ -83,7 +83,10 @@ export default function AddDevice() {
             <button type="reset" className="btn btn-sm btn-outline btn-error">
               Reset
             </button>
-            <button type="button" className="btn btn-sm btn-outline btn-primary">
+            <button
+              type="button"
+              className="btn btn-sm btn-outline btn-primary"
+            >
               Submit
             </button>
           </div>

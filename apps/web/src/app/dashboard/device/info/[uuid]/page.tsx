@@ -204,10 +204,17 @@ export default function DeviceInfo({ params }: IDeviceInfo) {
               </tbody>
             </table>
             <div className="flex justify-between mt-4">
-              <button type="button" className="btn btn-sm btn-outline btn-error">
+              <button
+                type="button"
+                className="btn btn-sm btn-outline btn-error"
+              >
                 Delete
               </button>
-              <Link href={"/device/edit/asjdhasjkdhasjkhdasjk"} type="button" className="btn btn-sm btn-outline btn-primary">
+              <Link
+                href={"/device/edit/asjdhasjkdhasjkhdasjk"}
+                type="button"
+                className="btn btn-sm btn-outline btn-primary"
+              >
                 Edit
               </Link>
             </div>

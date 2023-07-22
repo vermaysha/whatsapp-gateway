@@ -32,9 +32,7 @@ export default function Contact() {
             <li>
               <Link href={"/"}>Home</Link>
             </li>
-            <li>
-              Contact
-            </li>
+            <li>Contact</li>
           </ul>
         </div>
       </div>
@@ -105,15 +103,9 @@ export default function Contact() {
                     </div>
                   </td>
                   <td>John</td>
-                  <td>
-                    Doe
-                  </td>
-                  <td>
-                    +62 8953 3425 8990
-                  </td>
-                  <td>
-                    6MhUy@example.com
-                  </td>
+                  <td>Doe</td>
+                  <td>+62 8953 3425 8990</td>
+                  <td>6MhUy@example.com</td>
                 </tr>
               </tbody>
             </table>

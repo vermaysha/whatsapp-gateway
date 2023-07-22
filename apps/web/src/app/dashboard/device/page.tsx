@@ -66,7 +66,10 @@ export default function Device() {
                 className="input input-sm w-full max-w-xs join-item input-bordered focus:outline-none"
               />
             </div>
-            <Link href={"/device/add"} className="btn btn-sm btn-info btn-outline">
+            <Link
+              href={"/device/add"}
+              className="btn btn-sm btn-info btn-outline"
+            >
               Add{" "}
               <svg
                 xmlns="http://www.w3.org/2000/svg"

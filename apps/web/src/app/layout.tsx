@@ -1,9 +1,6 @@
-import Navbar from "@/components/Navbar"
 import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import Sidebar from "@/components/Sidebar"
-
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
@@ -18,26 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <div className="drawer lg:drawer-open">
-          <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
-          <div className="drawer-content flex flex-col bg-base-100">
-            <Navbar />
-            <div className="m-10">
-              {children}
-            </div>
-            <footer className="footer footer-center p-4 bg-neutral text-neutral-content">
-              <div className="">
-                <p>Copyright © {(new Date()).getFullYear()} - All right reserved by Ashary Vermaysha.</p>
-              </div>
-            </footer>
-          </div>
-          <div className="drawer-side w-screen">
-            <label htmlFor="my-drawer-3" className="drawer-overlay" />
-            <Sidebar />
-          </div>
-        </div>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }
