@@ -26,8 +26,15 @@ export class AuthController {
    * @param {SignInDto} signInDto - The signInDto object containing the username and password.
    * @return {any} The result of the authentication process.
    */
-  signIn(@Body() signInDto: SignInDto) {
-    return this.authService.signIn(signInDto.username, signInDto.password)
+  async signIn(@Body() signInDto: SignInDto, @Response() res: FastifyReply) {
+    const token = await this.authService.signIn(
+      signInDto.username,
+      signInDto.password,
+    )
+
+    res.setCookie('ACCESS_TOKEN', token.access_token)
+
+    res.send(token)
   }
 
   @UseGuards(AuthGuard)

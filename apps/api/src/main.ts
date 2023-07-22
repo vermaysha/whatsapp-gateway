@@ -5,6 +5,8 @@ import {
 } from '@nestjs/platform-fastify'
 import { AppModule } from './app.module'
 import { ValidationPipe } from '@nestjs/common'
+import type { FastifyCookieOptions } from '@fastify/cookie'
+import cookie from '@fastify/cookie'
 
 declare const module: any
 
@@ -13,6 +15,19 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   )
+  await app.register(
+    cookie as any,
+    {
+      secret: process.env.ENCRYPTION_KEY ?? '',
+      parseOptions: {
+        httpOnly: true,
+        sameSite: 'lax',
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+        path: '/',
+      },
+    } as FastifyCookieOptions,
+  )
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

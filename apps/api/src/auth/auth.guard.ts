@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest() as FastifyRequest
-    const token = this.extractTokenFromHeader(request)
+    const token = this.extractTokenFromCookie(request)
     if (!token) {
       throw new UnauthorizedException('Token not found')
     }
@@ -54,8 +54,7 @@ export class AuthGuard implements CanActivate {
    * @param {FastifyRequest} request - The FastifyRequest object from which to extract the token.
    * @return {string | undefined} - The extracted token, if it exists, or undefined.
    */
-  private extractTokenFromHeader(request: FastifyRequest): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? []
-    return type === 'Bearer' ? token : undefined
+  private extractTokenFromCookie(request: FastifyRequest): string | undefined {
+    return request.cookies.ACCESS_TOKEN
   }
 }
