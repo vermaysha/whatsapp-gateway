@@ -22,8 +22,8 @@ export function Navigation({ navLinks }: INavigation) {
       {navLinks.map((link, i) => {
         const isActive =
           link.href === "/"
-            ? link.href.toLowerCase() === pathname.toLowerCase()
-            : pathname.startsWith(link.href)
+            ? link.href.toLowerCase() === pathname?.toLowerCase()
+            : pathname?.startsWith(link.href)
 
         return (
           <li key={i} className="mb-2">
