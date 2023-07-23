@@ -12,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt'
       secret: process.env.ENCRYPTION_KEY,
       signOptions: {
         expiresIn: '1y',
+        algorithm: 'HS512',
       },
     }),
   ],
