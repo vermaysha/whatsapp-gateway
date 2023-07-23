@@ -55,6 +55,6 @@ export class AuthGuard implements CanActivate {
    * @return {string | undefined} - The extracted token, if it exists, or undefined.
    */
   private extractTokenFromCookie(request: FastifyRequest): string | undefined {
-    return request.cookies.ACCESS_TOKEN
+    return request.cookies.access_token
   }
 }
