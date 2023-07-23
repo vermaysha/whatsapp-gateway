@@ -22,7 +22,7 @@ async function bootstrap() {
       parseOptions: {
         httpOnly: true,
         sameSite: 'lax',
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365), //1year expires
         path: '/',
       },
     } as FastifyCookieOptions,
