@@ -8,11 +8,13 @@ import {
   UseGuards,
   Get,
   Response,
+  Delete,
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { AuthGuard } from './auth.guard'
 import { SignInDto } from './auth.dto'
+import { Auth } from './auth.decorator'
 
 @Controller('auth')
 export class AuthController {
@@ -32,12 +34,12 @@ export class AuthController {
       signInDto.password,
     )
 
-    res.setCookie('ACCESS_TOKEN', token.access_token)
+    res.setCookie('access_token', token.access_token)
 
     res.send(token)
   }
 
-  @UseGuards(AuthGuard)
+  @Auth()
   @Get('profile')
   /**
    * Retrieves the user profile.
@@ -48,5 +50,35 @@ export class AuthController {
    */
   getProfile(@Request() req: FastifyRequest, @Response() res: FastifyReply) {
     res.send(req.user)
+  }
+
+  @Auth()
+  @Get('verify')
+  /**
+   * Verify the request and send a response.
+   *
+   * @param {Response} res - The response object.
+   * @return {void} The response status.
+   */
+  verify(@Response() res: FastifyReply) {
+    res.send({
+      status: true,
+    })
+  }
+
+  @Auth()
+  @Delete('logout')
+  /**
+   * Logs out the user by clearing the access token cookie and sending a success response.
+   *
+   * @param {FastifyReply} res - The response object.
+   * @param {FastifyRequest} req - The request object.
+   * @return {void} No return value.
+   */
+  logout(@Response() res: FastifyReply, @Request() req: FastifyRequest) {
+    res.clearCookie('access_token')
+    res.send({
+      status: true,
+    })
   }
 }
