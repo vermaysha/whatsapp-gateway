@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { ForbiddenException, Injectable } from '@nestjs/common'
 import { UsersService } from '../users/users.service'
 import { JwtService } from '@nestjs/jwt'
 import { verify } from 'hash'
@@ -18,11 +18,11 @@ export class AuthService {
   }> {
     const user = await this.usersService.findOne(username)
     if (user === null) {
-      throw new UnauthorizedException(`User ${username} not found`)
+      throw new ForbiddenException(`User ${username} not found`)
     }
 
     if ((await verify(user.password, pass)) === false) {
-      throw new UnauthorizedException('Wrong password')
+      throw new ForbiddenException('Wrong password')
     }
     const payload = { sub: user.id, username: user.username }
 
