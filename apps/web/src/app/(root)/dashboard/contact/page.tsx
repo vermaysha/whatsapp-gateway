@@ -30,7 +30,7 @@ export default function Contact() {
         <div className="text-sm breadcrumbs">
           <ul>
             <li>
-              <Link href={"/"}>Home</Link>
+              <Link href={"/dashboard"}>Home</Link>
             </li>
             <li>Contact</li>
           </ul>

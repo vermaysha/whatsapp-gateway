@@ -30,10 +30,10 @@ export default function Device() {
         <div className="text-sm breadcrumbs">
           <ul>
             <li>
-              <Link href={"/"}>Home</Link>
+              <Link href={"/dashboard"}>Home</Link>
             </li>
             <li>
-              <Link href={"/device"}>Device</Link>
+              <Link href={"/dashboard/device"}>Device</Link>
             </li>
             <li>System</li>
           </ul>
@@ -67,7 +67,7 @@ export default function Device() {
               />
             </div>
             <Link
-              href={"/device/add"}
+              href={"/dashboard/device/add"}
               className="btn btn-sm btn-info btn-outline"
             >
               Add{" "}
@@ -140,7 +140,7 @@ export default function Device() {
                   <td>
                     <div className="flex items-center gap-2">
                       <Link
-                        href={"/device/info/123456789"}
+                        href={"/dashboard/device/info/123456789"}
                         className="btn btn-ghost btn-xs"
                       >
                         <svg
@@ -160,7 +160,7 @@ export default function Device() {
                         Info
                       </Link>
                       <Link
-                        href={"/device/system/123456789"}
+                        href={"/dashboard/device/system/123456789"}
                         className="btn btn-ghost btn-xs"
                       >
                         <svg

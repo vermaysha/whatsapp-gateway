@@ -35,10 +35,10 @@ export default function DeviceSystem({ params }: IDeviceSystem) {
         <div className="text-sm breadcrumbs">
           <ul>
             <li>
-              <Link href={"/"}>Home</Link>
+              <Link href={"/dashboard"}>Home</Link>
             </li>
             <li>
-              <Link href={"/device"}>Device</Link>
+              <Link href={"/dashboard/device"}>Device</Link>
             </li>
             <li>System</li>
           </ul>

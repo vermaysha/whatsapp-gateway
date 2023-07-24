@@ -35,10 +35,10 @@ export default function DeviceInfo({ params }: IDeviceInfo) {
         <div className="text-sm breadcrumbs">
           <ul>
             <li>
-              <Link href={"/"}>Home</Link>
+              <Link href={"/dashboard"}>Home</Link>
             </li>
             <li>
-              <Link href={"/device"}>Device</Link>
+              <Link href={"/dashboard/device"}>Device</Link>
             </li>
             <li>Info</li>
           </ul>
@@ -211,7 +211,7 @@ export default function DeviceInfo({ params }: IDeviceInfo) {
                 Delete
               </button>
               <Link
-                href={"/device/edit/asjdhasjkdhasjkhdasjk"}
+                href={"/dashboard/device/edit/asjdhasjkdhasjkhdasjk"}
                 type="button"
                 className="btn btn-sm btn-outline btn-primary"
               >
