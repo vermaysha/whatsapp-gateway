@@ -264,7 +264,7 @@ importers:
         version: 10.0.1
       '@whiskeysockets/baileys':
         specifier: ^6.4.0
-        version: 6.4.0(link-preview-js@3.0.4)(qrcode-terminal@0.12.0)(sharp@0.32.3)
+        version: 6.4.0(link-preview-js@3.0.4)(qrcode-terminal@0.12.0)(sharp@0.32.4)
       database:
         specifier: workspace:^
         version: link:../database
@@ -284,8 +284,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
       sharp:
-        specifier: ^0.32.3
-        version: 0.32.3
+        specifier: ^0.32.4
+        version: 0.32.4
       tsconfig:
         specifier: workspace:^
         version: link:../tsconfig
@@ -2735,7 +2735,7 @@ packages:
       '@webassemblyjs/ast': 1.11.6
       '@xtuc/long': 4.2.2
 
-  /@whiskeysockets/baileys@6.4.0(link-preview-js@3.0.4)(qrcode-terminal@0.12.0)(sharp@0.32.3):
+  /@whiskeysockets/baileys@6.4.0(link-preview-js@3.0.4)(qrcode-terminal@0.12.0)(sharp@0.32.4):
     resolution: {integrity: sha512-SdCoVpILWX7z2WEe40BwNjMqpI6Guf0gbG80NNfsJBcRcDQIS9pkmazIhTvNKytWZm7BFZR+QNKcBUxdPqdLsQ==}
     peerDependencies:
       jimp: ^0.16.1
@@ -2759,14 +2759,14 @@ packages:
       cache-manager: 5.2.3
       futoin-hkdf: 1.5.2
       libphonenumber-js: 1.10.37
-      libsignal: git/github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
+      libsignal: git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
       link-preview-js: 3.0.4
       music-metadata: 7.13.4
       node-cache: 5.1.2
       pino: 7.11.0
       protobufjs: 6.11.3
       qrcode-terminal: 0.12.0
-      sharp: 0.32.3
+      sharp: 0.32.4
       uuid: 9.0.0
       ws: 8.13.0
     transitivePeerDependencies:
@@ -7835,8 +7835,8 @@ packages:
     resolution: {integrity: sha512-RVnVQxTXuerk653XfuliOxBP81Sf0+qfQE73LIYKcyMYHG94AuH0kgrQpRDuTZnSmjpysHmzxJXKNfa6PjFhyQ==}
     dev: false
 
-  /sharp@0.32.3:
-    resolution: {integrity: sha512-i1gFPiNqyqxC4ouVvCKj5G8WfPIMeeSxpKcMrjic6NY4e8zktW7bIdqHPc3FCG+pNKU/XCEabKA57hhvZi8UmQ==}
+  /sharp@0.32.4:
+    resolution: {integrity: sha512-exUnZewqVZC6UXqXuQ8fyJJv0M968feBi04jb9GcUHrWtkRoAKnbJt8IfwT4NJs7FskArbJ14JAFGVuooszoGg==}
     engines: {node: '>=14.15.0'}
     requiresBuild: true
     dependencies:
@@ -9187,7 +9187,7 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  git/github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
+  git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
     resolution: {commit: 11dbd962ea108187c79a7c46fe4d6f790e23da97, repo: git@github.com:adiwajshing/libsignal-node.git, type: git}
     name: libsignal
     version: 2.0.1
