@@ -1,10 +1,43 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
-    ignore:
-      - dependency-name: "@adiwajshing/libsignal-node"
-      - dependency-name: "@whiskeysockets/baileys"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "daily"
+      interval: 'daily'
+    open-pull-requests-limit: 30
+
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    open-pull-requests-limit: 30
+
+  - package-ecosystem: 'npm'
+    directory: '/apps/api'
+    schedule:
+      interval: 'daily'
+    open-pull-requests-limit: 30
+
+  - package-ecosystem: 'npm'
+    directory: '/apps/web'
+    schedule:
+      interval: 'daily'
+    open-pull-requests-limit: 30
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/database'
+    schedule:
+      interval: 'daily'
+    open-pull-requests-limit: 30
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/hash'
+    schedule:
+      interval: 'daily'
+    open-pull-requests-limit: 30
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/whatsapp'
+    schedule:
+      interval: 'daily'
     open-pull-requests-limit: 30
