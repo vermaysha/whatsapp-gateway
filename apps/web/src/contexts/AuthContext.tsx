@@ -24,18 +24,6 @@ const AuthState = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter()
   const pathName = usePathname()
 
-  useEffect(() => {
-    if (isAuthenticated === false) {
-      // logoutUser()
-    }
-  }, [isAuthenticated])
-
-  useEffect(() => {
-    verifyUser().then(() => {
-      setIsLoading(false)
-    })
-  })
-
   const loginToAccount = async (
     login: ILogin,
   ): Promise<Response | undefined> => {
@@ -82,6 +70,37 @@ const AuthState = ({ children }: { children: React.ReactNode }) => {
       router.replace("/login")
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated === false) {
+      // logoutUser()
+    }
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    verifyUser().then(() => {
+      setIsLoading(false)
+    })
+  }, [])
+
+  useEffect(() => {
+    if (isLoading === true) {
+      // Get the current page scroll position in the vertical direction
+      const scrollTop = document.documentElement.scrollTop
+
+      // Get the current page scroll position in the horizontal direction
+
+      const scrollLeft = document.documentElement.scrollLeft
+
+      // if any scroll is attempted,
+      // set this to the previous value
+      window.onscroll = () => {
+        window.scrollTo(scrollLeft, scrollTop)
+      }
+      return
+    }
+    window.onscroll = () => {}
+  }, [isLoading])
 
   return (
     <AuthContext.Provider
