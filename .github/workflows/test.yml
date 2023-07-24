@@ -10,6 +10,9 @@ on:
 permissions:
   contents: write
 
+env:
+  CI: 1
+
 jobs:
   lint:
     name: Lint code
