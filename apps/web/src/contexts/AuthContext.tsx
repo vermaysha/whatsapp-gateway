@@ -7,6 +7,8 @@ import { usePathname, useRouter } from "next/navigation"
 
 const AuthContext = createContext<IAuthContext>({
   isAuthenticated: false,
+  isLoading: false,
+  setIsLoading: (flag: boolean) => {},
   loginToAccount: () => {
     return Promise.resolve(undefined)
   },
@@ -17,6 +19,7 @@ const AuthContext = createContext<IAuthContext>({
 
 const AuthState = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const router = useRouter()
   const pathName = usePathname()
@@ -28,7 +31,9 @@ const AuthState = ({ children }: { children: React.ReactNode }) => {
   }, [isAuthenticated])
 
   useEffect(() => {
-    verifyUser()
+    verifyUser().then(() => {
+      setIsLoading(false)
+    })
   })
 
   const loginToAccount = async (
@@ -82,6 +87,8 @@ const AuthState = ({ children }: { children: React.ReactNode }) => {
     <AuthContext.Provider
       value={{
         isAuthenticated,
+        isLoading,
+        setIsLoading,
         loginToAccount,
         logoutUser,
       }}

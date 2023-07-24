@@ -1,5 +1,7 @@
 export interface IAuthContext {
-  isAuthenticated: boolean
+  isAuthenticated: Boolean
+  isLoading: Boolean
+  setIsLoading: (flag: boolean) => void
   loginToAccount: (body: ILogin) => Promise<Response | undefined>
   logoutUser: () => Promise<void>
 }
