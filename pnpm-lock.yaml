@@ -206,8 +206,8 @@ importers:
         version: link:../tsconfig
     devDependencies:
       '@types/node':
-        specifier: ^20.4.2
-        version: 20.4.3
+        specifier: ^20.4.4
+        version: 20.4.4
       eslint:
         specifier: ^8.45.0
         version: 8.45.0
@@ -243,8 +243,8 @@ importers:
         version: link:../tsconfig
     devDependencies:
       '@types/node':
-        specifier: ^20.4.2
-        version: 20.4.3
+        specifier: ^20.4.4
+        version: 20.4.4
       rimraf:
         specifier: ^5.0.1
         version: 5.0.1
@@ -297,8 +297,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       '@types/node':
-        specifier: ^20.4.2
-        version: 20.4.3
+        specifier: ^20.4.4
+        version: 20.4.4
       qrcode-terminal:
         specifier: ^0.12.0
         version: 0.12.0
@@ -2333,9 +2333,6 @@ packages:
     resolution: {integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==}
     dev: false
 
-  /@types/node@20.4.3:
-    resolution: {integrity: sha512-Yu3+r4Mn/iY6Mf0aihncZQ1qOjOUrCiodbHHY1hds5O+7BbKp9t+Li7zLO13zO8j9L2C6euz8xsYQP0rjGvVXw==}
-
   /@types/node@20.4.4:
     resolution: {integrity: sha512-CukZhumInROvLq3+b5gLev+vgpsIqC2D0deQr/yS1WnxvmYLlJXZpaQrQiseMY+6xusl79E04UjWoqyr+t1/Ew==}
 
@@ -2759,7 +2756,7 @@ packages:
       cache-manager: 5.2.3
       futoin-hkdf: 1.5.2
       libphonenumber-js: 1.10.37
-      libsignal: git/github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
+      libsignal: git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
       link-preview-js: 3.0.4
       music-metadata: 7.13.4
       node-cache: 5.1.2
@@ -7373,7 +7370,7 @@ packages:
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
       '@types/long': 4.0.2
-      '@types/node': 20.4.3
+      '@types/node': 20.4.4
       long: 4.0.0
     dev: false
 
@@ -9187,7 +9184,7 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  git/github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
+  git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
     resolution: {commit: 11dbd962ea108187c79a7c46fe4d6f790e23da97, repo: git@github.com:adiwajshing/libsignal-node.git, type: git}
     name: libsignal
     version: 2.0.1
