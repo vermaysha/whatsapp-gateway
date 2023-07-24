@@ -3,7 +3,7 @@ import { INavLink, Navigation } from "./Navigation"
 const mainNav: INavLink[] = [
   {
     name: "Dashboard",
-    href: "/",
+    href: "/dashboard",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +23,7 @@ const mainNav: INavLink[] = [
   },
   {
     name: "Device",
-    href: "/device",
+    href: "/dashboard/device",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +43,7 @@ const mainNav: INavLink[] = [
   },
   {
     name: "Message",
-    href: "/message",
+    href: "/dashboard/message",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +63,7 @@ const mainNav: INavLink[] = [
   },
   {
     name: "Contact",
-    href: "/contact",
+    href: "/dashboard/contact",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +86,7 @@ const mainNav: INavLink[] = [
 const apiNav: INavLink[] = [
   {
     name: "API Token",
-    href: "/api-token",
+    href: "/dashboard/api-token",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -106,7 +106,7 @@ const apiNav: INavLink[] = [
   },
   {
     name: "API Documentation",
-    href: "/api-docs",
+    href: "/dashboard/api-docs",
     newTab: true,
     icon: (
       <svg
