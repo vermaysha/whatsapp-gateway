@@ -14,21 +14,22 @@ jobs:
   lint:
     name: Lint code
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14, 16, 18, 20]
 
     steps:
       - uses: actions/checkout@v3
         with:
           ssh-key: ${{ secrets.SSH_KEY }}
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
       - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
         with:
-          version: latest
-          run_install: true
+          version: 8
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
       - name: Lint code
         run: pnpm run lint
