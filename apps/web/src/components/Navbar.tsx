@@ -1,6 +1,19 @@
+"use client"
+
+import { AuthContext } from "@/contexts/AuthContext"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useContext } from "react"
 
 function Navbar() {
+  const { logoutUser } = useContext(AuthContext)
+  const router = useRouter()
+
+  async function logout() {
+    await logoutUser()
+    router.replace("/login")
+  }
+
   return (
     <div className="w-full navbar bg-base-100 border-b h-[65px]">
       <div className="flex-none lg:hidden">
@@ -56,7 +69,7 @@ function Navbar() {
             className="mt-2 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-53"
           >
             <li>
-              <a href="">
+              <button type="button" onClick={logout}>
                 <span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -74,7 +87,7 @@ function Navbar() {
                   </svg>
                 </span>
                 Logout
-              </a>
+              </button>
             </li>
           </ul>
         </div>

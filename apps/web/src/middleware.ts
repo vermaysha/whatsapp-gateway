@@ -1,35 +1,38 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-export function middleware(request: NextRequest) {
+// const isAuthenticated = (req: NextRequest): boolean => {
+//   return req.cookies.get("user") !== undefined
+// }
+
+export async function middleware(request: NextRequest) {
+  // if (request.nextUrl.pathname.startsWith("/_next")) {
+  //   return NextResponse.next()
+  // }
+
   if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/dashboard", request.url), {
       status: 307,
     })
   }
 
-  // Assume a "Cookie:nextjs=fast" header to be present on the incoming request
-  // Getting cookies from the request using the `RequestCookies` API
-  let cookie = request.cookies.get("nextjs")
-  console.log(cookie) // => { name: 'nextjs', value: 'fast', Path: '/' }
-  const allCookies = request.cookies.getAll()
-  console.log(allCookies) // => [{ name: 'nextjs', value: 'fast' }]
+  // const isLoggedIn = isAuthenticated(request)
 
-  request.cookies.has("nextjs") // => true
-  request.cookies.delete("nextjs")
-  request.cookies.has("nextjs") // => false
+  // console.log(request.cookies.getAll())
 
-  // Setting cookies on the response using the `ResponseCookies` API
-  const response = NextResponse.next()
-  response.cookies.set("vercel", "fast")
-  response.cookies.set({
-    name: "vercel",
-    value: "fast",
-    path: "/",
-  })
-  cookie = response.cookies.get("vercel")
-  console.log(cookie) // => { name: 'vercel', value: 'fast', Path: '/' }
-  // The outgoing response will have a `Set-Cookie:vercel=fast;path=/test` header.
+  // if (request.nextUrl.pathname === '/login' && isLoggedIn) {
+  //   console.log('redirect to dashboard', isLoggedIn, request.nextUrl.pathname !== '/login')
+  //   // return NextResponse.redirect(new URL('/dashboard', request.url), {
+  //   //   status: 307,
+  //   //   statusText: 'Already logged in.',
+  //   // })
+  // } else if (isLoggedIn === false && request.nextUrl.pathname !== '/login') {
+  //   console.log('redirect to login', isLoggedIn, request.nextUrl.pathname !== '/login')
+  //   // return NextResponse.redirect(new URL('/login', request.url), {
+  //   //   status: 307,
+  //   //   statusText: 'Unauthorized, please login.',
+  //   // })
+  // }
 
-  return response
+  // return NextResponse.next()
 }

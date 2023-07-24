@@ -1,4 +1,36 @@
+"use client"
+
+import { AuthContext } from "@/contexts/AuthContext"
+import { useRouter } from "next/navigation"
+import { type FormEvent, useContext, useRef } from "react"
+
 export default function Login() {
+  const username = useRef<HTMLInputElement>(null)
+  const password = useRef<HTMLInputElement>(null)
+
+  const { loginToAccount } = useContext(AuthContext)
+  const router = useRouter()
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!(username.current?.value && password.current?.value)) {
+      return
+    }
+
+    console.log(username.current?.value, password.current?.value)
+
+    const result = await loginToAccount({
+      username: username.current.value,
+      password: password.current.value,
+    })
+
+    if (result?.status === 200) {
+      router.replace("/")
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 grid-rows-1 h-screen max-h-screen xl:grid-cols-2">
       <div className="hidden items-center justify-center border-r bg-neutral xl:flex">
@@ -76,8 +108,9 @@ export default function Login() {
       </div>
       <div className="flex items-center justify-center">
         <form
-          action="#"
+          action=""
           className="w-full xl:w-1/2 border rounded-md m-10 p-10 xl:p-24 shadow-md"
+          onSubmit={submit}
         >
           <div className="mb-6">
             <h4 className="text-3xl font-bold text-center">Login</h4>
@@ -90,6 +123,8 @@ export default function Login() {
               type="text"
               placeholder="Text your username ..."
               className="input input-bordered w-full focus:outline-none"
+              autoComplete="username"
+              ref={username}
             />
           </div>
           <div className="mb-4">
@@ -100,10 +135,16 @@ export default function Login() {
               type="password"
               placeholder="Text your password ..."
               className="input input-bordered w-full focus:outline-none"
+              autoComplete="current-password"
+              ref={password}
             />
           </div>
           <div className="mb-4 text-right">
-            <button type="button" className="btn btn-primary btn-outline">
+            <button
+              type="button"
+              className="btn btn-primary btn-outline"
+              onClick={submit}
+            >
               Login
             </button>
           </div>
