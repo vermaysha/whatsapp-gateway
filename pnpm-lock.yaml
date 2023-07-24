@@ -206,8 +206,8 @@ importers:
         version: link:../tsconfig
     devDependencies:
       '@types/node':
-        specifier: ^20.4.2
-        version: 20.4.3
+        specifier: ^20.4.4
+        version: 20.4.4
       eslint:
         specifier: ^8.45.0
         version: 8.45.0
@@ -243,8 +243,8 @@ importers:
         version: link:../tsconfig
     devDependencies:
       '@types/node':
-        specifier: ^20.4.2
-        version: 20.4.3
+        specifier: ^20.4.4
+        version: 20.4.4
       rimraf:
         specifier: ^5.0.1
         version: 5.0.1
@@ -264,7 +264,7 @@ importers:
         version: 10.0.1
       '@whiskeysockets/baileys':
         specifier: ^6.4.0
-        version: 6.4.0(link-preview-js@3.0.4)(qrcode-terminal@0.12.0)(sharp@0.32.3)
+        version: 6.4.0(link-preview-js@3.0.4)(qrcode-terminal@0.12.0)(sharp@0.32.4)
       database:
         specifier: workspace:^
         version: link:../database
@@ -284,8 +284,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
       sharp:
-        specifier: ^0.32.3
-        version: 0.32.3
+        specifier: ^0.32.4
+        version: 0.32.4
       tsconfig:
         specifier: workspace:^
         version: link:../tsconfig
@@ -297,8 +297,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       '@types/node':
-        specifier: ^20.4.2
-        version: 20.4.3
+        specifier: ^20.4.4
+        version: 20.4.4
       qrcode-terminal:
         specifier: ^0.12.0
         version: 0.12.0
@@ -2333,9 +2333,6 @@ packages:
     resolution: {integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==}
     dev: false
 
-  /@types/node@20.4.3:
-    resolution: {integrity: sha512-Yu3+r4Mn/iY6Mf0aihncZQ1qOjOUrCiodbHHY1hds5O+7BbKp9t+Li7zLO13zO8j9L2C6euz8xsYQP0rjGvVXw==}
-
   /@types/node@20.4.4:
     resolution: {integrity: sha512-CukZhumInROvLq3+b5gLev+vgpsIqC2D0deQr/yS1WnxvmYLlJXZpaQrQiseMY+6xusl79E04UjWoqyr+t1/Ew==}
 
@@ -2735,7 +2732,7 @@ packages:
       '@webassemblyjs/ast': 1.11.6
       '@xtuc/long': 4.2.2
 
-  /@whiskeysockets/baileys@6.4.0(link-preview-js@3.0.4)(qrcode-terminal@0.12.0)(sharp@0.32.3):
+  /@whiskeysockets/baileys@6.4.0(link-preview-js@3.0.4)(qrcode-terminal@0.12.0)(sharp@0.32.4):
     resolution: {integrity: sha512-SdCoVpILWX7z2WEe40BwNjMqpI6Guf0gbG80NNfsJBcRcDQIS9pkmazIhTvNKytWZm7BFZR+QNKcBUxdPqdLsQ==}
     peerDependencies:
       jimp: ^0.16.1
@@ -2766,7 +2763,7 @@ packages:
       pino: 7.11.0
       protobufjs: 6.11.3
       qrcode-terminal: 0.12.0
-      sharp: 0.32.3
+      sharp: 0.32.4
       uuid: 9.0.0
       ws: 8.13.0
     transitivePeerDependencies:
@@ -7373,7 +7370,7 @@ packages:
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
       '@types/long': 4.0.2
-      '@types/node': 20.4.3
+      '@types/node': 20.4.4
       long: 4.0.0
     dev: false
 
@@ -7835,8 +7832,8 @@ packages:
     resolution: {integrity: sha512-RVnVQxTXuerk653XfuliOxBP81Sf0+qfQE73LIYKcyMYHG94AuH0kgrQpRDuTZnSmjpysHmzxJXKNfa6PjFhyQ==}
     dev: false
 
-  /sharp@0.32.3:
-    resolution: {integrity: sha512-i1gFPiNqyqxC4ouVvCKj5G8WfPIMeeSxpKcMrjic6NY4e8zktW7bIdqHPc3FCG+pNKU/XCEabKA57hhvZi8UmQ==}
+  /sharp@0.32.4:
+    resolution: {integrity: sha512-exUnZewqVZC6UXqXuQ8fyJJv0M968feBi04jb9GcUHrWtkRoAKnbJt8IfwT4NJs7FskArbJ14JAFGVuooszoGg==}
     engines: {node: '>=14.15.0'}
     requiresBuild: true
     dependencies:
