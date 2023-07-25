@@ -22,7 +22,7 @@
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
     "@fastify/cors": "^8.3.0",
-    "@nestjs/common": "^10.1.0",
+    "@nestjs/common": "^10.1.1",
     "@nestjs/core": "^10.1.0",
     "@nestjs/jwt": "^10.1.0",
     "@nestjs/platform-fastify": "^10.1.0",
@@ -46,7 +46,7 @@
     "@types/jest": "^29.5.3",
     "@types/node": "^20.4.4",
     "@types/supertest": "^2.0.12",
-    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
     "@typescript-eslint/parser": "^6.1.0",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
