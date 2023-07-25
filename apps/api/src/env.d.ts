@@ -3,7 +3,7 @@ import { FastifyRequest } from 'fastify'
 declare module 'fastify' {
   interface FastifyRequest {
     user: {
-      sub: string
+      uuid: string
       username: string
       iat: number
       exp: number
