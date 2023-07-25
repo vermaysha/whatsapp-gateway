@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Users, prisma } from 'database'
-
-// This should be a real class/interface representing a user entity
-export type User = any
+import { type Users, prisma } from 'database'
 
 @Injectable()
 export class UsersService {
@@ -15,7 +12,7 @@ export class UsersService {
   async findOne(username: string): Promise<Users | null> {
     return await prisma.users.findFirst({
       where: {
-        username: username,
+        username,
       },
     })
   }
