@@ -8,8 +8,8 @@ generator client {
 }
 
 enum Gender {
-  Male
-  Female
+  male
+  female
 }
 
 model Users {
@@ -22,8 +22,8 @@ model Users {
   username String @unique
   password String
 
-  updated_at DateTime    @updatedAt
-  ApiToken   ApiTokens[]
+  updatedAt DateTime    @updatedAt
+  apiToken   ApiTokens[]
 }
 
 model ApiTokens {
@@ -46,7 +46,7 @@ model Contacts {
   verifiedName String?
   avatar       String?
 
-  updated_at DateTime   @updatedAt
+  updatedAt DateTime   @updatedAt
   device     Devices[]
   messages   Messages[]
   chats      Chats[]
@@ -115,7 +115,7 @@ model Messages {
   status                 Int?
   reactions              Reaction[]
   revokeMessageTimestamp Int?
-  updated_at             DateTime   @updatedAt
+  updatedAt             DateTime   @updatedAt
   contactsId             String?    @db.ObjectId
   chats                  Chats?     @relation(fields: [chatsId], references: [id])
   chatsId                String?    @db.ObjectId
@@ -135,8 +135,8 @@ model Devices {
 
   startedAt  DateTime?
   stoppedAt  DateTime?
-  updated_at DateTime  @updatedAt
-  Logs       Logs[]
+  updatedAt DateTime  @updatedAt
+  logs       Logs[]
 }
 
 model Sessions {
@@ -144,7 +144,7 @@ model Sessions {
   deviceId   String   @db.ObjectId
   creds      String
   data       String
-  updated_at DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
   @@unique([deviceId, creds])
 }
@@ -166,5 +166,5 @@ model Logs {
   meta     Json?
 
   //
-  updated_at DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 }
