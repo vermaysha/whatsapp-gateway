@@ -45,8 +45,8 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0(@nestjs/common@10.1.1)
       '@nestjs/platform-fastify':
-        specifier: ^10.1.0
-        version: 10.1.0(@nestjs/common@10.1.1)(@nestjs/core@10.1.0)
+        specifier: ^10.1.1
+        version: 10.1.1(@nestjs/common@10.1.1)(@nestjs/core@10.1.0)
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -163,8 +163,8 @@ importers:
         specifier: 10.4.14
         version: 10.4.14(postcss@8.4.27)
       daisyui:
-        specifier: ^3.3.1
-        version: 3.3.1(ts-node@10.9.1)
+        specifier: ^3.4.0
+        version: 3.4.0(ts-node@10.9.1)
       eslint:
         specifier: 8.45.0
         version: 8.45.0
@@ -1852,8 +1852,8 @@ packages:
       jsonwebtoken: 9.0.0
     dev: false
 
-  /@nestjs/platform-fastify@10.1.0(@nestjs/common@10.1.1)(@nestjs/core@10.1.0):
-    resolution: {integrity: sha512-hFfsyitmODJFY28f9g0h1+StRiirGdA592z3lQHeLBblw8NO2AIHsT1FKuKP7Jazw5UXECkKDujg+QrYHq+r2g==}
+  /@nestjs/platform-fastify@10.1.1(@nestjs/common@10.1.1)(@nestjs/core@10.1.0):
+    resolution: {integrity: sha512-YwtYd5o+P5bfmev7mHnnRtYOkEqlTQfdWMpIZo2qqkSK1Ezc9qTASD5G2u3GXL5+fsHFFaTRzXw0J6gbNHwmqQ==}
     peerDependencies:
       '@fastify/static': ^6.0.0
       '@fastify/view': ^7.0.0 || ^8.0.0
@@ -1870,7 +1870,7 @@ packages:
       '@fastify/middie': 8.3.0
       '@nestjs/common': 10.1.1(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 10.1.0(@nestjs/common@10.1.1)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      fastify: 4.19.2
+      fastify: 4.20.0
       light-my-request: 5.10.0
       path-to-regexp: 3.2.0
       tslib: 2.6.0
@@ -3815,8 +3815,8 @@ packages:
     resolution: {integrity: sha512-axn2UMEnkhyDUPWOwVKBMVIzSQy2ejH2xRGy1wq81dqRwApXfIzfbE3hIX0ZRFBIihf/KDqK158DLwESu4AK1w==}
     dev: false
 
-  /daisyui@3.3.1(ts-node@10.9.1):
-    resolution: {integrity: sha512-0PVNl+0r2Ie+FRkDNQABYcv8qLc0bt0lhUfSf8PxGocqpDsCB6cNQ5k8jOlnZIjUhc1EXMIDPU9r0pVrfRGftw==}
+  /daisyui@3.4.0(ts-node@10.9.1):
+    resolution: {integrity: sha512-s9EvNxnw/ubCIopKul+3ddASzZG+jMOmZgLJ0BFOVnxFQy6HJ5+EbMx5yY7Ef0cA6qjeUMl88SwhE94WLSLtHQ==}
     engines: {node: '>=16.9.0'}
     dependencies:
       colord: 2.9.3
@@ -4699,29 +4699,6 @@ packages:
 
   /fastify-plugin@4.5.1:
     resolution: {integrity: sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==}
-    dev: false
-
-  /fastify@4.19.2:
-    resolution: {integrity: sha512-2unheeIRWFf9/Jjcz7djOpKuXCTzZjlyFfiBwKqpldkHMN2rfTLu/f9pYTdwlhzC9Cdj0S2H12zlug0Kd5uZ1w==}
-    dependencies:
-      '@fastify/ajv-compiler': 3.5.0
-      '@fastify/error': 3.3.0
-      '@fastify/fast-json-stringify-compiler': 4.3.0
-      abstract-logging: 2.0.1
-      avvio: 8.2.1
-      fast-content-type-parse: 1.0.0
-      fast-json-stringify: 5.7.0
-      find-my-way: 7.6.2
-      light-my-request: 5.10.0
-      pino: 8.14.1
-      process-warning: 2.2.0
-      proxy-addr: 2.0.7
-      rfdc: 1.3.0
-      secure-json-parse: 2.7.0
-      semver: 7.5.4
-      tiny-lru: 11.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /fastify@4.20.0:
