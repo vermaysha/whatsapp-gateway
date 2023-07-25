@@ -5,20 +5,23 @@ import {
   HttpCode,
   HttpStatus,
   Request,
-  UseGuards,
   Get,
   Response,
   Delete,
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { AuthGuard } from './auth.guard'
 import { SignInDto } from './auth.dto'
 import { Auth } from './auth.decorator'
+import { UsersService } from 'src/users/users.service'
+import { Users } from 'database'
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UsersService,
+  ) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login')
@@ -35,21 +38,34 @@ export class AuthController {
     )
 
     res.setCookie('access_token', token.access_token)
+    res.setCookie('uuid', token.user.id)
 
-    res.send(token)
+    res.send({
+      uuid: token.user.id,
+      username: token.user.username,
+    })
   }
 
   @Auth()
   @Get('profile')
   /**
-   * Retrieves the user profile.
+   * Retrieves the profile of a user.
    *
-   * @param {FastifyRequest & { user: Users | null }} req - The request object containing the user information.
-   * @param {FastifyReply} res - The response object used to send the user profile.
-   * @return {void} The user profile is sent as the response.
+   * @param {FastifyRequest} req - The request object.
+   * @param {FastifyReply} res - The response object.
+   * @return {void} The user profile.
    */
-  getProfile(@Request() req: FastifyRequest, @Response() res: FastifyReply) {
-    res.send(req.user)
+  async getProfile(
+    @Request() req: FastifyRequest,
+    @Response() res: FastifyReply,
+  ) {
+    const user: Partial<Users | null> = await this.userService.findOne(
+      req.user?.username ?? '',
+    )
+
+    delete user?.['password']
+
+    res.send(user)
   }
 
   @Auth()
