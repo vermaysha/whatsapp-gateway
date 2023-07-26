@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpException,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -42,7 +43,13 @@ export class DevicesController {
    * @return {Promise<void>} - A promise that resolves when the device details are sent.
    */
   async detail(@Param() params: DetailDto, @Response() res: FastifyReply) {
-    res.send(await this.deviceService.findOne(params.id))
+    const data = await this.deviceService.findOne(params.id)
+
+    if (!data) {
+      throw new NotFoundException('Device not found')
+    }
+
+    res.send(data)
   }
 
   @Put('/:id')
