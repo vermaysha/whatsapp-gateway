@@ -23,7 +23,7 @@ model Users {
   password String
 
   updatedAt DateTime    @updatedAt
-  apiToken   ApiTokens[]
+  apiToken  ApiTokens[]
 }
 
 model ApiTokens {
@@ -47,9 +47,9 @@ model Contacts {
   avatar       String?
 
   updatedAt DateTime   @updatedAt
-  device     Devices[]
-  messages   Messages[]
-  chats      Chats[]
+  device    Devices[]
+  messages  Messages[]
+  chats     Chats[]
 }
 
 type Participant {
@@ -91,7 +91,24 @@ type Reaction {
   groupingKey       String?
   text              String?
   unread            Boolean?
-  senderTimestampMs Int?
+  senderTimestampMs DateTime? @db.Timestamp
+}
+
+type DeviceListMetadata {
+  senderKeyHash       Bytes?
+  senderTimestamp     DateTime? @db.Timestamp
+  senderKeyIndexes    Int[]
+  recipientKeyHash    Bytes?
+  recipientTimestamp  DateTime? @db.Timestamp
+  recipientKeyIndexes Int[]
+}
+
+type MessageContextInfo {
+  deviceListMetadata         DeviceListMetadata?
+  deviceListMetadataVersion  Int?
+  messageSecret              Bytes?
+  paddingBytes               Bytes?
+  messageAddOnDurationInSecs Int?
 }
 
 model Messages {
@@ -114,11 +131,16 @@ model Messages {
   pushName               String?
   status                 Int?
   reactions              Reaction[]
-  revokeMessageTimestamp Int?
-  updatedAt             DateTime   @updatedAt
+  revokeMessageTimestamp DateTime?  @db.Timestamp
+  messageTimestamp       DateTime?  @db.Timestamp
+  updatedAt              DateTime?  @updatedAt
   contactsId             String?    @db.ObjectId
   chats                  Chats?     @relation(fields: [chatsId], references: [id])
   chatsId                String?    @db.ObjectId
+  viewOnce               Boolean    @default(false)
+  broadcast              Boolean    @default(false)
+
+  messageContextInfo MessageContextInfo
 
   @@unique([keyId, remoteJid])
 }
@@ -133,17 +155,17 @@ model Devices {
   qr     String?
   status String?
 
-  startedAt  DateTime?
-  stoppedAt  DateTime?
+  startedAt DateTime?
+  stoppedAt DateTime?
   updatedAt DateTime  @updatedAt
-  logs       Logs[]
+  logs      Logs[]
 }
 
 model Sessions {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  deviceId   String   @db.ObjectId
-  creds      String
-  data       String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  deviceId  String   @db.ObjectId
+  creds     String
+  data      String
   updatedAt DateTime @updatedAt
 
   @@unique([deviceId, creds])
