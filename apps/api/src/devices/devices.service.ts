@@ -31,6 +31,9 @@ export class DevicesService {
       orderBy: {
         id: 'desc',
       },
+      include: {
+        owner: true,
+      },
     })
 
     return {
@@ -63,6 +66,10 @@ export class DevicesService {
     return prisma.devices.findUnique({
       where: {
         id,
+      },
+      include: {
+        owner: true,
+        logs: true,
       },
     })
   }
