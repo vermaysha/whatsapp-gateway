@@ -1,6 +1,7 @@
-import type { WASocket } from '@whiskeysockets/baileys'
+import type { Contact, WASocket } from '@whiskeysockets/baileys'
 import type { Prisma } from 'database'
 import type { Boom } from '@hapi/boom'
+import { upsertContact } from './event'
 
 export class Whatapp {
   public socket: WASocket | null = null
@@ -11,18 +12,41 @@ export class Whatapp {
    * @param {string} deviceId - The ID of the device.
    */
   async start(deviceId: string) {
-    if (this.socket !== null) {
+    const { prisma } = await import('database')
+    const { sendMessage } = await import('../worker/worker.helper')
+    const { makeWASocket, DisconnectReason, jidNormalizedUser } = await import(
+      '@whiskeysockets/baileys'
+    )
+    const { listenWhatsappEvent } = await import('./whatsapp.event')
+    const { useMongoDBAuthState } = await import('./whatsapp.storage')
+
+    try {
+      await prisma.$connect()
+    } catch (error) {
+      sendMessage({
+        status: false,
+        command: 'DB_CONNECTION_ERROR',
+        data: error,
+        message: 'Failed to connect to database',
+      })
+      console.error('Failed to connect to database', error)
+      process.exit(1)
+    }
+
+    const device = await prisma?.devices.findUnique({
+      where: {
+        id: deviceId,
+      },
+    })
+
+    if (!device) {
+      console.error('Device doesnt exist')
       return
     }
 
-    const {
-      default: makeWASocket,
-      Browsers,
-      DisconnectReason,
-    } = await import('@whiskeysockets/baileys')
-    const { sendMessage } = await import('../worker/worker.helper')
-    const { listenWhatsappEvent } = await import('./whatsapp.event')
-    const { useMongoDBAuthState } = await import('./whatsapp.storage')
+    if (this.socket !== null) {
+      return
+    }
 
     /**
      * Updates a device in the database.
@@ -33,8 +57,6 @@ export class Whatapp {
     const updateDevice = async (
       data: Prisma.DevicesUpdateInput,
     ): Promise<void> => {
-      const { prisma } = await import('database')
-
       try {
         await prisma.devices.update({
           where: {
@@ -55,9 +77,43 @@ export class Whatapp {
 
     const sock = makeWASocket({
       auth: state,
-      browser: Browsers.ubuntu('Google Chrome'),
+      browser: ['Windows', 'Browser', '10.0.22621'],
       printQRInTerminal: true,
+      generateHighQualityLinkPreview: true,
+      markOnlineOnConnect: true,
+      options: {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+        },
+      },
     })
+
+    const updateDeviceContact = async (user: Contact) => {
+      try {
+        const jid = jidNormalizedUser(user.id)
+
+        await upsertContact(
+          {
+            id: jid,
+            name: user.name,
+            verifiedName: user.verifiedName,
+            notify: user.notify,
+          },
+          sock,
+        )
+
+        await updateDevice({
+          owner: {
+            connect: {
+              jid,
+            },
+          },
+        })
+      } catch (e) {
+        // silent is gold
+      }
+    }
 
     sock.ev.on('connection.update', async (update) => {
       const { connection, lastDisconnect, qr } = update
@@ -104,10 +160,13 @@ export class Whatapp {
             stoppedAt: new Date(),
           })
         }
-        return
+        process.exit(1)
       }
 
       if (connection === 'open') {
+        if (sock.user?.id) {
+          updateDeviceContact(sock.user)
+        }
         this.socket = sock
       }
     })
