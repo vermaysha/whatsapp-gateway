@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { fork, type ChildProcess } from 'child_process'
-import { DevicesService } from 'src/devices/devices.service'
 import { LogsService } from 'src/logs/logs.service'
 import { InputCommand, OutputCommand, OutputMessage } from 'whatsapp'
 
