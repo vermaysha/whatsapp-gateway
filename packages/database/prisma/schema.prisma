@@ -1,5 +1,5 @@
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -12,181 +12,157 @@ enum Gender {
   female
 }
 
-model Users {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+model ApiToken {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
+  name        String
+  token       String    @unique
+  description String?
+  expiredAt   DateTime? @db.Timestamptz()
+  createdAt   DateTime? @default(now()) @db.Timestamptz()
+  updatedAt   DateTime? @updatedAt @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid
   firstName String
   lastName  String?
   gender    Gender?
   avatar    String?
+  username  String   @unique
+  password  String
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime @default(now()) @db.Timestamptz()
 
-  username String @unique
-  password String
-
-  updatedAt DateTime    @updatedAt
-  apiToken  ApiTokens[]
+  apiTokens ApiToken[]
 }
 
-model ApiTokens {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  usersId     String    @db.ObjectId
-  name        String
-  token       String
-  description String?
-  expiredAt   DateTime?
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  deviceId  String   @db.Uuid
+  name      String
+  data      String   @db.Text
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime @default(now()) @db.Timestamptz()
 
-  user Users @relation(fields: [usersId], references: [id])
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@unique([deviceId, name])
 }
 
-model Contacts {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
-  jid          String  @unique
+model Logs {
+  id        String   @id @default(uuid()) @db.Uuid
+  deviceId  String   @db.Uuid
+  level     Int
+  time      DateTime
+  pid       Int
+  hostname  String
+  class     String
+  node      Json?    @db.JsonB
+  msg       String
+  trace     String?
+  meta      Json?    @db.JsonB
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime @default(now()) @db.Timestamptz()
+
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+}
+
+model Device {
+  id        String  @id @default(uuid()) @db.Uuid
+  contactId String? @db.Uuid
+  name      String
+  qr        String?
+  status    String?
+
+  startedAt DateTime? @db.Timestamptz()
+  stoppedAt DateTime? @db.Timestamptz()
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+
+  owner    Contact?  @relation("ownDevice", fields: [contactId], references: [id], onDelete: Cascade)
+  contacts Contact[] @relation("devices")
+  sessions Session[]
+  logs     Logs[]
+  chats    Chat[]
+}
+
+model Contact {
+  id           String   @id @default(uuid()) @db.Uuid
+  jid          String   @unique
+  deviceId     String   @db.Uuid
   name         String?
   notify       String?
   status       String?
   verifiedName String?
   avatar       String?
+  updatedAt    DateTime @updatedAt @db.Timestamptz()
+  createdAt    DateTime @default(now()) @db.Timestamptz()
 
-  updatedAt DateTime   @updatedAt
-  device    Devices[]
-  messages  Messages[]
-  chats     Chats[]
+  chats     Chat[]
+  messages  Message[]
+  devices   Device    @relation("devices", fields: [deviceId], references: [id], onDelete: Cascade)
+  ownDevice Device[]  @relation("ownDevice")
 }
 
-type Participant {
-  jid  String
-  rank Int?
-}
+model Chat {
+  id        String @id @default(uuid()) @db.Uuid
+  contactId String @db.Uuid
+  deviceId  String @db.Uuid
 
-model Chats {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  jid         String    @unique
-  newJid      String?
-  oldJid      String?
-  pnJid       String?
+  jid         String  @unique
   displayName String?
   name        String?
-  pHash       String?
-  contact     Contacts? @relation(fields: [contactsId], references: [id])
-
-  contactsId  String? @db.ObjectId
-  createdAt   Int?
-  createdBy   String?
   description String?
 
-  readOnly   Boolean?
-  support    Boolean?
-  shareOwnPn Boolean?
-  suspended  Boolean?
-  terminated Boolean?
+  readOnly   Boolean? @default(false) @db.Boolean
+  support    Boolean? @default(false) @db.Boolean
+  shareOwnPn Boolean? @default(false) @db.Boolean
+  suspended  Boolean? @default(false) @db.Boolean
+  terminated Boolean? @default(false) @db.Boolean
 
-  unreadCount        Int?
-  unreadMentionCount Int?
+  unreadCount        Int? @default(0)
+  unreadMentionCount Int? @default(0)
 
-  participant Participant[]
+  createdBy String?
+  createdAt DateTime @default(now()) @db.Timestamptz()
+  updatedAt DateTime @updatedAt
 
-  messages Messages[]
+  contact  Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  device   Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  messages Message[]
 }
 
-type Reaction {
-  groupingKey       String?
-  text              String?
-  unread            Boolean?
-  senderTimestampMs DateTime? @db.Timestamp
-}
-
-type DeviceListMetadata {
-  senderKeyHash       Bytes?
-  senderTimestamp     DateTime? @db.Timestamp
-  senderKeyIndexes    Int[]
-  recipientKeyHash    Bytes?
-  recipientTimestamp  DateTime? @db.Timestamp
-  recipientKeyIndexes Int[]
-}
-
-type MessageContextInfo {
-  deviceListMetadata         DeviceListMetadata?
-  deviceListMetadataVersion  Int?
-  messageSecret              Bytes?
-  paddingBytes               Bytes?
-  messageAddOnDurationInSecs Int?
-}
-
-model Messages {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+model Message {
+  id        String @id @default(uuid()) @db.Uuid
+  contactId String @db.Uuid
+  chatId    String @db.Uuid
 
   keyId     String
   remoteJid String
-  fromMe    Boolean?
-  type      String?
-  contact   Contacts? @relation(fields: [contactsId], references: [id])
+  fromMe    Boolean @default(false) @db.Boolean
+  type      String
 
   title     String?
   text      String?
   media     String?
   mediaType String?
 
-  mediaCiphertextSha256  Bytes?
-  messageSecret          Bytes?
   stubType               Int?
-  pushName               String?
   status                 Int?
-  reactions              Reaction[]
-  revokeMessageTimestamp DateTime?  @db.Timestamp
-  messageTimestamp       DateTime?  @db.Timestamp
-  updatedAt              DateTime?  @updatedAt
-  contactsId             String?    @db.ObjectId
-  chats                  Chats?     @relation(fields: [chatsId], references: [id])
-  chatsId                String?    @db.ObjectId
-  viewOnce               Boolean    @default(false)
-  broadcast              Boolean    @default(false)
+  revokeMessageTimestamp DateTime? @db.Timestamptz()
+  messageTimestamp       DateTime? @db.Timestamptz()
+  viewOnce               Boolean   @default(false) @db.Boolean
+  broadcast              Boolean   @default(false) @db.Boolean
+  messageContextInfo     Json      @db.JsonB
 
-  messageContextInfo MessageContextInfo
+  updatedAt DateTime? @updatedAt @db.Timestamptz()
+  createdAt DateTime? @default(now()) @db.Timestamptz()
+
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  chat    Chat    @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
   @@unique([keyId, remoteJid])
-}
-
-model Devices {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  owner     Contacts? @relation(fields: [contactId], references: [id])
-  contactId String?   @db.ObjectId
-
-  // Devices dynamic data
-  qr     String?
-  status String?
-
-  startedAt DateTime?
-  stoppedAt DateTime?
-  updatedAt DateTime  @updatedAt
-  logs      Logs[]
-}
-
-model Sessions {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  deviceId  String   @db.ObjectId
-  creds     String
-  data      String
-  updatedAt DateTime @updatedAt
-
-  @@unique([deviceId, creds])
-}
-
-model Logs {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  device   Devices @relation(fields: [deviceId], references: [id])
-  deviceId String  @db.ObjectId
-
-  //
-  level    Int
-  time     DateTime
-  pid      Int
-  hostname String
-  class    String
-  node     Json?
-  msg      String
-  trace    String?
-  meta     Json?
-
-  //
-  updatedAt DateTime @updatedAt
 }

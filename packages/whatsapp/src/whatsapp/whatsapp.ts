@@ -5,6 +5,7 @@ import { upsertContact } from './event'
 
 export class Whatapp {
   public socket: WASocket | null = null
+  public deviceId: string | null = null
 
   /**
    * Asynchronously starts the function.
@@ -12,6 +13,7 @@ export class Whatapp {
    * @param {string} deviceId - The ID of the device.
    */
   async start(deviceId: string) {
+    this.deviceId = deviceId
     const { prisma } = await import('database')
     const { sendMessage } = await import('../worker/worker.helper')
     const { makeWASocket, DisconnectReason, jidNormalizedUser } = await import(
@@ -33,7 +35,7 @@ export class Whatapp {
       process.exit(1)
     }
 
-    const device = await prisma?.devices.findUnique({
+    const device = await prisma?.device.findUnique({
       where: {
         id: deviceId,
       },
@@ -51,14 +53,14 @@ export class Whatapp {
     /**
      * Updates a device in the database.
      *
-     * @param {Prisma.DevicesUpdateInput} data - The updated data for the device.
+     * @param {Prisma.DeviceUpdateInput} data - The updated data for the device.
      * @return {Promise<void>} A promise that resolves to the updated device.
      */
     const updateDevice = async (
-      data: Prisma.DevicesUpdateInput,
+      data: Prisma.DeviceUpdateInput,
     ): Promise<void> => {
       try {
-        await prisma.devices.update({
+        await prisma.device.update({
           where: {
             id: deviceId,
           },
@@ -89,6 +91,11 @@ export class Whatapp {
       },
     })
 
+    /**
+     * Updates the device contact information for a given user.
+     *
+     * @param {Contact} user - The contact information of the user.
+     */
     const updateDeviceContact = async (user: Contact) => {
       try {
         const jid = jidNormalizedUser(user.id)
@@ -101,6 +108,7 @@ export class Whatapp {
             notify: user.notify,
           },
           sock,
+          deviceId,
         )
 
         await updateDevice({
@@ -174,7 +182,7 @@ export class Whatapp {
     sock.ev.on('creds.update', saveCreds)
 
     // Listen another events
-    listenWhatsappEvent(sock)
+    listenWhatsappEvent(sock, deviceId)
   }
 
   /**
@@ -201,6 +209,7 @@ export class Whatapp {
     )
 
     this.socket = null
+    this.deviceId = null
   }
 
   /**
@@ -212,6 +221,7 @@ export class Whatapp {
     await this.socket?.logout('Logged Out')
 
     this.socket = null
+    this.deviceId = null
   }
 }
 
