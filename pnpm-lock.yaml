@@ -45,8 +45,8 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0(@nestjs/common@10.1.1)
       '@nestjs/platform-fastify':
-        specifier: ^10.1.1
-        version: 10.1.1(@nestjs/common@10.1.1)(@nestjs/core@10.1.2)
+        specifier: ^10.1.2
+        version: 10.1.2(@nestjs/common@10.1.1)(@nestjs/core@10.1.2)
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -1852,8 +1852,8 @@ packages:
       jsonwebtoken: 9.0.0
     dev: false
 
-  /@nestjs/platform-fastify@10.1.1(@nestjs/common@10.1.1)(@nestjs/core@10.1.2):
-    resolution: {integrity: sha512-YwtYd5o+P5bfmev7mHnnRtYOkEqlTQfdWMpIZo2qqkSK1Ezc9qTASD5G2u3GXL5+fsHFFaTRzXw0J6gbNHwmqQ==}
+  /@nestjs/platform-fastify@10.1.2(@nestjs/common@10.1.1)(@nestjs/core@10.1.2):
+    resolution: {integrity: sha512-/bm8WQtSNHXdoX4yEFjCj7O75h/bwxyHG6v8InIf7B7/B91D+KtYHAkrDNvZmd1zQAe3VMCXgGHErDxu2X/q2g==}
     peerDependencies:
       '@fastify/static': ^6.0.0
       '@fastify/view': ^7.0.0 || ^8.0.0
@@ -1873,7 +1873,7 @@ packages:
       fastify: 4.20.0
       light-my-request: 5.10.0
       path-to-regexp: 3.2.0
-      tslib: 2.6.0
+      tslib: 2.6.1
     transitivePeerDependencies:
       - supports-color
     dev: false
@@ -7760,7 +7760,7 @@ packages:
   /rxjs@7.8.1:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
     dependencies:
-      tslib: 2.6.0
+      tslib: 2.6.1
 
   /safe-array-concat@1.0.0:
     resolution: {integrity: sha512-9dVEFruWIsnie89yym+xWTAYASdpw3CJV7Li/6zBewGf9z2i1j31rP6jnY0pHEO4QZh6N0K11bFjWmdR8UGdPQ==}
