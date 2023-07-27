@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from "react"
 import { IDevices } from "./interface"
 import Loading from "@/components/Loading"
 import { AuthContext } from "@/contexts/AuthContext"
+import { formatPhoneNumber } from "@/lib/formatPhoneNumber"
 
 const fetchData = async () => {
   const res = await request("/devices", { method: "get" })
@@ -145,8 +146,8 @@ export default function Device() {
                           <div className="avatar online">
                             <div className="mask mask-squircle w-10 h-10">
                               <Image
-                                src="/Edge_Logo_2019.svg"
-                                alt="Microsft Edge"
+                                src={device.owner.avatar}
+                                alt={device.owner.name}
                                 width={40}
                                 height={40}
                               />
@@ -155,12 +156,14 @@ export default function Device() {
                           <div>
                             <div className="font-bold">{device.name}</div>
                             <div className="text-sm opacity-50">
-                              {device.name}
+                              {device.owner.name ||
+                                device.owner.notify ||
+                                device.owner.verifiedName}
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td>{123456789}</td>
+                      <td>{formatPhoneNumber(device.owner.jid)}</td>
                       <td>
                         <span className="badge badge-ghost badge-md">
                           Desktop

@@ -1,8 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common'
-import { prisma, type Messages, Prisma } from 'database'
+import { prisma, type Message, Prisma } from 'database'
 
 export interface PaginatedMessage {
-  data: Messages[]
+  data: Message[]
   pagination: {
     perPage: number
     page: number
@@ -25,7 +25,7 @@ export class MessagesService {
     const totalCount = await this.count()
     const totalPages = Math.ceil(totalCount / perPage)
 
-    const data = await prisma.messages.findMany({
+    const data = await prisma.message.findMany({
       skip: skipAmount,
       take: perPage,
       orderBy: {
@@ -45,22 +45,22 @@ export class MessagesService {
   }
 
   /**
-   * Counts the number of messages.
+   * Counts the number of message.
    *
-   * @return {Promise<number>} The number of messages.
+   * @return {Promise<number>} The number of message.
    */
   async count(): Promise<number> {
-    return prisma.messages.count()
+    return prisma.message.count()
   }
 
   /**
    * Retrieves a single message by its ID.
    *
    * @param {string} id - The ID of the message to retrieve.
-   * @return {Promise<Messages | null>} A promise that resolves to the retrieved message, or null if no message is found.
+   * @return {Promise<Message | null>} A promise that resolves to the retrieved message, or null if no message is found.
    */
-  async findOne(id: string): Promise<Messages | null> {
-    return prisma.messages.findUnique({
+  async findOne(id: string): Promise<Message | null> {
+    return prisma.message.findUnique({
       where: {
         id,
       },
@@ -71,18 +71,18 @@ export class MessagesService {
    * Updates a message by its ID.
    *
    * @param {string} id - The ID of the message to be updated.
-   * @param {Prisma.MessagesUpdateInput} message - The updated message object.
-   * @return {Promise<Messages>} The updated message.
+   * @param {Prisma.MessageUpdateInput} message - The updated message object.
+   * @return {Promise<Message>} The updated message.
    */
   async update(
     id: string,
-    message: Prisma.MessagesUpdateInput,
-  ): Promise<Messages> {
+    message: Prisma.MessageUpdateInput,
+  ): Promise<Message> {
     if (!(await this.findOne(id))) {
       throw new HttpException('Message not found', 404)
     }
 
-    return prisma.messages.update({
+    return prisma.message.update({
       where: {
         id,
       },

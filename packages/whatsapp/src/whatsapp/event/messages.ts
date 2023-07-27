@@ -24,10 +24,12 @@ import { upsertContact } from './contacts'
  *
  * @param {MessageUpsertEventType} messages - The event containing the messages to upsert.
  * @param {WASocket} sock - The WebSocket connection.
+ * @param {string} deviceId - The ID of the device.
  */
 export async function messageUpsertEvent(
   messages: MessageUpsertEventType,
   sock: WASocket,
+  deviceId: string,
 ) {
   if (!sock.user?.id) {
     return
@@ -101,6 +103,31 @@ export async function messageUpsertEvent(
         break
     }
 
+    const messageContextInfo = {
+      deviceListMetadataVersion:
+        msg.messageContextInfo?.deviceListMetadataVersion,
+      deviceListMetadata: {
+        recipientKeyHash: convert2Buffer(
+          msg.messageContextInfo?.deviceListMetadata?.recipientKeyHash,
+        ),
+        recipientKeyIndexes:
+          msg.messageContextInfo?.deviceListMetadata?.recipientKeyIndexes ?? [],
+        recipientTimestamp: convert2Timestamp(
+          msg.messageContextInfo?.deviceListMetadata?.recipientTimestamp,
+        ),
+        senderKeyHash: convert2Buffer(
+          msg.messageContextInfo?.deviceListMetadata?.senderKeyHash,
+        ),
+        senderKeyIndexes:
+          msg.messageContextInfo?.deviceListMetadata?.senderKeyIndexes ?? [],
+        senderTimestamp: convert2Timestamp(
+          msg.messageContextInfo?.deviceListMetadata?.senderTimestamp,
+        ),
+      },
+      messageSecret: convert2Buffer(msg.messageContextInfo?.messageSecret),
+      paddingBytes: convert2Buffer(msg.messageContextInfo?.paddingBytes),
+    }
+
     try {
       await upsertContact(
         {
@@ -109,8 +136,9 @@ export async function messageUpsertEvent(
           verifiedName: m.verifiedBizName ?? undefined,
         },
         sock,
+        deviceId,
       )
-      await prisma.messages.create({
+      await prisma.message.create({
         data: {
           keyId: m.key.id,
           remoteJid: jid,
@@ -119,7 +147,7 @@ export async function messageUpsertEvent(
               jid,
             },
           },
-          chats: {
+          chat: {
             connectOrCreate: {
               where: {
                 jid,
@@ -130,6 +158,11 @@ export async function messageUpsertEvent(
                 contact: {
                   connect: {
                     jid,
+                  },
+                },
+                device: {
+                  connect: {
+                    id: deviceId,
                   },
                 },
               },
@@ -143,49 +176,11 @@ export async function messageUpsertEvent(
           type,
           viewOnce,
           broadcast: m.broadcast ?? false,
-          fromMe: m.key.fromMe,
           stubType: m.messageStubType,
-          mediaCiphertextSha256: convert2Buffer(m.mediaCiphertextSha256),
-          messageSecret: convert2Buffer(m.messageSecret),
           status: m.status === undefined && type !== undefined ? 3 : m.status,
-          reactions: m.reactions?.map((react) => {
-            return {
-              text: react.text,
-              unread: react.unread,
-              groupingKey: react.groupingKey,
-              senderTimestampMs: convert2Timestamp(react.senderTimestampMs, 1),
-            }
-          }),
           revokeMessageTimestamp: convert2Timestamp(m.revokeMessageTimestamp),
           messageTimestamp: convert2Timestamp(m.messageTimestamp),
-          messageContextInfo: {
-            deviceListMetadataVersion:
-              msg.messageContextInfo?.deviceListMetadataVersion,
-            deviceListMetadata: {
-              recipientKeyHash: convert2Buffer(
-                msg.messageContextInfo?.deviceListMetadata?.recipientKeyHash,
-              ),
-              recipientKeyIndexes:
-                msg.messageContextInfo?.deviceListMetadata
-                  ?.recipientKeyIndexes ?? [],
-              recipientTimestamp: convert2Timestamp(
-                msg.messageContextInfo?.deviceListMetadata?.recipientTimestamp,
-              ),
-              senderKeyHash: convert2Buffer(
-                msg.messageContextInfo?.deviceListMetadata?.senderKeyHash,
-              ),
-              senderKeyIndexes:
-                msg.messageContextInfo?.deviceListMetadata?.senderKeyIndexes ??
-                [],
-              senderTimestamp: convert2Timestamp(
-                msg.messageContextInfo?.deviceListMetadata?.senderTimestamp,
-              ),
-            },
-            messageSecret: convert2Buffer(
-              msg.messageContextInfo?.messageSecret,
-            ),
-            paddingBytes: convert2Buffer(msg.messageContextInfo?.paddingBytes),
-          },
+          messageContextInfo: messageContextInfo as Prisma.JsonObject,
         },
       })
     } catch (error) {}
@@ -212,7 +207,7 @@ export async function messageUpdateEvent(
     const m = msg.update
 
     try {
-      await prisma.messages.update({
+      await prisma.message.update({
         where: {
           keyId_remoteJid: {
             keyId: msg.key.id,
@@ -221,20 +216,23 @@ export async function messageUpdateEvent(
         },
         data: {
           stubType: m.messageStubType,
-          mediaCiphertextSha256: convert2Buffer(m.mediaCiphertextSha256),
-          messageSecret: convert2Buffer(m.messageSecret),
           status: m.status,
-          reactions: m.reactions?.map((react) => {
-            return {
-              text: react.text,
-              unread: react.unread,
-              groupingKey: react.groupingKey,
-              senderTimestampMs: convert2Timestamp(react.senderTimestampMs),
-            }
-          }),
           revokeMessageTimestamp: convert2Timestamp(m.revokeMessageTimestamp),
         },
       })
+
+      if (m.status === 4) {
+        await prisma.chat.update({
+          where: {
+            jid,
+          },
+          data: {
+            unreadCount: {
+              decrement: 1,
+            },
+          },
+        })
+      }
     } catch (error) {}
 
     console.log('messageUpdateEvent', JSON.stringify({ m, msg, jid }))
@@ -260,26 +258,14 @@ export async function messageReactionEvent(
     }
 
     try {
-      await prisma.messages.update({
+      await prisma.message.update({
         where: {
           keyId_remoteJid: {
             keyId: data.key.id,
             remoteJid: jid,
           },
         },
-        data: {
-          reactions: [
-            {
-              groupingKey: data.reaction.groupingKey,
-              senderTimestampMs: convert2Timestamp(
-                data.reaction.senderTimestampMs,
-                1,
-              ),
-              text: data.reaction.text,
-              unread: data.reaction.unread,
-            },
-          ],
-        },
+        data: {},
       })
     } catch (error) {}
   }

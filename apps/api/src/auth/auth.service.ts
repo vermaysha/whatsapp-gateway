@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common'
 import { UsersService } from '../users/users.service'
 import { JwtService } from '@nestjs/jwt'
 import { verify } from 'hash'
-import type { Users } from 'database'
+import { User } from 'database'
 
 @Injectable()
 export class AuthService {
@@ -23,7 +23,7 @@ export class AuthService {
     pass: string,
   ): Promise<{
     access_token: string
-    user: Users
+    user: User
   }> {
     const user = await this.usersService.findOne(username)
 

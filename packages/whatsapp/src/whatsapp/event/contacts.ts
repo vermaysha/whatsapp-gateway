@@ -3,19 +3,23 @@ import { jidNormalizedUser } from '@whiskeysockets/baileys'
 import { prisma } from 'database'
 
 /**
- * Upserts a contact into the database.
+ * Upserts a contact in the database with the provided information.
  *
- * @param {Partial<Contact>} contact - The contact object to upsert.
- * @param {WASocket} sock - The WebSocket connection.
- * @return {Promise<void>} - A promise that resolves when the contact has been upserted.
+ * @param {Partial<Contact>} contact - The partial contact object to be upserted.
+ * @param {WASocket} sock - The WebSocket connection object.
+ * @param {string} deviceId - The ID of the device.
+ * @return {Promise<void>} - A promise that resolves when the contact is upserted successfully.
  */
 export async function upsertContact(
   contact: Partial<Contact>,
   sock: WASocket,
+  deviceId: string,
 ): Promise<void> {
   if (!contact.id) return
 
   const jid = jidNormalizedUser(contact.id)
+  delete contact.id
+
   let avatar = undefined
   let status = undefined
 
@@ -36,18 +40,23 @@ export async function upsertContact(
   }
 
   try {
-    await prisma.contacts.upsert({
+    await prisma.contact.upsert({
       where: {
         jid,
       },
       create: {
         jid,
+        devices: {
+          connect: {
+            id: deviceId,
+          },
+        },
         ...data,
       },
       update: data,
     })
   } catch (error) {
-    console.error(error)
+    console.error(error, data)
   }
 }
 
@@ -56,14 +65,16 @@ export async function upsertContact(
  *
  * @param {Partial<Contact>[]} contacts - The list of contacts to process.
  * @param {WASocket} sock - The WebSocket connection.
+ * @param {string} deviceId - The ID of the device.
  * @return {Promise<void>} - A promise that resolves when all contacts have been processed.
  */
 export async function contactEvent(
   contacts: Partial<Contact>[],
   sock: WASocket,
+  deviceId: string,
 ): Promise<void> {
   for (const contact of contacts) {
-    await upsertContact(contact, sock)
+    await upsertContact(contact, sock, deviceId)
 
     console.log('contactEvent', JSON.stringify({ contact }))
   }

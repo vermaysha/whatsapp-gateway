@@ -5,9 +5,9 @@ const prisma = new PrismaClient()
 
 async function main() {
   // Device seeders
-  await prisma.devices.upsert({
+  await prisma.device.upsert({
     where: {
-      id: '64b4b3616ab8705e17bc68a3',
+      id: 'cd605fd7-7d9a-4791-af32-11def9de2833',
     },
     create: {
       name: 'Default',
@@ -16,7 +16,7 @@ async function main() {
   })
 
   // Users Seeders
-  await prisma.users.upsert({
+  await prisma.user.upsert({
     where: {
       username: 'admin',
     },

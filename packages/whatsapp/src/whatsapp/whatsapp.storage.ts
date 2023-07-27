@@ -55,21 +55,21 @@ export async function useMongoDBAuthState(
    * Writes data to the database.
    *
    * @param {any} value - The data to be written.
-   * @param {string} creds - The credentials for database access.
+   * @param {string} name - The credentials name for database access.
    * @return {Promise<void>} - A promise that resolves when the data is written.
    */
-  const writeData = async (value: any, creds: string): Promise<void> => {
+  const writeData = async (value: any, name: string): Promise<void> => {
     const data = JSON.stringify(value, BufferJSON.replacer)
 
-    await prisma.sessions.upsert({
+    await prisma.session.upsert({
       where: {
-        deviceId_creds: {
+        deviceId_name: {
           deviceId,
-          creds,
+          name,
         },
       },
       create: {
-        creds,
+        name,
         deviceId,
         data,
       },
@@ -82,24 +82,24 @@ export async function useMongoDBAuthState(
   /**
    * Retrieves data from the database based on the given credentials.
    *
-   * @param {string} creds - The credentials used to authenticate the user.
+   * @param {string} name - The credentials used to authenticate the user.
    * @return {Promise<any>} - The parsed data retrieved from the database, or null if no data is found.
    */
-  const readData = async (creds: string): Promise<any> => {
-    const result = await prisma.sessions.findUnique({
+  const readData = async (name: string): Promise<any> => {
+    const result = await prisma.session.findUnique({
       select: {
         data: true,
       },
       where: {
-        deviceId_creds: {
+        deviceId_name: {
           deviceId,
-          creds,
+          name,
         },
       },
     })
 
     if (result?.data) {
-      return JSON.parse(result?.data, BufferJSON.reviver)
+      return JSON.parse(result.data, BufferJSON.reviver)
     }
 
     return null
@@ -108,15 +108,15 @@ export async function useMongoDBAuthState(
   /**
    * Removes data based on the given credentials.
    *
-   * @param {string} creds - The credentials to use for removal.
+   * @param {string} name - The credentials to use for removal.
    * @return {Promise<void>} A promise that resolves when the data is removed.
    */
-  const removeData = async (creds: string): Promise<void> => {
-    await prisma.sessions.delete({
+  const removeData = async (name: string): Promise<void> => {
+    await prisma.session.delete({
       where: {
-        deviceId_creds: {
+        deviceId_name: {
           deviceId,
-          creds,
+          name,
         },
       },
     })
@@ -128,7 +128,7 @@ export async function useMongoDBAuthState(
    * @return {Promise<void>} A promise that resolves when the data is cleared.
    */
   const clearData = async (): Promise<void> => {
-    await prisma.sessions.deleteMany({
+    await prisma.session.deleteMany({
       where: {
         deviceId,
       },
