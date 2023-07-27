@@ -14,7 +14,7 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { SignInDto } from './auth.dto'
 import { Auth } from './auth.decorator'
 import { UsersService } from 'src/users/users.service'
-import { Users } from 'database'
+import { User } from 'database'
 
 @Controller('auth')
 export class AuthController {
@@ -59,7 +59,7 @@ export class AuthController {
     @Request() req: FastifyRequest,
     @Response() res: FastifyReply,
   ) {
-    const user: Partial<Users | null> = await this.userService.findOne(
+    const user: Partial<User | null> = await this.userService.findOne(
       req.user?.username ?? '',
     )
 

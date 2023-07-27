@@ -1,8 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common'
-import { Devices, Prisma, prisma } from 'database'
+import { Device, Prisma, prisma } from 'database'
 
 export interface PaginatedDevice {
-  data: Devices[]
+  data: Device[]
   pagination: {
     perPage: number
     page: number
@@ -14,7 +14,7 @@ export interface PaginatedDevice {
 @Injectable()
 export class DevicesService {
   /**
-   * Retrieves a paginated list of devices.
+   * Retrieves a paginated list of device.
    *
    * @param {number} page - The page number to retrieve (default: 1).
    * @param {number} perPage - The number of devices per page (default: 10).
@@ -25,7 +25,7 @@ export class DevicesService {
     const totalCount = await this.count()
     const totalPages = Math.ceil(totalCount / perPage)
 
-    const data = await prisma.devices.findMany({
+    const data = await prisma.device.findMany({
       skip: skipAmount,
       take: perPage,
       orderBy: {
@@ -50,20 +50,20 @@ export class DevicesService {
   /**
    * Counts the number of devices in the database.
    *
-   * @return {Promise<number>} The number of devices.
+   * @return {Promise<number>} The number of device.
    */
   async count(): Promise<number> {
-    return prisma.devices.count()
+    return prisma.device.count()
   }
 
   /**
    * Retrieves a single device by its ID.
    *
    * @param {string} id - The ID of the device.
-   * @return {Promise<Devices | null>} A promise that resolves to the device object or null if not found.
+   * @return {Promise<Device | null>} A promise that resolves to the device object or null if not found.
    */
-  async findOne(id: string): Promise<Devices | null> {
-    return prisma.devices.findUnique({
+  async findOne(id: string): Promise<Device | null> {
+    return prisma.device.findUnique({
       where: {
         id,
       },
@@ -77,11 +77,11 @@ export class DevicesService {
   /**
    * Creates a new device record in the database.
    *
-   * @param {Devices} device - The device object to be created.
-   * @return {Promise<Devices>} - A promise that resolves to the created device object.
+   * @param {Device} device - The device object to be created.
+   * @return {Promise<Device>} - A promise that resolves to the created device object.
    */
-  async create(device: Prisma.DevicesCreateInput): Promise<Devices> {
-    return prisma.devices.create({
+  async create(device: Prisma.DeviceCreateInput): Promise<Device> {
+    return prisma.device.create({
       data: device,
     })
   }
@@ -90,18 +90,15 @@ export class DevicesService {
    * Updates a device with the specified ID.
    *
    * @param {string} id - The ID of the device to update.
-   * @param {Prisma.DevicesUpdateInput} device - The updated device data.
-   * @return {Promise<Devices>} - A promise that resolves to the updated device.
+   * @param {Prisma.DeviceUpdateInput} device - The updated device data.
+   * @return {Promise<Device>} - A promise that resolves to the updated device.
    */
-  async update(
-    id: string,
-    device: Prisma.DevicesUpdateInput,
-  ): Promise<Devices> {
+  async update(id: string, device: Prisma.DeviceUpdateInput): Promise<Device> {
     if (!(await this.findOne(id))) {
       throw new HttpException('Device not found', 404)
     }
 
-    return prisma.devices.update({
+    return prisma.device.update({
       where: {
         id,
       },
@@ -120,7 +117,7 @@ export class DevicesService {
       throw new HttpException('Device not found', 404)
     }
 
-    await prisma.devices.delete({
+    await prisma.device.delete({
       where: {
         id,
       },

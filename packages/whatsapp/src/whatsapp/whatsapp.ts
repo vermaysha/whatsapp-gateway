@@ -1,10 +1,12 @@
 import type { Contact, WASocket } from '@whiskeysockets/baileys'
-import type { Prisma } from 'database'
+import { prisma, type Prisma } from 'database'
 import type { Boom } from '@hapi/boom'
 import { upsertContact } from './event'
+import { sendMessage } from '../worker/worker.helper'
 
 export class Whatapp {
   public socket: WASocket | null = null
+  public deviceId: string | null = null
 
   /**
    * Asynchronously starts the function.
@@ -12,8 +14,7 @@ export class Whatapp {
    * @param {string} deviceId - The ID of the device.
    */
   async start(deviceId: string) {
-    const { prisma } = await import('database')
-    const { sendMessage } = await import('../worker/worker.helper')
+    this.deviceId = deviceId
     const { makeWASocket, DisconnectReason, jidNormalizedUser } = await import(
       '@whiskeysockets/baileys'
     )
@@ -29,11 +30,10 @@ export class Whatapp {
         data: error,
         message: 'Failed to connect to database',
       })
-      console.error('Failed to connect to database', error)
-      process.exit(1)
+      return
     }
 
-    const device = await prisma?.devices.findUnique({
+    const device = await prisma?.device.findUnique({
       where: {
         id: deviceId,
       },
@@ -51,14 +51,14 @@ export class Whatapp {
     /**
      * Updates a device in the database.
      *
-     * @param {Prisma.DevicesUpdateInput} data - The updated data for the device.
+     * @param {Prisma.DeviceUpdateInput} data - The updated data for the device.
      * @return {Promise<void>} A promise that resolves to the updated device.
      */
     const updateDevice = async (
-      data: Prisma.DevicesUpdateInput,
+      data: Prisma.DeviceUpdateInput,
     ): Promise<void> => {
       try {
-        await prisma.devices.update({
+        await prisma.device.update({
           where: {
             id: deviceId,
           },
@@ -89,6 +89,11 @@ export class Whatapp {
       },
     })
 
+    /**
+     * Updates the device contact information for a given user.
+     *
+     * @param {Contact} user - The contact information of the user.
+     */
     const updateDeviceContact = async (user: Contact) => {
       try {
         const jid = jidNormalizedUser(user.id)
@@ -101,6 +106,7 @@ export class Whatapp {
             notify: user.notify,
           },
           sock,
+          deviceId,
         )
 
         await updateDevice({
@@ -157,10 +163,16 @@ export class Whatapp {
           clearCreds()
         } else {
           await updateDevice({
+            status: 'closed',
             stoppedAt: new Date(),
           })
         }
-        process.exit(1)
+        sendMessage({
+          command: 'STOPPED',
+          status: true,
+          message: 'Service Stopped',
+        })
+        return
       }
 
       if (connection === 'open') {
@@ -174,7 +186,7 @@ export class Whatapp {
     sock.ev.on('creds.update', saveCreds)
 
     // Listen another events
-    listenWhatsappEvent(sock)
+    listenWhatsappEvent(sock, deviceId)
   }
 
   /**
@@ -200,7 +212,25 @@ export class Whatapp {
       }),
     )
 
-    this.socket = null
+    if (this.deviceId) {
+      try {
+        await prisma.device.update({
+          where: {
+            id: this.deviceId,
+          },
+          data: {
+            status: 'closed',
+            stoppedAt: new Date(),
+          },
+        })
+      } catch (e) {}
+    }
+
+    sendMessage({
+      command: 'STOPPED',
+      status: true,
+      message: 'Service Stopped',
+    })
   }
 
   /**
@@ -211,7 +241,25 @@ export class Whatapp {
   async logout(): Promise<void> {
     await this.socket?.logout('Logged Out')
 
-    this.socket = null
+    if (this.deviceId) {
+      try {
+        await prisma.device.update({
+          where: {
+            id: this.deviceId,
+          },
+          data: {
+            status: 'closed',
+            stoppedAt: new Date(),
+          },
+        })
+      } catch (e) {}
+    }
+
+    sendMessage({
+      command: 'STOPPED',
+      status: true,
+      message: 'Service Stopped',
+    })
   }
 }
 
