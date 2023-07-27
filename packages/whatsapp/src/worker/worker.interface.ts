@@ -11,6 +11,7 @@ export type OutputCommand =
   | 'CONNECTION_UPDATE'
   | 'MESSAGE_RECEIVED'
   | 'DB_CONNECTION_ERROR'
+  | 'STOPPED'
 
 export interface InputMessage {
   command: InputCommand

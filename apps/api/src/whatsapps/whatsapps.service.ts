@@ -82,12 +82,12 @@ export class WhatsappsService {
           meta,
         })
       } catch (error) {
-        Logger.warn(error.message)
+        Logger.warn(error.message, 'WhatsappsService', data.toString())
       }
     })
 
     child.stderr?.on('data', (data) => {
-      console.log(data.toString())
+      Logger.warn(data.toString(), 'WhatsappsService')
     })
 
     child.on('message', (message) => {
@@ -99,6 +99,17 @@ export class WhatsappsService {
 
       if (data.command === 'QR_RECEIVED' && meta) {
         meta.qr = data.data
+      }
+
+      if (data.command === 'STOPPED') {
+        child.kill()
+        this.workers.delete(id)
+      }
+      if (data.command === 'DB_CONNECTION_ERROR') {
+        child.kill()
+        this.workers.delete(id)
+
+        Logger.error('Database connection error', 'WhatsappsService')
       }
     })
 

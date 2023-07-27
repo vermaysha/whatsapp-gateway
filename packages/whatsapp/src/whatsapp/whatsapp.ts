@@ -1,7 +1,8 @@
 import type { Contact, WASocket } from '@whiskeysockets/baileys'
-import type { Prisma } from 'database'
+import { prisma, type Prisma } from 'database'
 import type { Boom } from '@hapi/boom'
 import { upsertContact } from './event'
+import { sendMessage } from '../worker/worker.helper'
 
 export class Whatapp {
   public socket: WASocket | null = null
@@ -14,8 +15,6 @@ export class Whatapp {
    */
   async start(deviceId: string) {
     this.deviceId = deviceId
-    const { prisma } = await import('database')
-    const { sendMessage } = await import('../worker/worker.helper')
     const { makeWASocket, DisconnectReason, jidNormalizedUser } = await import(
       '@whiskeysockets/baileys'
     )
@@ -31,8 +30,7 @@ export class Whatapp {
         data: error,
         message: 'Failed to connect to database',
       })
-      console.error('Failed to connect to database', error)
-      process.exit(1)
+      return
     }
 
     const device = await prisma?.device.findUnique({
@@ -165,10 +163,16 @@ export class Whatapp {
           clearCreds()
         } else {
           await updateDevice({
+            status: 'closed',
             stoppedAt: new Date(),
           })
         }
-        process.exit(1)
+        sendMessage({
+          command: 'STOPPED',
+          status: true,
+          message: 'Service Stopped',
+        })
+        return
       }
 
       if (connection === 'open') {
@@ -208,8 +212,25 @@ export class Whatapp {
       }),
     )
 
-    this.socket = null
-    this.deviceId = null
+    if (this.deviceId) {
+      try {
+        await prisma.device.update({
+          where: {
+            id: this.deviceId,
+          },
+          data: {
+            status: 'closed',
+            stoppedAt: new Date(),
+          },
+        })
+      } catch (e) {}
+    }
+
+    sendMessage({
+      command: 'STOPPED',
+      status: true,
+      message: 'Service Stopped',
+    })
   }
 
   /**
@@ -220,8 +241,25 @@ export class Whatapp {
   async logout(): Promise<void> {
     await this.socket?.logout('Logged Out')
 
-    this.socket = null
-    this.deviceId = null
+    if (this.deviceId) {
+      try {
+        await prisma.device.update({
+          where: {
+            id: this.deviceId,
+          },
+          data: {
+            status: 'closed',
+            stoppedAt: new Date(),
+          },
+        })
+      } catch (e) {}
+    }
+
+    sendMessage({
+      command: 'STOPPED',
+      status: true,
+      message: 'Service Stopped',
+    })
   }
 }
 
