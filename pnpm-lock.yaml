@@ -36,17 +36,17 @@ importers:
         specifier: ^8.3.0
         version: 8.3.0
       '@nestjs/common':
-        specifier: ^10.1.1
-        version: 10.1.1(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+        specifier: ^10.1.2
+        version: 10.1.2(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core':
         specifier: ^10.1.2
-        version: 10.1.2(@nestjs/common@10.1.1)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+        version: 10.1.2(@nestjs/common@10.1.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/jwt':
         specifier: ^10.1.0
-        version: 10.1.0(@nestjs/common@10.1.1)
+        version: 10.1.0(@nestjs/common@10.1.2)
       '@nestjs/platform-fastify':
         specifier: ^10.1.2
-        version: 10.1.2(@nestjs/common@10.1.1)(@nestjs/core@10.1.2)
+        version: 10.1.2(@nestjs/common@10.1.2)(@nestjs/core@10.1.2)
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -89,7 +89,7 @@ importers:
         version: 10.0.1(chokidar@3.5.3)(typescript@5.1.6)
       '@nestjs/testing':
         specifier: ^10.1.2
-        version: 10.1.2(@nestjs/common@10.1.1)(@nestjs/core@10.1.2)
+        version: 10.1.2(@nestjs/common@10.1.2)(@nestjs/core@10.1.2)
       '@types/express':
         specifier: ^4.17.17
         version: 4.17.17
@@ -1791,8 +1791,8 @@ packages:
       - webpack-cli
     dev: true
 
-  /@nestjs/common@10.1.1(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1):
-    resolution: {integrity: sha512-LfGBo32+C8H8Gy6U2nYs6oQbqBD9TUoHqNjkEpXdfxBqKgZvaSeXZ+heqI/h6TXfeM3gsYSj3X7M9jcyd0AyhA==}
+  /@nestjs/common@10.1.2(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1):
+    resolution: {integrity: sha512-VS8xJtaYkUJHeQSnskZccPdlzd2A+j4aeFMTTmUJaUpTHsYBwUt1wWuZgyZeaSIIs0i0TcHla5rpFzRV3ZJmnQ==}
     peerDependencies:
       class-transformer: '*'
       class-validator: '*'
@@ -1809,10 +1809,10 @@ packages:
       iterare: 1.2.1
       reflect-metadata: 0.1.13
       rxjs: 7.8.1
-      tslib: 2.6.0
+      tslib: 2.6.1
       uid: 2.0.2
 
-  /@nestjs/core@10.1.2(@nestjs/common@10.1.1)(reflect-metadata@0.1.13)(rxjs@7.8.1):
+  /@nestjs/core@10.1.2(@nestjs/common@10.1.2)(reflect-metadata@0.1.13)(rxjs@7.8.1):
     resolution: {integrity: sha512-iOs29A/cgz8Ou8tOAeVPKYcfFoEiYbIwUvbg0UFI6VIiauo/zGalp/14ok1OL6PotrUU3mRkb0ZWYShINlvqIA==}
     requiresBuild: true
     peerDependencies:
@@ -1830,7 +1830,7 @@ packages:
       '@nestjs/websockets':
         optional: true
     dependencies:
-      '@nestjs/common': 10.1.1(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/common': 10.1.2(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nuxtjs/opencollective': 0.3.2
       fast-safe-stringify: 2.1.1
       iterare: 1.2.1
@@ -1842,17 +1842,17 @@ packages:
     transitivePeerDependencies:
       - encoding
 
-  /@nestjs/jwt@10.1.0(@nestjs/common@10.1.1):
+  /@nestjs/jwt@10.1.0(@nestjs/common@10.1.2):
     resolution: {integrity: sha512-iLwCGS25ybUxGS7i5j/Mwuyzvp/WxJftHlm8aLEBv5GV92apz6L1QVjxLdZrqXbzo++C8gdJauhzil8qitY+6w==}
     peerDependencies:
       '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
     dependencies:
-      '@nestjs/common': 10.1.1(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/common': 10.1.2(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@types/jsonwebtoken': 9.0.2
       jsonwebtoken: 9.0.0
     dev: false
 
-  /@nestjs/platform-fastify@10.1.2(@nestjs/common@10.1.1)(@nestjs/core@10.1.2):
+  /@nestjs/platform-fastify@10.1.2(@nestjs/common@10.1.2)(@nestjs/core@10.1.2):
     resolution: {integrity: sha512-/bm8WQtSNHXdoX4yEFjCj7O75h/bwxyHG6v8InIf7B7/B91D+KtYHAkrDNvZmd1zQAe3VMCXgGHErDxu2X/q2g==}
     peerDependencies:
       '@fastify/static': ^6.0.0
@@ -1868,8 +1868,8 @@ packages:
       '@fastify/cors': 8.3.0
       '@fastify/formbody': 7.4.0
       '@fastify/middie': 8.3.0
-      '@nestjs/common': 10.1.1(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      '@nestjs/core': 10.1.2(@nestjs/common@10.1.1)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/common': 10.1.2(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/core': 10.1.2(@nestjs/common@10.1.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       fastify: 4.20.0
       light-my-request: 5.10.0
       path-to-regexp: 3.2.0
@@ -1893,7 +1893,7 @@ packages:
       - chokidar
     dev: true
 
-  /@nestjs/testing@10.1.2(@nestjs/common@10.1.1)(@nestjs/core@10.1.2):
+  /@nestjs/testing@10.1.2(@nestjs/common@10.1.2)(@nestjs/core@10.1.2):
     resolution: {integrity: sha512-047SBcHxHNj/u/YEBTShaM3ijqjp+I8gbBy/sO18tGI0lHBdQztC6zLfIHddrF3rS2/fBLkES+/kemhkVlkpwQ==}
     peerDependencies:
       '@nestjs/common': ^10.0.0
@@ -1906,8 +1906,8 @@ packages:
       '@nestjs/platform-express':
         optional: true
     dependencies:
-      '@nestjs/common': 10.1.1(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      '@nestjs/core': 10.1.2(@nestjs/common@10.1.1)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/common': 10.1.2(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/core': 10.1.2(@nestjs/common@10.1.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       tslib: 2.6.1
     dev: true
 
@@ -2756,7 +2756,7 @@ packages:
       cache-manager: 5.2.3
       futoin-hkdf: 1.5.2
       libphonenumber-js: 1.10.37
-      libsignal: git/github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
+      libsignal: git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
       link-preview-js: 3.0.4
       music-metadata: 7.13.4
       node-cache: 5.1.2
@@ -8605,9 +8605,6 @@ packages:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: false
 
-  /tslib@2.6.0:
-    resolution: {integrity: sha512-7At1WUettjcSRHXCyYtTselblcHl9PJFFVKiCAy/bY97+BPZXSQ2wbq0P9s8tK2G7dFQfNnlJnPAiArVBVBsfA==}
-
   /tslib@2.6.1:
     resolution: {integrity: sha512-t0hLfiEKfMUoqhG+U1oid7Pva4bbDPHYfJNiB7BiIjRkj1pyC++4N3huJfqY6aRH6VTB0rvtzQwjM4K6qpfOig==}
 
@@ -9164,7 +9161,7 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  git/github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
+  git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
     resolution: {commit: 11dbd962ea108187c79a7c46fe4d6f790e23da97, repo: git@github.com:adiwajshing/libsignal-node.git, type: git}
     name: libsignal
     version: 2.0.1
