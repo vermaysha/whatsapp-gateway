@@ -278,8 +278,8 @@ importers:
         specifier: ^2.1.35
         version: 2.1.35
       pino:
-        specifier: ^8.14.1
-        version: 8.14.1
+        specifier: ^8.14.2
+        version: 8.14.2
       rimraf:
         specifier: ^5.0.1
         version: 5.0.1
@@ -7133,6 +7133,23 @@ packages:
 
   /pino@8.14.1:
     resolution: {integrity: sha512-8LYNv7BKWXSfS+k6oEc6occy5La+q2sPwU3q2ljTX5AZk7v+5kND2o5W794FyRaqha6DJajmkNRsWtPpFyMUdw==}
+    hasBin: true
+    dependencies:
+      atomic-sleep: 1.0.0
+      fast-redact: 3.2.0
+      on-exit-leak-free: 2.1.0
+      pino-abstract-transport: 1.0.0
+      pino-std-serializers: 6.2.2
+      process-warning: 2.2.0
+      quick-format-unescaped: 4.0.4
+      real-require: 0.2.0
+      safe-stable-stringify: 2.4.3
+      sonic-boom: 3.3.0
+      thread-stream: 2.3.0
+    dev: false
+
+  /pino@8.14.2:
+    resolution: {integrity: sha512-zKu9aWeSWTy1JgvxIpZveJKKsAr4+6uNMZ0Vf0KRwzl/UNZA3XjHiIl/0WwqLMkDwuHuDkT5xAgPA2jpKq4whA==}
     hasBin: true
     dependencies:
       atomic-sleep: 1.0.0

@@ -35,7 +35,7 @@
     "ffmpeg": "^0.0.4",
     "link-preview-js": "^3.0.4",
     "mime-types": "^2.1.35",
-    "pino": "^8.14.1",
+    "pino": "^8.14.2",
     "rimraf": "^5.0.1",
     "sharp": "^0.32.4",
     "tsconfig": "workspace:^",
