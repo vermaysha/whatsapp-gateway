@@ -43,7 +43,7 @@ model Session {
   id        String   @id @default(uuid()) @db.Uuid
   deviceId  String   @db.Uuid
   name      String
-  data      String   @db.Text
+  data      Json     @db.JsonB
   updatedAt DateTime @updatedAt @db.Timestamptz()
   createdAt DateTime @default(now()) @db.Timestamptz()
 

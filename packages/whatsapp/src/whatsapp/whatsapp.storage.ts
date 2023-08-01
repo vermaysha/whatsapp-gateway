@@ -1,12 +1,11 @@
 import {
   type AuthenticationCreds,
   type AuthenticationState,
-  BufferJSON,
   type SignalDataTypeMap,
   initAuthCreds,
   proto,
 } from '@whiskeysockets/baileys'
-import { prisma } from 'database'
+import { Prisma, prisma } from 'database'
 import { sendMessage } from '../worker/worker.helper'
 
 /**
@@ -27,6 +26,70 @@ export interface IMongoDBAuthState {
    * Clears the credentials and returns a promise that resolves when the credentials are cleared successfully.
    */
   clearCreds: () => Promise<any>
+}
+
+/**
+ * Encodes the given object into a format suitable for transmission or storage.
+ *
+ * @param {any} obj - The object to encode.
+ * @return {any} The encoded object.
+ */
+function encodeBuffer(obj: any): any {
+  if (typeof obj !== 'object' || !obj) {
+    return obj
+  }
+
+  if (Buffer.isBuffer(obj) || obj instanceof Uint8Array) {
+    return {
+      type: 'Buffer',
+      data: Buffer.from(obj).toString('base64'),
+    }
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(encodeBuffer)
+  }
+
+  const newObj: any = {}
+  for (const key in obj) {
+    if (Object.hasOwnProperty.call(obj, key)) {
+      newObj[key] = encodeBuffer(obj[key])
+    }
+  }
+  return newObj
+}
+
+/**
+ * Decodes a buffer object or an array of buffer objects.
+ *
+ * @param {any} obj - The object to be decoded.
+ * @return {any} The decoded object.
+ */
+function decodeBuffer(obj: any): any {
+  if (
+    typeof obj !== 'object' ||
+    !obj ||
+    Buffer.isBuffer(obj) ||
+    obj instanceof Uint8Array
+  ) {
+    return obj
+  }
+
+  if (obj.type === 'Buffer') {
+    return Buffer.from(obj.data, 'base64')
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(decodeBuffer)
+  }
+
+  const newObj: any = {}
+  for (const key in obj) {
+    if (Object.hasOwnProperty.call(obj, key)) {
+      newObj[key] = decodeBuffer(obj[key])
+    }
+  }
+  return newObj
 }
 
 /**
@@ -59,7 +122,7 @@ export async function useMongoDBAuthState(
    * @return {Promise<void>} - A promise that resolves when the data is written.
    */
   const writeData = async (value: any, name: string): Promise<void> => {
-    const data = JSON.stringify(value, BufferJSON.replacer)
+    const data = encodeBuffer(value) as Prisma.InputJsonValue
 
     await prisma.session.upsert({
       where: {
@@ -99,7 +162,7 @@ export async function useMongoDBAuthState(
     })
 
     if (result?.data) {
-      return JSON.parse(result.data, BufferJSON.reviver)
+      return decodeBuffer(result.data)
     }
 
     return null
