@@ -19,7 +19,7 @@ export class Whatapp {
       '@whiskeysockets/baileys'
     )
     const { listenWhatsappEvent } = await import('./whatsapp.event')
-    const { useMongoDBAuthState } = await import('./whatsapp.storage')
+    const { useDBAuthState } = await import('./whatsapp.storage')
 
     try {
       await prisma.$connect()
@@ -67,7 +67,7 @@ export class Whatapp {
       } catch (e) {}
     }
 
-    const { state, saveCreds, clearCreds } = await useMongoDBAuthState(deviceId)
+    const { state, saveCreds, clearCreds } = await useDBAuthState(deviceId)
 
     await updateDevice({
       startedAt: new Date(),
