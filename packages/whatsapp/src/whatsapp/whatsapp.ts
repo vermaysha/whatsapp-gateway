@@ -1,8 +1,10 @@
-import type { Contact, WASocket } from '@whiskeysockets/baileys'
-import { prisma, type Prisma } from 'database'
+import { type Contact, type WASocket } from '@whiskeysockets/baileys'
 import type { Boom } from '@hapi/boom'
+import type { AxiosRequestConfig } from 'axios'
+import { prisma, type Prisma } from 'database'
 import { upsertContact } from './event'
 import { sendMessage } from '../worker/worker.helper'
+import pino from 'pino'
 
 export class Whatapp {
   public socket: WASocket | null = null
@@ -14,13 +16,6 @@ export class Whatapp {
    * @param {string} deviceId - The ID of the device.
    */
   async start(deviceId: string) {
-    this.deviceId = deviceId
-    const { makeWASocket, DisconnectReason, jidNormalizedUser } = await import(
-      '@whiskeysockets/baileys'
-    )
-    const { listenWhatsappEvent } = await import('./whatsapp.event')
-    const { useDBAuthState } = await import('./whatsapp.storage')
-
     try {
       await prisma.$connect()
     } catch (error) {
@@ -30,21 +25,6 @@ export class Whatapp {
         data: error,
         message: 'Failed to connect to database',
       })
-      return
-    }
-
-    const device = await prisma?.device.findUnique({
-      where: {
-        id: deviceId,
-      },
-    })
-
-    if (!device) {
-      console.error('Device doesnt exist')
-      return
-    }
-
-    if (this.socket !== null) {
       return
     }
 
@@ -67,26 +47,72 @@ export class Whatapp {
       } catch (e) {}
     }
 
+    const device = await prisma?.device.findUnique({
+      where: {
+        id: deviceId,
+      },
+    })
+
+    if (!device) {
+      sendMessage({
+        status: false,
+        command: 'DEVICE_NOT_FOUND',
+        data: { deviceId },
+      })
+      return
+    }
+
+    if (this.socket !== null) {
+      sendMessage({
+        status: true,
+        command: 'DEVICE_ALREADY_STARTED',
+        data: { deviceId },
+      })
+      return
+    }
+
+    this.deviceId = deviceId
+    const axiosConfig: AxiosRequestConfig = {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'en-US,en;q=0.9,id;q=0.8',
+        'Cache-Control': 'max-age=0',
+      },
+    }
+    const logger = pino({
+      name: device.name,
+      enabled: true,
+    })
+
+    const {
+      makeWASocket,
+      DisconnectReason,
+      jidNormalizedUser,
+      fetchLatestWaWebVersion,
+    } = await import('@whiskeysockets/baileys')
+    const { listenWhatsappEvent } = await import('./whatsapp.event')
+    const { useDBAuthState } = await import('./whatsapp.storage')
     const { state, saveCreds, clearCreds } = await useDBAuthState(deviceId)
+    const { version } = await fetchLatestWaWebVersion(axiosConfig)
 
     await updateDevice({
       startedAt: new Date(),
       status: 'connecting',
       qr: null,
     })
-
     const sock = makeWASocket({
+      version,
+      logger,
       auth: state,
-      browser: ['Windows', 'Browser', '10.0.22621'],
-      printQRInTerminal: true,
+      browser: ['Windows', 'Desktop', '10.0.22621'],
+      printQRInTerminal: process.env.NODE_ENV === 'development',
       generateHighQualityLinkPreview: true,
       markOnlineOnConnect: true,
-      options: {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
-        },
-      },
+      options: axiosConfig,
     })
 
     /**
