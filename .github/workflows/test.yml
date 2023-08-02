@@ -22,6 +22,11 @@ jobs:
         node-version: [18]
 
     steps:
+      - name: Force PNPM to use HTTPS instead of SSH
+        run: |
+          git config --global url."https://github.com/".insteadOf git@github.com:
+          git config --global url."https://".insteadOf git://
+
       - uses: actions/checkout@v3
         with:
           ssh-key: ${{ secrets.SSH_KEY }}
