@@ -3,6 +3,6 @@
   "dts": true,
   "entry": ["src/index.ts", "src/bin.ts"],
   "format": ["cjs"],
-  "minify": false,
+  "minify": true,
   "sourcemap": true
 }
