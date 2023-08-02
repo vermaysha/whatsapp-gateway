@@ -86,6 +86,7 @@ export class Whatapp {
     const logger = pino({
       name: device.name,
       enabled: true,
+      timestamp: () => `,"time":"${new Date().toJSON()}"`,
     })
 
     const {
