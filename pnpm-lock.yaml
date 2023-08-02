@@ -208,6 +208,9 @@ importers:
       '@types/node':
         specifier: ^20.4.5
         version: 20.4.5
+      dotenv-cli:
+        specifier: ^7.2.1
+        version: 7.2.1
       eslint:
         specifier: ^8.46.0
         version: 8.46.0
@@ -2786,7 +2789,7 @@ packages:
       cache-manager: 5.2.3
       futoin-hkdf: 1.5.2
       libphonenumber-js: 1.10.37
-      libsignal: git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
+      libsignal: github.com/adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
       link-preview-js: 3.0.4
       music-metadata: 7.13.4
       node-cache: 5.1.2
@@ -4078,10 +4081,24 @@ packages:
       is-obj: 2.0.0
     dev: true
 
+  /dotenv-cli@7.2.1:
+    resolution: {integrity: sha512-ODHbGTskqRtXAzZapDPvgNuDVQApu4oKX8lZW7Y0+9hKA6le1ZJlyRS687oU9FXjOVEDU/VFV6zI125HzhM1UQ==}
+    hasBin: true
+    dependencies:
+      cross-spawn: 7.0.3
+      dotenv: 16.3.1
+      dotenv-expand: 10.0.0
+      minimist: 1.2.8
+    dev: true
+
+  /dotenv-expand@10.0.0:
+    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
+    engines: {node: '>=12'}
+    dev: true
+
   /dotenv@16.3.1:
     resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
-    dev: false
 
   /duplexify@4.1.2:
     resolution: {integrity: sha512-fz3OjcNCHmRP12MJoZMPglx8m4rrFP8rovnk4vT8Fs+aonZoCwGg10dSsQsfP/E62eZcPTMSMP6686fu9Qlqtw==}
@@ -9327,8 +9344,8 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
-    resolution: {commit: 11dbd962ea108187c79a7c46fe4d6f790e23da97, repo: git@github.com:adiwajshing/libsignal-node.git, type: git}
+  github.com/adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
+    resolution: {tarball: https://codeload.github.com/adiwajshing/libsignal-node/tar.gz/11dbd962ea108187c79a7c46fe4d6f790e23da97}
     name: libsignal
     version: 2.0.1
     dependencies:

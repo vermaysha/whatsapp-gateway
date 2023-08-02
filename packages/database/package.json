@@ -11,10 +11,10 @@
   "scripts": {
     "build": "tsup",
     "clean": "rimraf .turbo node_modules dist",
-    "db:migrate:deploy": "prisma migrate deploy",
-    "db:migrate:dev": "prisma migrate dev",
-    "db:push": "prisma db push",
-    "db:seed": "tsx src/seed.ts",
+    "db:migrate:deploy": "dotenv -e .env.development -- prisma migrate deploy",
+    "db:migrate:dev": "dotenv -e .env.development -- prisma migrate dev",
+    "db:push": "dotenv -e .env.development -- prisma db push",
+    "db:seed": "dotenv -e .env.development -- tsx src/seed.ts",
     "dev": "tsup --watch",
     "format": "prisma format && prettier --write \"src/**/*.ts\"",
     "generate": "prisma generate",
@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.4.5",
+    "dotenv-cli": "^7.2.1",
     "eslint": "^8.46.0",
     "prettier": "^3.0.0",
     "prisma": "^5.1.0",
