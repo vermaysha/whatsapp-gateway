@@ -30,8 +30,8 @@ importers:
   apps/api:
     dependencies:
       '@fastify/cookie':
-        specifier: ^9.0.1
-        version: 9.0.1
+        specifier: ^9.0.4
+        version: 9.0.4
       '@fastify/cors':
         specifier: ^8.3.0
         version: 8.3.0
@@ -1394,8 +1394,8 @@ packages:
       fast-uri: 2.2.0
     dev: false
 
-  /@fastify/cookie@9.0.1:
-    resolution: {integrity: sha512-bLtWz5B2jouLnyarVN1wabLSEj39ILYXhES091IW+fkit2F0fLGd1CJJ1BxrN4qDzmFGwqz+MIhlR7Z2o8skpg==}
+  /@fastify/cookie@9.0.4:
+    resolution: {integrity: sha512-behLOTH2u7fSZ6+TWeW8XUCmpEstwl8ysxzyb4QRxnKyt80O2S4yVfNbBZQcG9rktjeZXfR7LLl9xXKL4vdjlQ==}
     dependencies:
       cookie: 0.5.0
       fastify-plugin: 4.5.1
@@ -2786,7 +2786,7 @@ packages:
       cache-manager: 5.2.3
       futoin-hkdf: 1.5.2
       libphonenumber-js: 1.10.37
-      libsignal: github.com/adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
+      libsignal: git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
       link-preview-js: 3.0.4
       music-metadata: 7.13.4
       node-cache: 5.1.2
@@ -9327,8 +9327,8 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  github.com/adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
-    resolution: {tarball: https://codeload.github.com/adiwajshing/libsignal-node/tar.gz/11dbd962ea108187c79a7c46fe4d6f790e23da97}
+  git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
+    resolution: {commit: 11dbd962ea108187c79a7c46fe4d6f790e23da97, repo: git@github.com:adiwajshing/libsignal-node.git, type: git}
     name: libsignal
     version: 2.0.1
     dependencies:
