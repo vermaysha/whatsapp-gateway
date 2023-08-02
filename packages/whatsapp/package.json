@@ -7,6 +7,7 @@
   "files": [
     "dist/**"
   ],
+  "bin": "dist/bin.js",
   "scripts": {
     "test": "[ -e \"test.ts\" ] && (cross-env DEBUG=ENGINE NODE_ENV=development tsx test.ts | pino-pretty -c) || true",
     "build": "rimraf dist && tsup",
