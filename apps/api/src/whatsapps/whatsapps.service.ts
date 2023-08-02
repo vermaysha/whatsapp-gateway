@@ -53,7 +53,7 @@ export class WhatsappsService {
             (key) =>
               ![
                 'level',
-                'class',
+                'name',
                 'hostname',
                 'pid',
                 'time',
@@ -73,11 +73,11 @@ export class WhatsappsService {
             },
           },
           level: dataJson.level,
-          class: dataJson.class,
+          name: dataJson.name,
           hostname: dataJson.hostname,
           msg: dataJson.msg,
           pid: dataJson.pid,
-          time: dataJson.time,
+          time: dataJson.time ? new Date(dataJson.time) : new Date(),
           trace: dataJson.trace,
           meta,
         })

@@ -53,19 +53,19 @@ model Session {
 }
 
 model Logs {
-  id        String   @id @default(uuid()) @db.Uuid
-  deviceId  String   @db.Uuid
-  level     Int
-  time      DateTime
-  pid       Int
-  hostname  String
-  class     String
-  node      Json?    @db.JsonB
-  msg       String
+  id        String    @id @default(uuid()) @db.Uuid
+  deviceId  String    @db.Uuid
+  level     Int?
+  time      DateTime? @db.Timestamptz()
+  pid       Int?
+  hostname  String?
+  name      String?
+  node      Json?     @db.JsonB
+  msg       String?
   trace     String?
-  meta      Json?    @db.JsonB
-  updatedAt DateTime @updatedAt @db.Timestamptz()
-  createdAt DateTime @default(now()) @db.Timestamptz()
+  meta      Json?     @db.JsonB
+  updatedAt DateTime  @updatedAt @db.Timestamptz()
+  createdAt DateTime  @default(now()) @db.Timestamptz()
 
   device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 }
