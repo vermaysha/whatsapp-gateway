@@ -12,6 +12,8 @@ export type OutputCommand =
   | 'MESSAGE_RECEIVED'
   | 'DB_CONNECTION_ERROR'
   | 'STOPPED'
+  | 'DEVICE_NOT_FOUND'
+  | 'DEVICE_ALREADY_STARTED'
 
 export interface InputMessage {
   command: InputCommand
