@@ -17,6 +17,10 @@ jobs:
   test:
     name: Test code
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
     strategy:
       matrix:
         node-version: [16, 18, 20]
