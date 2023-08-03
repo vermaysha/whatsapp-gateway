@@ -1,27 +1,16 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpException,
-  NotFoundException,
-  Param,
-  Post,
-  Put,
-  Query,
-  Response,
-} from '@nestjs/common'
+import { Controller, NotFoundException, Response } from '@nestjs/common'
 import { FastifyReply } from 'fastify'
 import { Auth } from 'src/auth/auth.decorator'
 import { DevicesService } from './devices.service'
-import { CreateDto, DetailDto, ListDto, UpdateDto } from './devices.dto'
+import { CreateDto, ListDto, UpdateDto } from './devices.dto'
+import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core'
 
 @Controller('devices')
 @Auth()
 export class DevicesController {
   constructor(private deviceService: DevicesService) {}
 
-  @Get('/')
+  @TypedRoute.Get('/')
   /**
    * Retrieves and sends a list of devices based on the provided query parameters.
    *
@@ -29,21 +18,28 @@ export class DevicesController {
    * @param {FastifyReply} res - The response object used to send the data.
    * @return {Promise<void>} - A promise that resolves once the data is sent.
    */
-  async index(@Query() query: ListDto, @Response() res: FastifyReply) {
-    const data = await this.deviceService.findAll(query.page, query.perPage)
+  async index(@TypedQuery() query: ListDto, @Response() res: FastifyReply) {
+    const data = await this.deviceService.findAll(
+      query.page ?? 1,
+      query.perPage ?? 10,
+    )
     res.send(data)
   }
 
-  @Get('/:id')
+  @TypedRoute.Get('/:id')
+
   /**
    * Retrieves the details of a device.
    *
-   * @param {DetailDto} params - The parameters for retrieving the device details.
-   * @param {FastifyReply} res - The response object for sending the device details.
-   * @return {Promise<void>} - A promise that resolves when the device details are sent.
+   * @param {string} id - The ID of the device.
+   * @param {FastifyReply} res - The response object.
+   * @return {Promise<void>} - Returns a promise that resolves to void.
    */
-  async detail(@Param() params: DetailDto, @Response() res: FastifyReply) {
-    const data = await this.deviceService.findOne(params.id)
+  async detail(
+    @TypedParam('id', 'string') id: string,
+    @Response() res: FastifyReply,
+  ) {
+    const data = await this.deviceService.findOne(id)
 
     if (!data) {
       throw new NotFoundException('Device not found')
@@ -52,13 +48,13 @@ export class DevicesController {
     res.send(data)
   }
 
-  @Put('/:id')
+  @TypedRoute.Put('/:id')
   async update(
-    @Param() param: DetailDto,
-    @Body() body: UpdateDto,
+    @TypedParam('id', 'string') id: string,
+    @TypedBody() body: UpdateDto,
     @Response() res: FastifyReply,
   ) {
-    const data = await this.deviceService.update(param.id, {
+    const data = await this.deviceService.update(id, {
       name: body.name,
     })
 
@@ -69,8 +65,8 @@ export class DevicesController {
     })
   }
 
-  @Post('/')
-  async create(@Body() body: CreateDto, @Response() res: FastifyReply) {
+  @TypedRoute.Post('/')
+  async create(@TypedBody() body: CreateDto, @Response() res: FastifyReply) {
     const data = await this.deviceService.create({
       name: body.name,
     })
@@ -82,9 +78,9 @@ export class DevicesController {
     })
   }
 
-  @Delete('/:id')
-  async delete(@Param() param: DetailDto, @Response() res: FastifyReply) {
-    await this.deviceService.delete(param.id)
+  @TypedRoute.Delete('/:id')
+  async delete(@TypedParam('id') id: string, @Response() res: FastifyReply) {
+    await this.deviceService.delete(id)
     res.send({
       status: true,
       message: 'Device deleted successfully',

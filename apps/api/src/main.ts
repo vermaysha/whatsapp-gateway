@@ -37,11 +37,6 @@ async function bootstrap() {
     } as FastifyCorsOptions,
   )
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-    }),
-  )
   await app.listen(4000, '0.0.0.0')
 
   if (module.hot) {

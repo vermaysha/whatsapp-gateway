@@ -1,13 +1,9 @@
 import {
-  Body,
   Controller,
-  Post,
   HttpCode,
   HttpStatus,
   Request,
-  Get,
   Response,
-  Delete,
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { FastifyReply, FastifyRequest } from 'fastify'
@@ -15,6 +11,7 @@ import { SignInDto } from './auth.dto'
 import { Auth } from './auth.decorator'
 import { UsersService } from 'src/users/users.service'
 import { User } from 'database'
+import { TypedBody, TypedRoute } from '@nestia/core'
 
 @Controller('auth')
 export class AuthController {
@@ -24,14 +21,17 @@ export class AuthController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
-  @Post('login')
+  @TypedRoute.Post('login')
   /**
    * Sign in with the provided signInDto.
    *
    * @param {SignInDto} signInDto - The signInDto object containing the username and password.
    * @return {any} The result of the authentication process.
    */
-  async signIn(@Body() signInDto: SignInDto, @Response() res: FastifyReply) {
+  async signIn(
+    @TypedBody() signInDto: SignInDto,
+    @Response() res: FastifyReply,
+  ) {
     const token = await this.authService.signIn(
       signInDto.username,
       signInDto.password,
@@ -47,7 +47,7 @@ export class AuthController {
   }
 
   @Auth()
-  @Get('profile')
+  @TypedRoute.Get('profile')
   /**
    * Retrieves the profile of a user.
    *
@@ -69,7 +69,7 @@ export class AuthController {
   }
 
   @Auth()
-  @Get('verify')
+  @TypedRoute.Get('verify')
   /**
    * Verify the request and send a response.
    *
@@ -83,7 +83,7 @@ export class AuthController {
   }
 
   @Auth()
-  @Delete('logout')
+  @TypedRoute.Delete('logout')
   /**
    * Logs out the user by clearing the access token cookie and sending a success response.
    *

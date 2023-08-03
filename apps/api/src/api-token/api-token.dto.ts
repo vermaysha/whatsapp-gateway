@@ -1,44 +1,13 @@
-import { Type } from 'class-transformer'
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator'
-
 export class ApiTokenListDto {
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  page?: number
+  page?: number | null
 
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  perPage?: number
-}
-
-export class ApitTokenDetailDto {
-  @IsNotEmpty()
-  @IsString()
-  @Type(() => String)
-  id: string
+  perPage?: number | null
 }
 
 export class ApiTokenCreateDto {
-  @IsNotEmpty()
-  @IsString()
-  @Type(() => String)
   name: string
 
-  @IsOptional()
-  @IsString()
-  @Type(() => String)
-  description?: string
+  description?: string | null
 
-  @IsOptional()
-  @IsDateString()
-  @Type(() => Date)
-  expiredAt?: Date
+  expiredAt?: Date | null
 }
