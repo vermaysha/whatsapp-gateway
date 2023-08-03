@@ -29,7 +29,7 @@ export class LogsService {
       skip: skipAmount,
       take: perPage,
       orderBy: {
-        id: 'desc',
+        createdAt: 'desc',
       },
     })
 
