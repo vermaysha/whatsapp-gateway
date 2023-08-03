@@ -19,7 +19,10 @@
       "dependsOn": ["^start"],
       "outputs": ["dist/**", ".next/**"]
     },
-    "test:ci": {
+    "test": {
+      "cache": false
+    },
+    "test:cov": {
       "cache": false
     },
     "db:migrate:deploy": {},

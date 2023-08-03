@@ -9,7 +9,9 @@
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "turbo run format",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "turbo run test",
+    "test:cov": "turbo run test:cov"
   },
   "repository": {
     "type": "git",
