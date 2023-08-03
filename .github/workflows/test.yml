@@ -1,4 +1,4 @@
-name: Test Code and lint code
+name: Test Code
 on:
   workflow_dispatch:
   push:
@@ -14,12 +14,12 @@ env:
   CI: 1
 
 jobs:
-  lint:
-    name: Lint code
+  test:
+    name: Test code
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18]
+        node-version: [16, 18, 20]
 
     steps:
       - name: Force PNPM to use HTTPS instead of SSH
@@ -57,5 +57,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint code
-        run: pnpm run lint
+      - name: Test code
+        run: pnpm test
