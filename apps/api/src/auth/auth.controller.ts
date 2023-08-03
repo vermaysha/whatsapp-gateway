@@ -1,3 +1,5 @@
+/// <reference path="../env.d.ts" />
+import '@fastify/cookie'
 import {
   Controller,
   HttpCode,
@@ -6,7 +8,7 @@ import {
   Response,
 } from '@nestjs/common'
 import { AuthService } from './auth.service'
-import { FastifyReply, FastifyRequest } from 'fastify'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 import { SignInDto } from './auth.dto'
 import { Auth } from './auth.decorator'
 import { UsersService } from 'src/users/users.service'

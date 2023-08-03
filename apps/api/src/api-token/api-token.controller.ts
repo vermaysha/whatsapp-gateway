@@ -1,3 +1,4 @@
+/// <reference path="../env.d.ts" />
 import { Controller, Req, Res } from '@nestjs/common'
 import { ApiTokenService } from './api-token.service'
 import { ApiTokenCreateDto, ApiTokenListDto } from './api-token.dto'
