@@ -1,0 +1,91 @@
+name: Lint and Format Code
+on:
+  push:
+    branches: [master]
+  pull_request_target:
+    branches:
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  CI: 1
+
+jobs:
+  lint_and_format:
+    if: ${{ !contains(github.event.head_commit.message, '[ci skip]') }}
+    name: Lint and Format using Node v${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      - name: Force PNPM to use HTTPS instead of SSH
+        run: |
+          git config --global url."https://github.com/".insteadOf git@github.com:
+          git config --global url."https://".insteadOf git://
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.SSH_KEY }}
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint code
+        continue-on-error: true
+        id: linting
+        run: pnpm lint
+
+      - name: Format Code
+        if: ${{ steps.linting.outcome == 'failure' }}
+        run: pnpm format
+
+      - name: Configure Git
+        if: ${{ steps.linting.outcome == 'failure' }}
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Commit Changes
+        if: ${{ steps.linting.outcome == 'failure' }}
+        run: |
+          git add .
+          git commit -m "refactor: code style [ci skip]"
+
+      - name: Create Pull Request
+        if: ${{ steps.linting.outcome == 'failure' }}
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: 'refactor: code style [ci skip]'
+          branch: refactor/code-style
+          delete-branch: true
+          branch-suffix: short-commit-hash
+          title: 'refactor: code style [ci skip]'
