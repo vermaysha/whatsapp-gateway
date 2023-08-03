@@ -1,5 +1,5 @@
 import { Controller, Res } from '@nestjs/common'
-import { Auth } from 'src/auth/auth.decorator'
+import { Auth } from '../auth/auth.decorator'
 import { ChatsService } from './chats.service'
 import { TypedQuery, TypedRoute } from '@nestia/core'
 import { FastifyReply } from 'fastify'

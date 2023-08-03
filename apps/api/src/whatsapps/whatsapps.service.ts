@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { fork, type ChildProcess } from 'child_process'
-import { LogsService } from 'src/logs/logs.service'
+import { LogsService } from '../logs/logs.service'
 import { InputCommand, OutputCommand, OutputMessage } from 'whatsapp'
 
 interface IMemoryUsage {

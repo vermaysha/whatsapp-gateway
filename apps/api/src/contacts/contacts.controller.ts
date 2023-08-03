@@ -1,7 +1,7 @@
 import { Controller, Res } from '@nestjs/common'
 import { ContactsService } from './contacts.service'
 import { TypedQuery, TypedRoute } from '@nestia/core'
-import { Auth } from 'src/auth/auth.decorator'
+import { Auth } from '../auth/auth.decorator'
 import { FastifyReply } from 'fastify'
 import { IContactsList } from './contacts.dto'
 

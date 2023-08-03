@@ -11,7 +11,7 @@ import { AuthService } from './auth.service'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { SignInDto } from './auth.dto'
 import { Auth } from './auth.decorator'
-import { UsersService } from 'src/users/users.service'
+import { UsersService } from '../users/users.service'
 import { User } from 'database'
 import { TypedBody, TypedRoute } from '@nestia/core'
 

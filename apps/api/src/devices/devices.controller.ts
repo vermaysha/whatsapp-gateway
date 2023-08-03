@@ -1,6 +1,6 @@
 import { Controller, NotFoundException, Response } from '@nestjs/common'
 import { FastifyReply } from 'fastify'
-import { Auth } from 'src/auth/auth.decorator'
+import { Auth } from '../auth/auth.decorator'
 import { DevicesService } from './devices.service'
 import { CreateDto, ListDto, UpdateDto } from './devices.dto'
 import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core'

@@ -1,7 +1,7 @@
 import { TypedQuery, TypedRoute } from '@nestia/core'
 import { Controller, Res } from '@nestjs/common'
 import { FastifyReply } from 'fastify'
-import { Auth } from 'src/auth/auth.decorator'
+import { Auth } from '../auth/auth.decorator'
 import { ILogsList } from './logs.dto'
 import { LogsService } from './logs.service'
 

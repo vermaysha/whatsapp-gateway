@@ -1,5 +1,5 @@
 import { Controller, HttpException, Req, Res } from '@nestjs/common'
-import { Auth } from 'src/auth/auth.decorator'
+import { Auth } from '../auth/auth.decorator'
 import { FastifyReply } from 'fastify'
 import { WhatsappsService } from './whatsapps.service'
 import { TypedParam, TypedRoute } from '@nestia/core'
