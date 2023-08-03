@@ -21,7 +21,8 @@
     "lint": "eslint \"src/**/*.ts\"",
     "prebuild": "npm run generate",
     "predev": "npm run generate",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "prepare": "npm run generate"
   },
   "author": {
     "name": "Ashary Vermaysha",
