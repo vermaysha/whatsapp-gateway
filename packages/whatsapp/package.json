@@ -9,7 +9,7 @@
   ],
   "bin": "dist/bin.js",
   "scripts": {
-    "test": "[ -e \"test.ts\" ] && (cross-env DEBUG=ENGINE NODE_ENV=development tsx test.ts | pino-pretty -c) || true",
+    "test": "[ -e \"test.ts\" ] && (cross-env DEBUG=ENGINE NODE_ENV=development tsx test.ts | pino-pretty -c) || exit 0",
     "build": "rimraf dist && tsup",
     "dev": "tsup --watch",
     "format": "prettier --write \"src/**/*.ts\"",
