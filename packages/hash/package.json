@@ -14,7 +14,7 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "argon2": "^0.30.3",
+    "argon2": "^0.31.0",
     "dotenv": "^16.3.1",
     "tsconfig": "workspace:^"
   },
