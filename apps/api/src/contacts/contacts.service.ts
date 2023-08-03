@@ -29,7 +29,7 @@ export class ContactsService {
       skip: skipAmount,
       take: perPage,
       orderBy: {
-        id: 'desc',
+        updatedAt: 'desc',
       },
     })
 
