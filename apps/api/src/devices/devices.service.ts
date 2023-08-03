@@ -29,7 +29,7 @@ export class DevicesService {
       skip: skipAmount,
       take: perPage,
       orderBy: {
-        id: 'desc',
+        updatedAt: 'desc',
       },
       include: {
         owner: true,
