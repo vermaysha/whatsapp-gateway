@@ -38,7 +38,7 @@
     "@types/node": "^20.4.6",
     "dotenv-cli": "^7.2.1",
     "eslint": "^8.46.0",
-    "prettier": "^3.0.0",
+    "prettier": "^3.0.1",
     "prisma": "^5.1.0",
     "rimraf": "^5.0.1",
     "tsup": "^7.2.0",
