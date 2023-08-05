@@ -133,8 +133,7 @@ function Sidebar() {
       <div className="border-b z-20 bg-base-100 sticky top-0  hidden items-center px-4 py-2  lg:flex ">
         <a href="/" className="flex-0 btn btn-ghost px-2">
           <div className="font-title inline-flex text-lg md:text-2xl">
-            <span className="uppercase">WA</span>{" "}
-            <span className="capitalize ">Gateway</span>
+            {process.env.NEXT_PUBLIC_APP_NAME?.slice(0, 12) ?? "WAGateway"}
           </div>
         </a>
       </div>

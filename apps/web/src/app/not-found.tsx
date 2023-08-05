@@ -1,9 +1,10 @@
+import { pageTitle } from "@/lib"
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 
 export const metadata: Metadata = {
-  title: "404 Not Found | Whatsapp Gateway",
+  title: pageTitle("Not Found"),
 }
 
 export default function NotFound() {

@@ -1,13 +1,11 @@
 "use client"
 
-import { request } from "@/lib/request"
+import { pageTitle, request, formatPhoneNumber } from "@/lib"
 import Image from "next/image"
 import Link from "next/link"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { IDevices } from "./interface"
 import Loading from "@/components/Loading"
-import { AuthContext } from "@/contexts/AuthContext"
-import { formatPhoneNumber } from "@/lib/formatPhoneNumber"
 
 const fetchData = async () => {
   const res = await request("/devices", { method: "get" })
@@ -19,7 +17,7 @@ const fetchData = async () => {
 export default function Device() {
   const [devices, setDevices] = useState<IDevices | undefined>(undefined)
   useEffect(() => {
-    document.title = "Device | Whatsapp Gateway"
+    document.title = pageTitle("Device")
   }, [])
 
   useEffect(() => {

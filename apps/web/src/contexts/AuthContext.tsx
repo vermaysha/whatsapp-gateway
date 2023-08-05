@@ -1,6 +1,6 @@
 "use client"
 
-import { request } from "@/lib/request"
+import { request } from "@/lib"
 import { createContext, useEffect, useState } from "react"
 import { IAuthContext, ILogin } from "./AuthContext.interface"
 import { usePathname, useRouter } from "next/navigation"

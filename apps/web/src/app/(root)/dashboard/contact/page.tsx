@@ -1,5 +1,6 @@
 "use client"
 
+import { pageTitle } from "@/lib"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect } from "react"
@@ -7,7 +8,7 @@ import Select from "react-select"
 
 export default function Contact() {
   useEffect(() => {
-    document.title = "Messages | Whatsapp Gateway"
+    document.title = pageTitle("Contact")
   }, [])
 
   const options = [
