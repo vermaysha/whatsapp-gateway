@@ -2,14 +2,20 @@
 
 import { AuthContext } from "@/contexts/AuthContext"
 import { useRouter } from "next/navigation"
-import { type FormEvent, useContext, useRef } from "react"
+import { type FormEvent, useContext, useRef, useEffect } from "react"
 
 export default function Login() {
   const username = useRef<HTMLInputElement>(null)
   const password = useRef<HTMLInputElement>(null)
 
-  const { loginToAccount } = useContext(AuthContext)
+  const { loginToAccount, isAuthenticated } = useContext(AuthContext)
   const router = useRouter()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/dashboard")
+    }
+  })
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
