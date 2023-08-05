@@ -59,6 +59,9 @@ importers:
       hash:
         specifier: workspace:^
         version: link:../../packages/hash
+      pagination:
+        specifier: workspace:^
+        version: link:../../packages/pagination
       reflect-metadata:
         specifier: ^0.1.13
         version: 0.1.13

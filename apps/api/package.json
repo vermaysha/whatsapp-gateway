@@ -31,6 +31,7 @@
     "database": "workspace:^",
     "fastify": "^4.21.0",
     "hash": "workspace:^",
+    "pagination": "workspace:^",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "typia": "^4.1.15",

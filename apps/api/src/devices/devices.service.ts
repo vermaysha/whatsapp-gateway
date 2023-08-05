@@ -1,50 +1,39 @@
 import { HttpException, Injectable } from '@nestjs/common'
 import { Device, Prisma, prisma } from 'database'
+import { PaginatedResult, paginate } from 'pagination'
 
-export interface PaginatedDevice {
-  data: Device[]
-  pagination: {
-    perPage: number
-    page: number
-    totalPages: number
-    total: number
-  }
-}
+const devicesInclude = Prisma.validator<Prisma.DeviceInclude>()({
+  owner: true,
+})
+type DeviceFindAll = Prisma.DeviceGetPayload<{
+  include: typeof devicesInclude
+}>
 
 @Injectable()
 export class DevicesService {
   /**
    * Retrieves a paginated list of device.
    *
-   * @param {number} page - The page number to retrieve (default: 1).
-   * @param {number} perPage - The number of devices per page (default: 10).
+   * @param {number | null} page - The page number to retrieve (default: 1).
+   * @param {number | null} perPage - The number of devices per page (default: 10).
    * @return {Promise<PaginatedDevice>} A promise that resolves to a `PaginatedDevice` object containing the retrieved devices and pagination information.
    */
-  async findAll(page = 1, perPage = 10): Promise<PaginatedDevice> {
-    const skipAmount = (page - 1) * perPage
-    const totalCount = await this.count()
-    const totalPages = Math.ceil(totalCount / perPage)
-
-    const data = await prisma.device.findMany({
-      skip: skipAmount,
-      take: perPage,
-      orderBy: {
-        updatedAt: 'desc',
+  async findAll(
+    page: number | null = 1,
+    perPage: number | null = 10,
+  ): Promise<PaginatedResult<DeviceFindAll>> {
+    return paginate<Prisma.DeviceFindManyArgs, DeviceFindAll>(
+      prisma.device,
+      {
+        orderBy: {
+          createdAt: 'desc',
+        },
       },
-      include: {
-        owner: true,
-      },
-    })
-
-    return {
-      data,
-      pagination: {
+      {
         page,
         perPage,
-        totalPages,
-        total: totalCount,
       },
-    }
+    )
   }
 
   /**

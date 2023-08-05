@@ -1,5 +1,5 @@
 export interface PaginatedResult<T> {
-  data: T[] | unknown
+  data: T[]
   pagination: {
     total: number
     lastPage: number
@@ -11,6 +11,6 @@ export interface PaginatedResult<T> {
 }
 
 export type PaginateOptions = {
-  page?: number
-  perPage?: number
+  page?: number | null
+  perPage?: number | null
 }

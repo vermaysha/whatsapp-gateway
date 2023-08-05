@@ -8,9 +8,9 @@ import { PaginateOptions, PaginatedResult } from './pagination.interface'
  * @param {PaginateOptions} options - Optional pagination options.
  * @returns {Promise<PaginatedResult<K>>} A promise that resolves to a paginated result.
  */
-export async function paginate<K>(
+export async function paginate<T, K>(
   model: any,
-  args: any = { where: undefined },
+  args: T,
   options?: PaginateOptions,
 ): Promise<PaginatedResult<K>> {
   const page = options?.page ?? 1
@@ -18,7 +18,7 @@ export async function paginate<K>(
 
   const skip = page > 0 ? perPage * (page - 1) : 0
   const [total, data] = await Promise.all([
-    model.count({ where: args.where ?? undefined }),
+    model.count({ where: (args as any).where ?? undefined }),
     model.findMany({
       ...args,
       take: perPage,
