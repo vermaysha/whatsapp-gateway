@@ -1,12 +1,21 @@
-import type { Metadata } from "next"
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
-
-export const metadata: Metadata = {
-  title: "Contact | Whatsapp Gateway",
-}
+import { useEffect } from "react"
+import Select from "react-select"
 
 export default function Contact() {
+  useEffect(() => {
+    document.title = "Messages | Whatsapp Gateway"
+  }, [])
+
+  const options = [
+    { value: "chocolate", label: "Chocolate" },
+    { value: "strawberry", label: "Strawberry" },
+    { value: "vanilla", label: "Vanilla" },
+  ]
+
   return (
     <>
       <div className="flex justify-between items-center border-b p-4 bg-base-100 rounded">
@@ -38,8 +47,20 @@ export default function Contact() {
       </div>
       <div className="mt-5 bg-base-100 p-4 rounded min-h-screen">
         <div className="p-4 border rounded mb-5">
-          <div className="flex justify-between my-4">
+          <div className="flex justify-between items-center  my-4">
+            <div className="w-full max-w-xs z-50">
+              <Select
+                options={options}
+                defaultValue={options[0]}
+                placeholder="Select your devices"
+              />
+            </div>
             <div className="join">
+              <input
+                type="text"
+                placeholder="Seach here"
+                className="input input-sm w-full max-w-xs join-item input-bordered focus:outline-none"
+              />
               <div className="join-item items-center flex input-sm place-content-center border">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -56,12 +77,6 @@ export default function Contact() {
                   />
                 </svg>
               </div>
-
-              <input
-                type="text"
-                placeholder="Seach here"
-                className="input input-sm w-full max-w-xs join-item input-bordered focus:outline-none"
-              />
             </div>
           </div>
           <div className="overflow-x-auto">
