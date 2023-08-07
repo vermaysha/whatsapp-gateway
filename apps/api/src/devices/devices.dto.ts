@@ -37,6 +37,13 @@ export class DeviceListDTO {
   orderBy?: 'createdAt' | 'updatedAt' | 'name' | 'startedAt' | 'stoppedAt'
 }
 
+export class DeviceSummaryDTO {
+  /**
+   * The search query keyword.
+   */
+  search?: string | null
+}
+
 export class UpdateDto {
   name: string
 }

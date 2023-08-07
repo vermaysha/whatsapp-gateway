@@ -2,7 +2,12 @@ import { Controller, NotFoundException, Response } from '@nestjs/common'
 import { FastifyReply } from 'fastify'
 import { Auth } from '../auth/auth.decorator'
 import { DevicesService } from './devices.service'
-import { CreateDto, DeviceListDTO, UpdateDto } from './devices.dto'
+import {
+  CreateDto,
+  DeviceListDTO,
+  DeviceSummaryDTO,
+  UpdateDto,
+} from './devices.dto'
 import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core'
 
 @Controller('devices')
@@ -26,8 +31,23 @@ export class DevicesController {
     res.send(data)
   }
 
-  @TypedRoute.Get('/:id')
+  @TypedRoute.Get('/summary')
+  /**
+   * Retrieves a summary of device data based on the provided query.
+   *
+   * @param {DeviceSummaryDTO} query - The query object containing the search criteria.
+   * @param {FastifyReply} res - The response object used to send the data.
+   * @return {Promise<void>} - A promise that resolves when the data is sent.
+   */
+  async summary(
+    @TypedQuery() query: DeviceSummaryDTO,
+    @Response() res: FastifyReply,
+  ) {
+    const data = await this.deviceService.summary(query.search)
+    res.send(data)
+  }
 
+  @TypedRoute.Get('/:id')
   /**
    * Retrieves the details of a device.
    *

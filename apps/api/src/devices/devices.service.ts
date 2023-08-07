@@ -13,6 +13,32 @@ type DeviceFindAll = Prisma.DeviceGetPayload<{
 @Injectable()
 export class DevicesService {
   /**
+   * Retrieves a summary of devices based on the provided search criteria.
+   *
+   * @param {string | null} search - The search string to filter the devices. Default is null.
+   * @return {Promise<Pick<Device, 'id' | 'name'>[]>} - A promise that resolves to an array of devices with only the 'id' and 'name' properties.
+   */
+  async summary(
+    search?: string | null,
+  ): Promise<Pick<Device, 'id' | 'name'>[]> {
+    return prisma.device.findMany({
+      orderBy: {
+        _relevance: search
+          ? {
+              fields: ['name'],
+              search,
+              sort: 'desc',
+            }
+          : undefined,
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+    })
+  }
+
+  /**
    * Finds all devices based on the provided parameters.
    *
    * @param {DeviceListDTO} params - The parameters for the device list.
