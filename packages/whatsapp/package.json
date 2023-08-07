@@ -36,7 +36,7 @@
     "ffmpeg": "^0.0.4",
     "link-preview-js": "^3.0.4",
     "mime-types": "^2.1.35",
-    "pino": "^8.14.2",
+    "pino": "^8.15.0",
     "sharp": "^0.32.4"
   },
   "devDependencies": {
