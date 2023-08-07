@@ -28,6 +28,7 @@ export class DevicesService {
         orderBy: {
           createdAt: 'desc',
         },
+        include: devicesInclude,
       },
       {
         page,
