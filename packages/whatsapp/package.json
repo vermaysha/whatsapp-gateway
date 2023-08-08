@@ -36,12 +36,12 @@
     "ffmpeg": "^0.0.4",
     "link-preview-js": "^3.0.4",
     "mime-types": "^2.1.35",
-    "pino": "^8.14.2",
+    "pino": "^8.15.0",
     "sharp": "^0.32.4"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.1",
-    "@types/node": "^20.4.7",
+    "@types/node": "^20.4.8",
     "axios": "^1.4.0",
     "cross-env": "^7.0.3",
     "pino-pretty": "^10.2.0",
