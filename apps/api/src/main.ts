@@ -12,6 +12,8 @@ import staticFiles, { type FastifyStaticOptions } from '@fastify/static'
 import { join } from 'path'
 import { AppSessionStore } from './lib'
 
+declare const module: any
+
 async function bootstrap() {
   const secret = process.env.ENCRYPTION_KEY ?? ''
   const store = new AppSessionStore()
@@ -64,6 +66,11 @@ async function bootstrap() {
   } as FastifyStaticOptions)
 
   await app.listen(4000, '0.0.0.0')
+
+  if (module.hot) {
+    module.hot.accept()
+    module.hot.dispose(() => app.close())
+  }
 }
 
 bootstrap()
