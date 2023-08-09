@@ -3,7 +3,11 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "outputMode": "new-only"
+    },
+    "start": {
+      "persistent": true
     },
     "lint": {
       "cache": false,
@@ -13,25 +17,23 @@
       "cache": false,
       "outputs": []
     },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "start": {
-      "dependsOn": ["^start"],
-      "outputs": ["dist/**", ".next/**"]
-    },
     "test": {
       "cache": false
     },
     "test:cov": {
       "cache": false
     },
-    "db:migrate:deploy": {},
-    "db:push": {},
-    "db:seed": {},
-    "generate": {
-      "dependsOn": ["^generate"]
+    "db:migrate:deploy": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false
+    },
+    "db:seed": {
+      "cache": false
+    },
+    "db:generate": {
+      "cache": true
     }
   }
 }

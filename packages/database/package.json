@@ -15,14 +15,14 @@
     "db:migrate:dev": "dotenv -e .env.development -- prisma migrate dev",
     "db:push": "dotenv -e .env.development -- prisma db push",
     "db:seed": "dotenv -e .env.development -- tsx src/seed.ts",
+    "db:generate": "prisma generate || echo \"Skip generate prisma clients\"",
     "dev": "tsup --watch",
     "format": "prisma format && prettier --write \"src/**/*.ts\"",
-    "generate": "prisma generate || echo \"Skip generate prisma clients\"",
     "lint": "eslint \"src/**/*.ts\"",
-    "prebuild": "pnpm generate",
-    "predev": "pnpm generate",
+    "prebuild": "pnpm db:generate",
+    "predev": "pnpm db:generate",
     "studio": "prisma studio",
-    "postinstall": "pnpm generate"
+    "postinstall": "pnpm db:generate"
   },
   "author": {
     "name": "Ashary Vermaysha",

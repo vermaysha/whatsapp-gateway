@@ -11,7 +11,11 @@
     "format": "turbo run format",
     "prepare": "husky install",
     "test": "turbo run test",
-    "test:cov": "turbo run test:cov"
+    "test:cov": "turbo run test:cov",
+    "db:generate": "turbo run db:generate",
+    "db:migrate:deploy": "turbo run db:migrate:deploy",
+    "db:push": "turbo run db:push",
+    "db:seed": "turbo run db:seed"
   },
   "repository": {
     "type": "git",
