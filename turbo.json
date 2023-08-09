@@ -6,6 +6,10 @@
       "outputs": ["dist/**", ".next/**"],
       "outputMode": "new-only"
     },
+    "dev": {
+      "dependsOn": ["^build"],
+      "persistent": true
+    },
     "start": {
       "persistent": true
     },
