@@ -64,5 +64,10 @@ jobs:
       - name: Build project
         run: pnpm build
 
+      - name: Generate Prisma schema
+        run: |
+          cd ./packages/database
+          pnpm generate
+
       - name: Test code
         run: pnpm test
