@@ -2,6 +2,7 @@
 import '@fastify/cookie'
 import {
   Controller,
+  ForbiddenException,
   HttpCode,
   HttpStatus,
   Request,
@@ -33,18 +34,24 @@ export class AuthController {
   async signIn(
     @TypedBody() signInDto: SignInDto,
     @Response() res: FastifyReply,
+    @Request() req: FastifyRequest,
   ) {
-    const token = await this.authService.signIn(
+    if (req.session.get('user')) {
+      throw new ForbiddenException(`You're already logged in`)
+    }
+
+    const user = await this.authService.signIn(
       signInDto.username,
       signInDto.password,
     )
 
-    res.setCookie('access_token', token.access_token)
-    res.setCookie('uuid', token.user.id)
+    req.session.set('user', user.id)
 
     res.send({
-      uuid: token.user.id,
-      username: token.user.username,
+      uuid: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatar: user.avatar,
     })
   }
 
@@ -62,7 +69,7 @@ export class AuthController {
     @Response() res: FastifyReply,
   ) {
     const user: Partial<User | null> = await this.userService.findOne(
-      req.user?.username ?? '',
+      req.session.user,
     )
 
     delete user?.['password']

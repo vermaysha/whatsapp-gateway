@@ -5,16 +5,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { FastifyRequest } from 'fastify'
-import { JwtService } from '@nestjs/jwt'
 import { Reflector } from '@nestjs/core'
 import { IS_PUBLIC_KEY } from './auth.decorator'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private jwtService: JwtService,
-    private reflector: Reflector,
-  ) {}
+  constructor(private reflector: Reflector) {}
 
   /**
    * Authenticates the user based on the provided token in the request header.
@@ -33,28 +29,11 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest() as FastifyRequest
-    const token = this.extractTokenFromCookie(request)
-    if (!token) {
-      throw new UnauthorizedException('Token not found')
-    }
-    try {
-      const payload = await this.jwtService.verifyAsync(token)
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      request.user = payload
-    } catch {
-      throw new UnauthorizedException('Failed to verify token')
-    }
-    return true
-  }
 
-  /**
-   * Extracts the token from the header of a FastifyRequest object.
-   *
-   * @param {FastifyRequest} request - The FastifyRequest object from which to extract the token.
-   * @return {string | undefined} - The extracted token, if it exists, or undefined.
-   */
-  private extractTokenFromCookie(request: FastifyRequest): string | undefined {
-    return request.cookies.access_token
+    if (!request.session.get('user')) {
+      throw new UnauthorizedException('User must be logged in')
+    }
+
+    return true
   }
 }

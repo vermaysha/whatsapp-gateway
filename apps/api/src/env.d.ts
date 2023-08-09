@@ -12,5 +12,7 @@ declare module 'fastify' {
   }
 
   // Extends Fastify Session Key
-  interface Session {}
+  interface Session {
+    user?: string
+  }
 }
