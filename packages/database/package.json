@@ -17,11 +17,12 @@
     "db:seed": "dotenv -e .env.development -- tsx src/seed.ts",
     "dev": "tsup --watch",
     "format": "prisma format && prettier --write \"src/**/*.ts\"",
-    "generate": "prisma generate",
+    "generate": "prisma generate || echo \"Skip generate prisma clients\"",
     "lint": "eslint \"src/**/*.ts\"",
-    "prebuild": "npm run generate",
-    "predev": "npm run generate",
-    "studio": "prisma studio"
+    "prebuild": "pnpm generate",
+    "predev": "pnpm generate",
+    "studio": "prisma studio",
+    "postinstall": "pnpm generate"
   },
   "author": {
     "name": "Ashary Vermaysha",
