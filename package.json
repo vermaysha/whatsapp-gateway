@@ -6,7 +6,6 @@
   "scripts": {
     "start": "turbo run start",
     "build": "turbo run build",
-    "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "turbo run format",
     "prepare": "husky install",
