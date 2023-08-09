@@ -5,26 +5,44 @@ import {
 } from '@nestjs/platform-fastify'
 import { AppModule } from './app.module'
 import cookie, { type FastifyCookieOptions } from '@fastify/cookie'
+import session, { type FastifySessionOptions } from '@fastify/session'
 import cors, { type FastifyCorsOptions } from '@fastify/cors'
 import etag, { type FastifyEtagOptions } from '@fastify/etag'
 import staticFiles, { type FastifyStaticOptions } from '@fastify/static'
 import { join } from 'path'
+import { AppSessionStore } from './lib'
 
 async function bootstrap() {
+  const secret = process.env.ENCRYPTION_KEY ?? ''
+  const store = new AppSessionStore()
+  const cookieOptions = {
+    httpOnly: true,
+    secure: 'auto',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 365, // 1years
+  }
+
+  if (!secret) {
+    throw new Error('ENCRYPTION_KEY is required')
+  }
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
   )
 
   await app.register(cookie, {
-    secret: process.env.ENCRYPTION_KEY ?? '',
-    parseOptions: {
-      httpOnly: true,
-      sameSite: 'lax',
-      maxAge: Date.now() + 1000 * 60 * 60 * 24 * 365, //1year expires
-      path: '/',
-    },
+    secret,
+    parseOptions: cookieOptions,
   } as FastifyCookieOptions)
+
+  await app.register(session, {
+    secret,
+    cookieName: 'sessions',
+    cookie: cookieOptions,
+    store,
+  } as FastifySessionOptions)
 
   await app.register(cors, {
     origin: 'http://localhost:5000',

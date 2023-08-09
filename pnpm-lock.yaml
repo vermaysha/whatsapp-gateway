@@ -38,6 +38,9 @@ importers:
       '@fastify/etag':
         specifier: ^4.2.0
         version: 4.2.0
+      '@fastify/session':
+        specifier: ^10.4.0
+        version: 10.4.0
       '@fastify/static':
         specifier: ^6.10.2
         version: 6.10.2
@@ -1586,6 +1589,13 @@ packages:
       fast-decode-uri-component: 1.0.1
       http-errors: 2.0.0
       mime: 3.0.0
+    dev: false
+
+  /@fastify/session@10.4.0:
+    resolution: {integrity: sha512-0lABZ0Rcg0VjiRj5xWeAwC1LBwgclaoAPikaONxTz0LJQTPPWSfSDDXafLkGDAqrl5KF8sC3jqLiZ9CbRHZ0Jg==}
+    dependencies:
+      fastify-plugin: 4.5.1
+      safe-stable-stringify: 2.4.3
     dev: false
 
   /@fastify/static@6.10.2:
@@ -5182,7 +5192,7 @@ packages:
       fast-json-stringify: 5.7.0
       find-my-way: 7.6.2
       light-my-request: 5.10.0
-      pino: 8.14.2
+      pino: 8.15.0
       process-warning: 2.2.0
       proxy-addr: 2.0.7
       rfdc: 1.3.0
@@ -7768,23 +7778,6 @@ packages:
       safe-stable-stringify: 2.4.3
       sonic-boom: 2.8.0
       thread-stream: 0.15.2
-    dev: false
-
-  /pino@8.14.2:
-    resolution: {integrity: sha512-zKu9aWeSWTy1JgvxIpZveJKKsAr4+6uNMZ0Vf0KRwzl/UNZA3XjHiIl/0WwqLMkDwuHuDkT5xAgPA2jpKq4whA==}
-    hasBin: true
-    dependencies:
-      atomic-sleep: 1.0.0
-      fast-redact: 3.2.0
-      on-exit-leak-free: 2.1.0
-      pino-abstract-transport: 1.0.0
-      pino-std-serializers: 6.2.2
-      process-warning: 2.2.0
-      quick-format-unescaped: 4.0.4
-      real-require: 0.2.0
-      safe-stable-stringify: 2.4.3
-      sonic-boom: 3.3.0
-      thread-stream: 2.3.0
     dev: false
 
   /pino@8.15.0:

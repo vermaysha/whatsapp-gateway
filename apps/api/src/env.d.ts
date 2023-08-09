@@ -10,4 +10,7 @@ declare module 'fastify' {
     } | null
     // tambahkan properti atau metode lainnya jika diperlukan
   }
+
+  // Extends Fastify Session Key
+  interface Session {}
 }
