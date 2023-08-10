@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@nestia/e2e": "^0.3.6",
-    "@nestia/sdk": "^1.6.2",
+    "@nestia/sdk": "^1.6.3",
     "@nestjs/cli": "^10.1.11",
     "@nestjs/schematics": "^10.0.2",
     "@nestjs/testing": "^10.1.3",
