@@ -57,12 +57,15 @@ async function bootstrap() {
   } as FastifyEtagOptions)
 
   await app.register(staticFiles, {
-    root: join(__dirname, 'storages'),
+    root: join(__dirname, '..', 'assets'),
+    decorateReply: true,
+    serve: false,
+    cacheControl: true,
     dotfiles: 'ignore',
     etag: true,
-    lastModified: true,
     index: false,
-    maxAge: '1m',
+    lastModified: true,
+    maxAge: '1w',
   } as FastifyStaticOptions)
 
   await app.listen(4000, '0.0.0.0')
