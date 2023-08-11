@@ -3,5 +3,6 @@
   "compilerOptions": {
     "declaration": false
   },
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
 }
