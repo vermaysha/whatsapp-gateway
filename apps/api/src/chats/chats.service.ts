@@ -1,5 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common'
 import { prisma, Prisma, Chat } from 'database'
+import { IChatsList } from './chats.dto'
+import { paginate } from 'pagination'
 
 export interface PaginatedChat {
   data: Chat[]
@@ -14,43 +16,57 @@ export interface PaginatedChat {
 @Injectable()
 export class ChatsService {
   /**
-   * Retrieves all chat data in a paginated format.
+   * Retrieves a list of chats based on the provided parameters.
    *
-   * @param {number} page - The page number to retrieve. Defaults to 1.
-   * @param {number} perPage - The number of items per page. Defaults to 10.
-   * @return {Promise<PaginatedChat>} A promise that resolves to a paginated chat object.
+   * @param {IChatsList} params - The parameters used to filter and paginate the chats.
+   * @param {number} params.page - The page number of the chats to retrieve.
+   * @param {number} params.perPage - The number of chats per page.
+   * @param {string} params.order - The order in which the chats should be sorted.
+   * @param {string} params.orderBy - The field to orderBy the chats by.
+   * @param {string} params.device - The device ID to filter the chats by.
    */
-  async findAll(page = 1, perPage = 10): Promise<PaginatedChat> {
-    const skipAmount = (page - 1) * perPage
-    const totalCount = await this.count()
-    const totalPages = Math.ceil(totalCount / perPage)
+  async findAll(params: IChatsList) {
+    const { page, perPage, order, orderBy, device } = params
 
-    const data = await prisma.chat.findMany({
-      skip: skipAmount,
-      take: perPage,
-      orderBy: {
-        updatedAt: 'desc',
-      },
-      include: {
-        contact: true,
-        messages: {
-          take: 1,
-          orderBy: {
-            updatedAt: 'desc',
-          },
+    const orderQuery: Prisma.ChatOrderByWithRelationAndSearchRelevanceInput = {
+      [orderBy ?? 'createdAt']: order ?? 'desc',
+    }
+
+    const chatInclude = Prisma.validator<Prisma.ChatInclude>()({
+      contact: true,
+      messages: {
+        take: 1,
+        orderBy: {
+          updatedAt: 'desc',
         },
       },
     })
 
-    return {
-      data,
-      pagination: {
+    const where: Prisma.ChatWhereInput | undefined = device
+      ? {
+          contact: {
+            deviceId: device,
+          },
+        }
+      : undefined
+
+    return paginate<
+      Prisma.ChatFindManyArgs,
+      Prisma.ChatGetPayload<{
+        include: typeof chatInclude
+      }>
+    >(
+      prisma.chat,
+      {
+        orderBy: orderQuery,
+        include: chatInclude,
+        where,
+      },
+      {
         page,
         perPage,
-        totalPages,
-        total: totalCount,
       },
-    }
+    )
   }
 
   /**
@@ -63,36 +79,20 @@ export class ChatsService {
   }
 
   /**
-   * Retrieves a single Chat by its ID.
+   * Find a chat by its ID and optional device ID.
    *
-   * @param {string} id - The ID of the Chat.
-   * @return {Promise<Chat | null>} A Promise that resolves to the found Chat, or null if it doesn't exist.
+   * @param {string} id - The ID of the chat.
+   * @param {string | null} deviceId - The optional device ID of the chat.
    */
-  async findOne(id: string): Promise<Chat | null> {
+  async findOne(id: string, deviceId?: string | null) {
     return prisma.chat.findUnique({
+      include: {
+        contact: true,
+      },
       where: {
         id,
+        deviceId: deviceId || undefined,
       },
-    })
-  }
-
-  /**
-   * Updates a chat record with the provided ID.
-   *
-   * @param {string} id - The ID of the chat to update.
-   * @param {Prisma.ChatUpdateInput} chat - The updated chat data.
-   * @return {Promise<Chat>} - A promise that resolves to the updated chat record.
-   */
-  async update(id: string, chat: Prisma.ChatUpdateInput): Promise<Chat> {
-    if (!(await this.findOne(id))) {
-      throw new HttpException('Chat not found', 404)
-    }
-
-    return prisma.chat.update({
-      where: {
-        id,
-      },
-      data: chat,
     })
   }
 }

@@ -1,4 +1,14 @@
-export class IChatsList {
+export class DefaultDTO {
+  /**
+   * The device UUID.
+   *
+   * @default null
+   * @format uuid
+   */
+  device?: string | null
+}
+
+export class IChatsList extends DefaultDTO {
   /**
    * The page number to retrieve.
    *
@@ -16,4 +26,18 @@ export class IChatsList {
    * @default 1
    */
   perPage?: number | null
+
+  /**
+   * The sort order.
+   *
+   * @default desc
+   */
+  order?: 'asc' | 'desc'
+
+  /**
+   * The field to sort by.
+   *
+   * @default updatedAt
+   */
+  orderBy?: 'createdAt' | 'updatedAt'
 }
