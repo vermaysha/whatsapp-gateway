@@ -1,68 +1,70 @@
 import { Injectable } from '@nestjs/common'
 import { Logs, Prisma, prisma } from 'database'
-
-export interface PaginatedDevice {
-  data: Logs[]
-  pagination: {
-    perPage: number
-    page: number
-    totalPages: number
-    total: number
-  }
-}
+import { ILogsList } from './logs.dto'
+import { paginate } from 'pagination'
 
 @Injectable()
 export class LogsService {
   /**
-   * Retrieves a paginated list of devices.
+   * Find all logs based on the provided parameters.
    *
-   * @param {number} page - The page number to retrieve (default: 1).
-   * @param {number} perPage - The number of items per page (default: 10).
-   * @return {Promise<PaginatedDevice>} A promise that resolves to a paginated list of devices.
+   * @param {ILogsList} params - The parameters for finding logs.
+   * @param {number} params.page - The page number.
+   * @param {number} params.perPage - The number of logs per page.
+   * @param {string} params.order - The order of the logs.
+   * @param {string} params.orderBy - The field to order the logs by.
+   * @param {string} params.search - The search query for logs.
+   * @param {string} params.device - The device ID for filtering logs.
    */
-  async findAll(page = 1, perPage = 10): Promise<PaginatedDevice> {
-    const skipAmount = (page - 1) * perPage
-    const totalCount = await this.count()
-    const totalPages = Math.ceil(totalCount / perPage)
+  async findAll(params: ILogsList) {
+    const { page, perPage, order, orderBy, search, device } = params
 
-    const data = await prisma.logs.findMany({
-      skip: skipAmount,
-      take: perPage,
-      orderBy: {
-        createdAt: 'desc',
+    const orderQuery:
+      | Prisma.LogsOrderByWithRelationAndSearchRelevanceInput
+      | undefined = search
+      ? {
+          _relevance: search
+            ? {
+                fields: ['msg', 'trace', 'name'],
+                search,
+                sort: 'desc',
+              }
+            : undefined,
+        }
+      : {
+          [orderBy ?? 'createdAt']: order ?? 'desc',
+        }
+
+    const where: Prisma.LogsWhereInput | undefined = device
+      ? {
+          deviceId: device,
+        }
+      : undefined
+
+    return paginate<Prisma.LogsFindManyArgs, Logs>(
+      prisma.message,
+      {
+        orderBy: orderQuery,
+        where,
       },
-    })
-
-    return {
-      data,
-      pagination: {
+      {
         page,
         perPage,
-        totalPages,
-        total: totalCount,
       },
-    }
+    )
   }
 
   /**
-   * Retrieves the count of logs.
+   * Finds a log entry by its ID and optional device ID.
    *
-   * @return {Promise<number>} The count of logs.
+   * @param {string} id - The ID of the log entry.
+   * @param {string | null} device - The optional device ID. Defaults to null.
    */
-  async count(): Promise<number> {
-    return prisma.logs.count()
-  }
-
-  /**
-   * Retrieves a single log by its ID.
-   *
-   * @param {string} id - The ID of the log to retrieve.
-   * @return {Promise<Logs | null>} A Promise that resolves to the retrieved log, or null if not found.
-   */
-  async findOne(id: string): Promise<Logs | null> {
+  async findOne(id: string, device?: string | null) {
     return prisma.logs.findUnique({
       where: {
         id,
+        deviceId: device || undefined,
       },
     })
   }
