@@ -100,8 +100,8 @@ export class AuthController {
    * @param {FastifyRequest} req - The request object.
    * @return {void} No return value.
    */
-  logout(@Response() res: FastifyReply, @Request() req: FastifyRequest) {
-    res.clearCookie('access_token')
+  async logout(@Response() res: FastifyReply, @Request() req: FastifyRequest) {
+    await req.session.destroy()
     res.send({
       status: true,
     })
