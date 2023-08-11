@@ -10,8 +10,10 @@ import { ListDTO } from './messages.dto'
 import { FastifyReply } from 'fastify'
 import { join } from 'path'
 import { existsSync } from 'fs'
+import { Auth } from 'src/auth/auth.decorator'
 
 @Controller('messages')
+@Auth(true)
 export class MessagesController {
   constructor(private messsageService: MessagesService) {}
 
