@@ -1,47 +1,63 @@
 import { HttpException, Injectable } from '@nestjs/common'
 import { prisma, type Message, Prisma } from 'database'
-
-export interface PaginatedMessage {
-  data: Message[]
-  pagination: {
-    perPage: number
-    page: number
-    totalPages: number
-    total: number
-  }
-}
+import { ListDTO } from './messages.dto'
+import { PaginatedResult, paginate } from 'pagination'
 
 @Injectable()
 export class MessagesService {
   /**
-   * Retrieves all messages with pagination.
+   * Find all messages based on the provided parameters.
    *
-   * @param {number} page - The page number to retrieve.
-   * @param {number} perPage - The number of messages per page.
-   * @return {Promise<PaginatedMessage>} A promise that resolves to a paginated message object.
+   * @param {ListDTO} params - The parameters for the query.
    */
-  async findAll(page = 1, perPage = 10): Promise<PaginatedMessage> {
-    const skipAmount = (page - 1) * perPage
-    const totalCount = await this.count()
-    const totalPages = Math.ceil(totalCount / perPage)
+  async findAll(params: ListDTO) {
+    const { page, perPage, order, orderBy, search, device } = params
 
-    const data = await prisma.message.findMany({
-      skip: skipAmount,
-      take: perPage,
-      orderBy: {
-        updatedAt: 'desc',
-      },
+    const orderQuery:
+      | Prisma.MessageOrderByWithRelationAndSearchRelevanceInput
+      | undefined = search
+      ? {
+          _relevance: search
+            ? {
+                fields: ['text', 'title'],
+                search,
+                sort: 'desc',
+              }
+            : undefined,
+        }
+      : {
+          [orderBy ?? 'createdAt']: order ?? 'desc',
+        }
+
+    const messageInclude = Prisma.validator<Prisma.MessageInclude>()({
+      contact: true,
     })
 
-    return {
-      data,
-      pagination: {
+    const where: Prisma.MessageWhereInput | undefined = device
+      ? {
+          contact: {
+            deviceId: device,
+          },
+        }
+      : undefined
+
+    return paginate<
+      Prisma.MessageFindManyArgs,
+      Prisma.MessageGetPayload<{
+        include: typeof messageInclude
+      }>
+    >(
+      prisma.message,
+      {
+        orderBy: orderQuery,
+        include: messageInclude,
+        where,
+      },
+      {
         page,
         perPage,
-        totalPages,
-        total: totalCount,
       },
-    }
+    )
   }
 
   /**
@@ -54,15 +70,18 @@ export class MessagesService {
   }
 
   /**
-   * Retrieves a single message by its ID.
+   * Finds a message by its ID.
    *
-   * @param {string} id - The ID of the message to retrieve.
-   * @return {Promise<Message | null>} A promise that resolves to the retrieved message, or null if no message is found.
+   * @param {string} id - The ID of the message.
    */
-  async findOne(id: string): Promise<Message | null> {
+  async findOne(id: string) {
     return prisma.message.findUnique({
       where: {
         id,
+      },
+      include: {
+        contact: true,
+        chat: true,
       },
     })
   }
