@@ -68,6 +68,8 @@ async function bootstrap() {
     maxAge: '1w',
   } as FastifyStaticOptions)
 
+  app.setGlobalPrefix('api')
+
   await app.listen(4000, '0.0.0.0')
 
   if (module.hot) {

@@ -14,7 +14,7 @@ const config: INestiaConfig = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'http://localhost:4000/api/',
         description: 'Local Server',
       },
     ],

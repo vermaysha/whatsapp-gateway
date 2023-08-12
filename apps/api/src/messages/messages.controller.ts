@@ -11,6 +11,7 @@ import { FastifyReply } from 'fastify'
 import { join } from 'path'
 import { existsSync } from 'fs'
 import { Auth } from '../auth/auth.decorator'
+import '@fastify/static'
 
 @Controller('messages')
 @Auth()
