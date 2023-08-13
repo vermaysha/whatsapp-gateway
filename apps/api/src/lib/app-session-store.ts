@@ -1,4 +1,5 @@
 import type { SessionStore } from '@fastify/session'
+import { Logger } from '@nestjs/common'
 import { prisma, type Prisma } from 'database'
 import type * as Fastify from 'fastify'
 
@@ -10,6 +11,12 @@ type CallbackSession = (
 
 export class AppSessionStore implements SessionStore {
   private model: Prisma.AppSessionDelegate = prisma.appSession
+  private checkInterval?: NodeJS.Timeout
+  private checkIntervalMs = 60 * 60 * 24 * 1 * 1000 // 1days
+
+  constructor() {
+    this.startInterval()
+  }
 
   /**
    * Sets the session data for a given session ID.
@@ -89,5 +96,55 @@ export class AppSessionStore implements SessionStore {
       })
     } catch (err) {}
     callback()
+  }
+
+  /**
+   * Starts the interval for performing a garbage collection.
+   *
+   * @param {function} onIntervalError - Optional callback function to handle errors that occur during the interval execution.
+   * @return {void}
+   */
+  public startInterval(onIntervalError?: (err: unknown) => void): void {
+    if (this.checkInterval) return
+
+    const ms = this.checkIntervalMs
+    if (typeof ms === 'number' && ms !== 0) {
+      this.stopInterval()
+      this.checkInterval = setInterval(async () => {
+        try {
+          await this.garbaceCollection()
+        } catch (err: unknown) {
+          if (onIntervalError !== undefined) onIntervalError(err)
+        }
+      }, Math.floor(ms))
+    }
+  }
+
+  /**
+   * Stops the interval.
+   *
+   * @return {void} -
+   */
+  public stopInterval(): void {
+    if (this.checkInterval) clearInterval(this.checkInterval)
+  }
+
+  /**
+   * Asynchronously performs garbage collection by deleting expired sessions.
+   *
+   * @return {Promise<void>} This function does not return anything.
+   */
+  async garbaceCollection(): Promise<void> {
+    Logger.log('Checking for any expired sessions', AppSessionStore.name)
+    const res = await this.model.deleteMany({
+      where: {
+        expiresAt: {
+          lte: new Date(),
+        },
+      },
+    })
+
+    Logger.log(`Delete ${res.count} expired sessions`, AppSessionStore.name)
+    return
   }
 }
