@@ -22,7 +22,7 @@ async function bootstrap() {
     secure: 'auto',
     sameSite: 'lax',
     path: '/',
-    maxAge: 60 * 60 * 24 * 365, // 1years
+    maxAge: 60 * 60 * 24 * 365 * 1000, // 1years
   }
 
   if (!secret) {
