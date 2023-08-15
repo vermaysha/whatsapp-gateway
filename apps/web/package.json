@@ -1,30 +1,25 @@
 {
-  "name": "web",
-  "version": "0.1.0",
+  "name": "nuxt-app",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 5000",
-    "build": "next build",
-    "start": "next start -p 5000",
-    "lint": "next lint",
-    "format": "prettier --write --ignore-unknown ."
+    "start": "PORT=5000 node .output/server/index.mjs",
+    "build": "nuxt build",
+    "dev": "nuxt dev -p 5000",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
-  "dependencies": {
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "@pinia/nuxt": "^0.4.11",
     "@tailwindcss/typography": "^0.5.9",
-    "@types/node": "20.4.9",
-    "@types/react": "18.2.20",
-    "@types/react-dom": "18.2.7",
+    "@types/node": "^18.17.3",
     "autoprefixer": "10.4.14",
     "daisyui": "^3.5.1",
-    "eslint": "8.46.0",
-    "eslint-config-next": "13.4.13",
-    "next": "13.4.13",
+    "nuxt": "^3.6.5",
+    "pinia": "^2.1.6",
     "postcss": "8.4.27",
-    "prettier": "3.0.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-select": "^5.7.4",
     "tailwindcss": "3.3.3",
-    "typescript": "5.1.6"
+    "typescript": "^5.1.6"
   }
 }
