@@ -15,12 +15,14 @@ import { Auth } from './auth.decorator'
 import { UsersService } from '../users/users.service'
 import { User } from 'database'
 import { TypedBody, TypedRoute } from '@nestia/core'
+import { JwtService } from '@nestjs/jwt'
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private userService: UsersService,
+    private jwtService: JwtService,
   ) {}
 
   @HttpCode(HttpStatus.OK)
@@ -46,6 +48,12 @@ export class AuthController {
     )
 
     req.session.set('user', user.id)
+
+    const payload = {
+      uuid: user.id,
+    }
+    const wsToken = await this.jwtService.signAsync(payload)
+    res.setCookie('wsToken', wsToken)
 
     res.send({
       uuid: user.id,
@@ -104,6 +112,31 @@ export class AuthController {
     await req.session.destroy()
     res.send({
       status: true,
+    })
+  }
+
+  @Auth()
+  @TypedRoute.Get('/refresh-ws-token')
+  /**
+   * Refreshes the WebSocket token.
+   *
+   * @param {Request} req - The Fastify request object.
+   * @param {Response} res - The Fastify reply object.
+   * @return {Promise<void>} - Returns a Promise that resolves to void.
+   */
+  async refreshWsToken(
+    @Request() req: FastifyRequest,
+    @Response() res: FastifyReply,
+  ) {
+    const payload = {
+      uuid: req.session.get('user'),
+    }
+    const token = await this.jwtService.signAsync(payload)
+
+    res.setCookie('wsToken', token)
+
+    res.send({
+      token,
     })
   }
 }
