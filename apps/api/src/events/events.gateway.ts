@@ -14,7 +14,11 @@ import { map } from 'rxjs/operators'
 import type { Server, Socket } from 'socket.io'
 import { AuthWsGuard } from '../auth/auth-ws.guard'
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 @UseGuards(AuthWsGuard)
 export class EventsGateway
   implements
