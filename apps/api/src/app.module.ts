@@ -12,6 +12,7 @@ import { ChatsModule } from './chats/chats.module'
 import { WhatsappsModule } from './whatsapps/whatsapps.module'
 import { LogsModule } from './logs/logs.module'
 import { ApiTokenModule } from './api-token/api-token.module'
+import { EventsModule } from './events/events.module'
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ApiTokenModule } from './api-token/api-token.module'
     WhatsappsModule,
     LogsModule,
     ApiTokenModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [
