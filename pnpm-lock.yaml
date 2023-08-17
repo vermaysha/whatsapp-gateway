@@ -322,7 +322,7 @@ importers:
         version: 10.0.1
       '@whiskeysockets/baileys':
         specifier: ^6.4.0
-        version: 6.4.0(link-preview-js@3.0.4)(qrcode-terminal@0.12.0)(sharp@0.32.5)
+        version: 6.4.0(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.5)
       database:
         specifier: workspace:^
         version: link:../database
@@ -330,8 +330,8 @@ importers:
         specifier: ^0.0.4
         version: 0.0.4
       link-preview-js:
-        specifier: ^3.0.4
-        version: 3.0.4
+        specifier: ^3.0.5
+        version: 3.0.5
       mime-types:
         specifier: ^2.1.35
         version: 2.1.35
@@ -3861,7 +3861,7 @@ packages:
       webpack-cli: 5.1.4(webpack@5.88.2)
     dev: true
 
-  /@whiskeysockets/baileys@6.4.0(link-preview-js@3.0.4)(qrcode-terminal@0.12.0)(sharp@0.32.5):
+  /@whiskeysockets/baileys@6.4.0(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.5):
     resolution: {integrity: sha512-SdCoVpILWX7z2WEe40BwNjMqpI6Guf0gbG80NNfsJBcRcDQIS9pkmazIhTvNKytWZm7BFZR+QNKcBUxdPqdLsQ==}
     peerDependencies:
       jimp: ^0.16.1
@@ -3885,8 +3885,8 @@ packages:
       cache-manager: 5.2.3
       futoin-hkdf: 1.5.3
       libphonenumber-js: 1.10.41
-      libsignal: github.com/adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
-      link-preview-js: 3.0.4
+      libsignal: git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
+      link-preview-js: 3.0.5
       music-metadata: 7.13.4
       node-cache: 5.1.2
       pino: 7.11.0
@@ -8253,8 +8253,8 @@ packages:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
     dev: true
 
-  /link-preview-js@3.0.4:
-    resolution: {integrity: sha512-xsuxMigAZd4xmj6BIwMNuQjjpJdh0DWeIo1NXQgaoWSi9Z/dzz/Kxy6vzzsUonFlMTPJ1i0EC8aeOg/xrOMidg==}
+  /link-preview-js@3.0.5:
+    resolution: {integrity: sha512-tOPdmphcZPxhZJFpkXj1D9ANDmK+yC6VzHwfl/ypfi1ASJUvkWNVkf3ikGk6p8CWA5wg8XVWNl2G++BL1UlCPg==}
     dependencies:
       abort-controller: 3.0.0
       cheerio: 1.0.0-rc.11
@@ -13185,8 +13185,8 @@ packages:
       readable-stream: 3.6.2
     dev: true
 
-  github.com/adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
-    resolution: {tarball: https://codeload.github.com/adiwajshing/libsignal-node/tar.gz/11dbd962ea108187c79a7c46fe4d6f790e23da97}
+  git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
+    resolution: {commit: 11dbd962ea108187c79a7c46fe4d6f790e23da97, repo: git@github.com:adiwajshing/libsignal-node.git, type: git}
     name: libsignal
     version: 2.0.1
     dependencies:
