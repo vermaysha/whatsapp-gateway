@@ -13,5 +13,6 @@ import { JwtModule } from '@nestjs/jwt'
     }),
   ],
   providers: [EventsGateway],
+  exports: [EventsGateway],
 })
 export class EventsModule {}
