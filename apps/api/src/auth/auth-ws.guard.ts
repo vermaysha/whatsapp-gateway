@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { WsException } from '@nestjs/websockets'
+import { Socket } from 'socket.io'
 
 @Injectable()
 export class AuthWsGuard implements CanActivate {
@@ -17,8 +18,7 @@ export class AuthWsGuard implements CanActivate {
    * @return {boolean} Returns `true` if the user is authenticated, otherwise throws an `UnauthorizedException`.
    */
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const socket = context.switchToWs().getClient()
-
+    const socket = context.switchToWs().getClient<Socket>()
     const token = this.extractToken(socket)
 
     if (!token) {
@@ -42,14 +42,20 @@ export class AuthWsGuard implements CanActivate {
     return true
   }
 
-  private extractToken(socket: any): string | null {
-    const cookie: string | null | undefined = socket.handshake?.headers?.cookie
+  /**
+   * Extracts the token from the given socket.
+   *
+   * @param {Socket} socket - The socket object from which to extract the token.
+   * @return {string | null} The extracted token, or null if no token is found.
+   */
+  private extractToken(socket: Socket): string | null {
+    const cookie: string | null | undefined = socket.handshake.headers.cookie
     const session = cookie?.match(/wsToken=([^;]+)/)?.[1]
 
     if (session) return session
 
     const [type, token] =
-      socket.handshake?.headers?.authorization?.split(' ')?.[1]
+      socket.handshake?.headers?.authorization?.split(' ') ?? []
 
     if (type === 'Bearer' && token) {
       return token
