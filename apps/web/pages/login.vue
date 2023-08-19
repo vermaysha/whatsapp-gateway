@@ -7,7 +7,7 @@ useHead({
   title: 'Login',
 });
 
-const notifyStore = useNotifyStore();
+const authStore = useAuthStore();
 const username = ref('');
 const password = ref('');
 
@@ -17,26 +17,7 @@ const password = ref('');
  * @return {Promise<void>} Returns a Promise that resolves when the login process is complete.
  */
 async function login() {
-  const { data, error } = await useCustomFetch('/auth/login', {
-    body: {
-      username: username.value,
-      password: password.value,
-    },
-    method: 'post',
-  });
-
-  const route = useRoute();
-
-  if (error.value?.data.message) {
-    notifyStore.notify(error.value.data.message, NotificationType.Error);
-  } else if (error.value) {
-    notifyStore.notify(error.value, NotificationType.Error);
-  }
-
-  if (data.value) {
-    const redirect: string | undefined = route.query.redirect as string;
-    return navigateTo(redirect || '/');
-  }
+  await authStore.login(username.value, password.value);
 }
 </script>
 

@@ -1,5 +1,7 @@
+const authStore = () => useAuthStore();
+
 export default defineNuxtRouteMiddleware(async (to) => {
-  const { error } = await useCustomFetch('/auth/verify');
+  const { error } = await authStore().verify();
 
   if (to.path === '/login') {
     if (!error.value) {

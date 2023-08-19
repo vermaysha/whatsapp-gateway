@@ -1,11 +1,7 @@
 <script setup lang="ts">
+const authStore = useAuthStore();
 async function logout() {
-  await useCustomFetch('/auth/logout', { method: 'delete' });
-
-  navigateTo('/login', {
-    replace: true,
-    redirectCode: 307,
-  });
+  await authStore.logout();
 }
 </script>
 
