@@ -188,6 +188,10 @@ importers:
         version: 3.0.0
 
   apps/web:
+    dependencies:
+      uqr:
+        specifier: ^0.1.2
+        version: 0.1.2
     devDependencies:
       '@nuxt/devtools':
         specifier: latest
@@ -4024,7 +4028,7 @@ packages:
       cache-manager: 5.2.3
       futoin-hkdf: 1.5.3
       libphonenumber-js: 1.10.41
-      libsignal: git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
+      libsignal: github.com/adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
       link-preview-js: 3.0.5
       music-metadata: 7.13.4
       node-cache: 5.1.2
@@ -8511,7 +8515,7 @@ packages:
       pathe: 1.1.1
       ufo: 1.2.0
       untun: 0.1.1
-      uqr: 0.1.0
+      uqr: 0.1.2
     dev: true
 
   /listr2@6.6.1:
@@ -12776,9 +12780,8 @@ packages:
       picocolors: 1.0.0
     dev: true
 
-  /uqr@0.1.0:
-    resolution: {integrity: sha512-jFCDB0ptDeUbNyU52pY2TMawACz0gBNo20Aw8R58s/4Avux/ZuqP8qZh3Q9XA4wU8ztWwEWsStI+tNNEEUHdyQ==}
-    dev: true
+  /uqr@0.1.2:
+    resolution: {integrity: sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA==}
 
   /uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
@@ -13517,8 +13520,8 @@ packages:
       readable-stream: 3.6.2
     dev: true
 
-  git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
-    resolution: {commit: 11dbd962ea108187c79a7c46fe4d6f790e23da97, repo: git@github.com:adiwajshing/libsignal-node.git, type: git}
+  github.com/adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
+    resolution: {tarball: https://codeload.github.com/adiwajshing/libsignal-node/tar.gz/11dbd962ea108187c79a7c46fe4d6f790e23da97}
     name: libsignal
     version: 2.0.1
     dependencies:
