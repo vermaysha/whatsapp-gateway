@@ -18,4 +18,20 @@ export class UsersService {
       },
     })
   }
+
+  /**
+   * Finds a user by their ID.
+   *
+   * @param {string | null} id - The ID of the user.
+   * @return {Promise<User | null>} A promise that resolves to the found user or null if no user is found.
+   */
+  async findById(id?: string | null): Promise<User | null> {
+    if (!id) return null
+
+    return await prisma.user.findFirst({
+      where: {
+        id,
+      },
+    })
+  }
 }
