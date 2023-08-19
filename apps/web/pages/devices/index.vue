@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import type { IPagination } from 'composables/useCustomFetch';
-
-useHead({
-  title: 'Devices',
-});
-
+import { renderSVG } from 'uqr';
 interface IOwner {
   id: string;
   jid: string;
@@ -28,15 +24,63 @@ interface IDevice {
   stoppedAt: null;
   updatedAt: string;
   createdAt: string;
-  owner: IOwner;
+  owner?: IOwner;
 }
+
+interface IEvent {
+  deviceId: string;
+  data: string;
+}
+
+useHead({
+  title: 'Devices',
+});
+
+const notifyStore = useNotifyStore();
+const socketStore = useSocketStore();
 
 const loading = ref(true);
 const devices = ref<IDevice[]>([]);
 const pagination = ref<IPagination>();
+const needRefresh = ref<boolean>(false);
+const modal = ref<{
+  show: boolean;
+  data: string;
+  title: string;
+}>({
+  show: false,
+  data: '',
+  title: '',
+});
+
+/**
+ * Finds a device with the specified ID.
+ *
+ * @param {string} id - The ID of the device to find.
+ * @return {IDevice | null} - The found device or null if not found.
+ */
+const findDevice = (id: string): IDevice | null => {
+  return devices.value.find((device) => device.id === id) ?? null;
+};
 
 onMounted(async () => {
-  const { data, status } = await useCustomFetch<IDevice[]>('/devices');
+  const { data, refresh } = await useCustomFetch<IDevice[]>('/devices');
+  const refreshData = async () => {
+    loading.value = true;
+    await refresh();
+    loading.value = false;
+  };
+
+  socketStore.$subscribe(async (_, state) => {
+    if (!state.needRefresh) {
+      return;
+    }
+    refreshData();
+  });
+
+  if (needRefresh.value) {
+    refreshData();
+  }
 
   if (!data.value?.data) {
     return;
@@ -46,6 +90,113 @@ onMounted(async () => {
   pagination.value = data.value.pagination;
   loading.value = false;
 });
+
+onMounted(() => {
+  socketStore.listen('QR_RECEIVED', (data: IEvent) => {
+    const device = findDevice(data.deviceId);
+    if (device) {
+      device.qr = data.data;
+      modal.value.data = renderSVG(device.qr ?? '', {});
+    }
+  });
+
+  socketStore.listen('CONNECTION_UPDATE', (data: IEvent) => {
+    const device = findDevice(data.deviceId);
+    if (device) device.status = data.data;
+
+    if (data.data === 'open') {
+      modal.value.show = false;
+      needRefresh.value = true;
+    }
+  });
+});
+
+/**
+ * Starts a device with the given UUID.
+ *
+ * @param {string} uuid - The UUID of the device to start.
+ * @return {Promise<void>} - A promise that resolves when the device is started.
+ */
+async function startDevice(uuid: string): Promise<void> {
+  const { data, error } = await useCustomFetch(`/whatsapp/start/${uuid}`, {
+    method: 'GET',
+  });
+
+  if (data.value) {
+    notifyStore.notify('Device started', NotificationType.Success);
+  }
+
+  if (error.value) {
+    notifyStore.notify(error, NotificationType.Error);
+  }
+}
+
+/**
+ * Restarts the device identified by the given UUID.
+ *
+ * @param {string} uuid - The UUID of the device to restart.
+ * @return {Promise<void>} - A promise that resolves when the device is successfully restarted.
+ */
+async function restartDevice(uuid: string): Promise<void> {
+  const { data, error } = await useCustomFetch(`/whatsapp/restart/${uuid}`, {
+    method: 'GET',
+  });
+
+  if (data.value) {
+    notifyStore.notify('Device restarted', NotificationType.Success);
+  }
+
+  if (error.value) {
+    notifyStore.notify(error, NotificationType.Error);
+  }
+}
+
+/**
+ * Stops a device.
+ *
+ * @param {string} uuid - The UUID of the device to stop.
+ * @return {Promise<void>} A promise that resolves when the device is stopped.
+ */
+async function stopDevice(uuid: string): Promise<void> {
+  const { data, error } = await useCustomFetch(`/whatsapp/stop/${uuid}`, {
+    method: 'GET',
+  });
+
+  if (data.value) {
+    const device = findDevice(uuid);
+    if (device) device.status = 'closed';
+    notifyStore.notify('Device stopped', NotificationType.Success);
+  }
+
+  if (error.value) {
+    notifyStore.notify(error, NotificationType.Error);
+  }
+}
+
+/**
+ * Scans a QR code for a given UUID.
+ *
+ * @param {string} uuid - The UUID to scan the QR code for.
+ * @return {void} This function does not return a value.
+ */
+function scanQr(uuid: string): void {
+  const device = findDevice(uuid);
+  modal.value.data = renderSVG(device?.qr ?? '');
+  modal.value.show = true;
+  modal.value.title = `Scan QR Code: ${device?.name}`;
+}
+
+/**
+ * Closes the modal.
+ *
+ * @param {void} - This function does not take any parameters.
+ * @return {void} - This function does not return any value.
+ */
+function closeModal(): void {
+  modal.value.title = '';
+  modal.value.data = '';
+  modal.value.show = !modal.value.show;
+}
 </script>
 
 <template>
@@ -181,38 +332,102 @@ onMounted(async () => {
                     <div class="avatar online">
                       <div class="mask mask-squircle w-10 h-10">
                         <img
+                          v-if="device.owner?.avatar"
                           :src="device.owner.avatar"
                           :alt="device.owner.name"
                           width="40"
                           height="40"
                         />
+
+                        <svg
+                          v-else
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="w-10 h-10"
+                          viewBox="0 0 512 512"
+                        >
+                          <rect
+                            x="32"
+                            y="64"
+                            width="448"
+                            height="320"
+                            rx="32"
+                            ry="32"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linejoin="round"
+                            stroke-width="32"
+                          />
+                          <path
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="32"
+                            d="M304 448l-8-64h-80l-8 64h96z"
+                          />
+                          <path
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="32"
+                            d="M368 448H144"
+                          />
+                          <path
+                            d="M32 304v48a32.09 32.09 0 0032 32h384a32.09 32.09 0 0032-32v-48zm224 64a16 16 0 1116-16 16 16 0 01-16 16z"
+                          />
+                        </svg>
                       </div>
                     </div>
                     <div>
                       <div class="font-bold">{{ device.name }}</div>
                       <div class="text-sm opacity-50">
                         {{
-                          device.owner.name ||
-                          device.owner.notify ||
-                          device.owner.verifiedName
+                          device.owner?.name ||
+                          device.owner?.notify ||
+                          device.owner?.verifiedName ||
+                          '-'
                         }}
                       </div>
                     </div>
                   </div>
                 </td>
-                <td>{{ formatPhoneNumber(device.owner.jid) }}</td>
+                <td>
+                  {{
+                    device.owner?.jid
+                      ? formatPhoneNumber(device.owner?.jid)
+                      : '-'
+                  }}
+                </td>
                 <td>
                   <span class="badge badge-ghost badge-md"> Desktop </span>
                 </td>
                 <td>
-                  <span class="badge badge-info badge-md">{{
-                    device.status
-                  }}</span>
+                  <span
+                    class="badge badge-primary badge-md"
+                    v-if="device.status === 'open'"
+                    >Open</span
+                  >
+                  <span
+                    class="badge badge-info badge-md"
+                    v-else-if="device.status === 'connecting'"
+                    >Connecting</span
+                  >
+                  <span
+                    class="badge badge-info badge-md"
+                    v-else-if="device.status === 'receiving_qr'"
+                    >Receiving QR</span
+                  >
+                  <span
+                    class="badge badge-error badge-md"
+                    v-else-if="device.status === 'closed'"
+                    >Close</span
+                  >
+                  <span class="badge badge-error badge-md" v-else>Close</span>
                 </td>
                 <td>
                   <div class="flex items-center gap-2">
                     <NuxtLink
-                      href="/devices/info?uuid=device.id"
+                      :href="`/devices/info?uuid=${device.id}`"
                       class="btn btn-ghost btn-xs"
                     >
                       <svg
@@ -232,7 +447,7 @@ onMounted(async () => {
                       Info
                     </NuxtLink>
                     <NuxtLink
-                      href="/devices/system?uuid=device.id"
+                      :href="`/devices/system?uuid=${device.id}`"
                       class="btn btn-ghost btn-xs"
                     >
                       <svg
@@ -251,6 +466,122 @@ onMounted(async () => {
                       </svg>
                       System
                     </NuxtLink>
+                    <button
+                      class="btn btn-ghost btn-xs"
+                      v-if="device.status === 'receiving_qr'"
+                      @click="scanQr(device.id)"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5"
+                        viewBox="0 0 512 512"
+                      >
+                        <rect
+                          x="336"
+                          y="336"
+                          width="80"
+                          height="80"
+                          rx="8"
+                          ry="8"
+                        />
+                        <rect
+                          x="272"
+                          y="272"
+                          width="64"
+                          height="64"
+                          rx="8"
+                          ry="8"
+                        />
+                        <rect
+                          x="416"
+                          y="416"
+                          width="64"
+                          height="64"
+                          rx="8"
+                          ry="8"
+                        />
+                        <rect
+                          x="432"
+                          y="272"
+                          width="48"
+                          height="48"
+                          rx="8"
+                          ry="8"
+                        />
+                        <rect
+                          x="272"
+                          y="432"
+                          width="48"
+                          height="48"
+                          rx="8"
+                          ry="8"
+                        />
+                        <rect
+                          x="336"
+                          y="96"
+                          width="80"
+                          height="80"
+                          rx="8"
+                          ry="8"
+                        />
+                        <rect
+                          x="288"
+                          y="48"
+                          width="176"
+                          height="176"
+                          rx="16"
+                          ry="16"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="32"
+                        />
+                        <rect
+                          x="96"
+                          y="96"
+                          width="80"
+                          height="80"
+                          rx="8"
+                          ry="8"
+                        />
+                        <rect
+                          x="48"
+                          y="48"
+                          width="176"
+                          height="176"
+                          rx="16"
+                          ry="16"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="32"
+                        />
+                        <rect
+                          x="96"
+                          y="336"
+                          width="80"
+                          height="80"
+                          rx="8"
+                          ry="8"
+                        />
+                        <rect
+                          x="48"
+                          y="288"
+                          width="176"
+                          height="176"
+                          rx="16"
+                          ry="16"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="32"
+                        />
+                      </svg>
+                      Scan QR
+                    </button>
                   </div>
                 </td>
                 <td>
@@ -261,6 +592,8 @@ onMounted(async () => {
                     >
                       <button
                         class="btn btn-outline btn-sm btn-success join-item"
+                        @click="startDevice(device.id)"
+                        :disabled="device.status !== 'closed'"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -284,6 +617,7 @@ onMounted(async () => {
                     >
                       <button
                         class="btn btn-outline btn-sm btn-warning join-item"
+                        @click="restartDevice(device.id)"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -304,6 +638,8 @@ onMounted(async () => {
                     <div class="tooltip tooltip-error" data-tip="Stop device">
                       <button
                         class="btn btn-outline btn-sm btn-error join-item"
+                        @click="stopDevice(device.id)"
+                        :disabled="device.status === 'closed'"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -330,6 +666,22 @@ onMounted(async () => {
         <div class="mt-4 flex justify-between">
           <div></div>
           <Pagination v-if="pagination" :data="pagination" />
+        </div>
+      </div>
+    </div>
+    <div
+      :class="{
+        modal: true,
+        'modal-open': modal.show,
+      }"
+    >
+      <div class="modal-box">
+        <h3 class="font-bold text-lg">{{ modal.title }}</h3>
+        <div v-html="modal.data"></div>
+        <div class="modal-action">
+          <button @click="closeModal" class="btn btn-error text-white">
+            Close
+          </button>
         </div>
       </div>
     </div>
