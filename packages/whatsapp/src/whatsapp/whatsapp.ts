@@ -166,11 +166,17 @@ export class Whatapp {
       if (qr) {
         sendMessage({
           status: true,
+          command: 'CONNECTION_UPDATE',
+          data: 'receiving_qr',
+        })
+        sendMessage({
+          status: true,
           command: 'QR_RECEIVED',
           data: qr,
         })
         await updateDevice({
           qr,
+          status: 'receiving_qr',
         })
       }
 
