@@ -47,6 +47,13 @@ export class EventsGateway
     this.connectedUsers--
   }
 
+  emit(event: string, uuid: string, data: any): boolean {
+    const name = `${event}/${uuid}`
+    const status = this.server.emit(name, data)
+    console.log('emit Event', name, data, status)
+    return status
+  }
+
   @SubscribeMessage('events')
   findAll(@MessageBody() data: any): Observable<WsResponse<number>> {
     console.log('events', data)
