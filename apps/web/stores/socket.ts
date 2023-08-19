@@ -3,9 +3,11 @@ import { type Socket, io } from 'socket.io-client';
 interface State {
   socket: Socket | null;
   token: string | null;
+  needRefresh: boolean;
 }
 
 const notify = () => useNotifyStore();
+const auth = () => useAuthStore();
 const config = () => useRuntimeConfig();
 
 export const useSocketStore = defineStore('socket', {
@@ -18,6 +20,7 @@ export const useSocketStore = defineStore('socket', {
     return {
       socket: null,
       token: null,
+      needRefresh: false,
     };
   },
   actions: {
@@ -35,7 +38,24 @@ export const useSocketStore = defineStore('socket', {
         auth: {
           token: this.token,
         },
+        autoConnect: true,
       });
+    },
+
+    /**
+     * Listen for a specific event and execute a callback when the event is triggered.
+     *
+     * @param {string} event - The name of the event to listen for.
+     * @param {(...args: any[]) => void} callback - The callback function to execute when the event is triggered.
+     * @return {void} This function does not return anything.
+     */
+    listen(event: string, callback: (...args: any[]) => void): void {
+      const uuid = auth().uuid;
+      const name = `${event}/${uuid}`;
+      if (!uuid || !this.socket) return;
+
+      this.socket.on(name, callback);
+      console.log('Listen event', `${event}/${uuid}`);
     },
 
     /**
@@ -57,12 +77,17 @@ export const useSocketStore = defineStore('socket', {
         return;
       }
 
+      const lastDisconnect = ref<boolean>(false);
+
       this.socket.on('connect', () => {
         console.log('connected', this.socket?.id);
+        this.needRefresh = lastDisconnect.value === true;
         notify().notify('Connected to server', NotificationType.Info);
       });
 
       this.socket.on('disconnect', () => {
+        this.needRefresh = false;
+        lastDisconnect.value = true;
         console.log('disconnected', this.socket?.id);
         notify().notify('Disconnected from server', NotificationType.Error);
       });
