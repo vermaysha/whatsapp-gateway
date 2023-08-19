@@ -56,10 +56,12 @@ export class AuthController {
     res.setCookie('wsToken', wsToken)
 
     res.send({
-      uuid: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      avatar: user.avatar,
+      data: {
+        uuid: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatar: user.avatar,
+      },
     })
   }
 
@@ -76,13 +78,13 @@ export class AuthController {
     @Request() req: FastifyRequest,
     @Response() res: FastifyReply,
   ) {
-    const user: Partial<User | null> = await this.userService.findOne(
+    const user: Partial<User | null> = await this.userService.findById(
       req.session.user,
     )
 
     delete user?.['password']
 
-    res.send(user)
+    res.send({ data: user })
   }
 
   @Auth()
@@ -93,9 +95,19 @@ export class AuthController {
    * @param {Response} res - The response object.
    * @return {void} The response status.
    */
-  verify(@Response() res: FastifyReply) {
+  async verify(@Response() res: FastifyReply, @Request() req: FastifyRequest) {
+    const user: Partial<User | null> = await this.userService.findById(
+      req.session.user,
+    )
+
     res.send({
-      status: true,
+      data: {
+        status: true,
+        uuid: user?.id,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        avatar: user?.avatar,
+      },
     })
   }
 
@@ -111,7 +123,7 @@ export class AuthController {
   async logout(@Response() res: FastifyReply, @Request() req: FastifyRequest) {
     await req.session.destroy()
     res.send({
-      status: true,
+      data: { status: true },
     })
   }
 
