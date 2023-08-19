@@ -1,4 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common'
+import {
+  HttpException,
+  Injectable,
+  OnApplicationBootstrap,
+} from '@nestjs/common'
 import { Device, Prisma, prisma } from 'database'
 import { PaginatedResult, paginate } from 'pagination'
 import { DeviceListDTO } from './devices.dto'
@@ -11,7 +15,22 @@ type DeviceFindAll = Prisma.DeviceGetPayload<{
 }>
 
 @Injectable()
-export class DevicesService {
+export class DevicesService implements OnApplicationBootstrap {
+  /**
+   * Asynchronously called when the application is bootstrapped.
+   *
+   * @return {Promise<void>} A promise that resolves when the function completes.
+   */
+  async onApplicationBootstrap(): Promise<void> {
+    await prisma.device.updateMany({
+      data: {
+        status: 'closed',
+        stoppedAt: new Date(),
+        qr: null,
+      },
+    })
+  }
+
   /**
    * Retrieves a summary of devices based on the provided search criteria.
    *
