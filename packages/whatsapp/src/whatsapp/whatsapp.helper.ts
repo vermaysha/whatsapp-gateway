@@ -1,5 +1,19 @@
 import type { WASocket, proto } from '@whiskeysockets/baileys'
 import { getKeyAuthor } from '@whiskeysockets/baileys'
+import axios from 'axios'
+import { randomBytes } from 'crypto'
+import { createWriteStream } from 'fs'
+import { resolve as pathResolve } from 'path'
+import { cwd } from 'process'
+
+export const ASSETS_PATH = pathResolve(
+  cwd(),
+  '..',
+  '..',
+  'apps',
+  'api',
+  'assets',
+)
 
 /**
  * Downloads media and saves it to the specified directory.
@@ -35,16 +49,15 @@ export async function downloadMedia(
     const fixFileName = (file?: string) =>
       file?.replace(/\//g, '__')?.replace(/:/g, '-')
 
-    const user = fixFileName(
-      getKeyAuthor(message.key, sock.user?.id) || 'default',
-    )
+    const user =
+      fixFileName(getKeyAuthor(message.key, sock.user?.id)) || 'default'
 
     const fileName = randomBytes(8).toString('hex')
 
-    const fileDir = `./storages/${user}`
-    mkdirSync(fileDir, { recursive: true })
+    const savedPath = pathResolve(ASSETS_PATH, user)
+    mkdirSync(savedPath, { recursive: true })
 
-    const filePath = `${fileDir}/${fileName}.${extension}`
+    const filePath = `${user}/${fileName}.${extension}`
 
     const writeStream = createWriteStream(filePath)
     writeStream.write(buffer)
@@ -68,14 +81,14 @@ export async function downloadMedia(
  * @return {Date | undefined} - The converted timestamp as a Date object. Returns undefined if data is falsy.
  */
 export function convert2Timestamp(
-  data?: number | null,
+  data?: number | null | Long,
   multiple = 1000,
 ): Date | undefined {
   if (!data) {
     return undefined
   }
 
-  return new Date(data * multiple)
+  return new Date(Number(data) * multiple)
 }
 
 /**
@@ -154,4 +167,34 @@ export function decodeBuffer(obj: any): any {
     }
   }
   return newObj
+}
+
+/**
+ * Downloads a media file from a given URL and saves it to a specified output path.
+ *
+ * @param {string} url - The URL of the media file to download.
+ * @param {string} [outputPath=''] - The output path to save the downloaded file. Defaults to an empty string.
+ * @return {Promise<string>} A promise that resolves with the path of the saved file.
+ */
+export async function downloadMediaUri(
+  url: string,
+  outputPath: string = '',
+): Promise<string> {
+  try {
+    const fileName = `${randomBytes(8).toString('hex')}.jpg`
+    const savedPath = pathResolve(ASSETS_PATH, outputPath, fileName)
+    const response = await axios.get(url, { responseType: 'stream' })
+
+    const outputStream = createWriteStream(savedPath)
+    response.data.pipe(outputStream)
+
+    return new Promise<string>((resolve, reject) => {
+      outputStream.on('finish', () => {
+        resolve(`${outputPath}/${fileName}.jpg`)
+      })
+      outputStream.on('error', reject)
+    })
+  } catch (error) {
+    throw new Error(`Failed to download file: ${(error as Error).message}`)
+  }
 }

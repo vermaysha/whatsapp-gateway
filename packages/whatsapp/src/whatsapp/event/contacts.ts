@@ -1,6 +1,7 @@
 import type { Contact, WASocket } from '@whiskeysockets/baileys'
 import { jidNormalizedUser } from '@whiskeysockets/baileys'
 import { prisma } from 'database'
+import { downloadMediaUri } from '../whatsapp.helper'
 
 /**
  * Upserts a contact in the database with the provided information.
@@ -24,7 +25,10 @@ export async function upsertContact(
   let status = undefined
 
   try {
-    avatar = await sock.profilePictureUrl(jid, 'image')
+    const image = await sock.profilePictureUrl(jid, 'image')
+    if (image) {
+      avatar = await downloadMediaUri(image, jid)
+    }
   } catch (error) {}
 
   try {
