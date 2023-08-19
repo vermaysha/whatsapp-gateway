@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { fork, type ChildProcess } from 'child_process'
 import { LogsService } from '../logs/logs.service'
 import { InputCommand, OutputCommand, OutputMessage } from 'whatsapp'
+import { EventsGateway } from '../events/events.gateway'
 
 interface IMemoryUsage {
   rss: number
@@ -21,18 +22,22 @@ export type WhatsappWorker = {
 
 @Injectable()
 export class WhatsappsService {
-  constructor(private logsService: LogsService) {}
+  constructor(
+    private logsService: LogsService,
+    private eventsGateway: EventsGateway,
+  ) {}
 
   private workers = new Map<string, WhatsappWorker>()
 
   /**
-   * Starts the specified process with the given ID.
+   * Starts the device with the specified deviceId for the given userId.
    *
-   * @param {string} id - The ID of the process.
-   * @return {boolean} This function does not return anything.
+   * @param {string} deviceId - The ID of the device to start.
+   * @param {string} userId - The ID of the user associated with the device.
+   * @return {boolean} Returns true if the device was successfully started, false otherwise.
    */
-  public start(id: string): boolean {
-    if (this.get(id)) {
+  public start(deviceId: string, userId: string): boolean {
+    if (this.get(deviceId)) {
       return false
     }
 
@@ -42,7 +47,7 @@ export class WhatsappsService {
 
     child.send({
       command: 'START_SERVICE',
-      params: { deviceId: id },
+      params: { deviceId },
     })
 
     child.stdout?.on('data', (data) => {
@@ -69,7 +74,7 @@ export class WhatsappsService {
         this.logsService.create({
           device: {
             connect: {
-              id,
+              id: deviceId,
             },
           },
           level: dataJson.level,
@@ -92,28 +97,36 @@ export class WhatsappsService {
 
     child.on('message', (message) => {
       const data = message as OutputMessage
-      const meta = this.workers.get(id)?.meta
+      const meta = this.workers.get(deviceId)?.meta
       if (data.command === 'CONNECTION_UPDATE' && meta) {
         meta.status = data.data
+        this.eventsGateway.emit('CONNECTION_UPDATE', userId, {
+          deviceId,
+          data: data.data,
+        })
       }
 
       if (data.command === 'QR_RECEIVED' && meta) {
         meta.qr = data.data
+        this.eventsGateway.emit('QR_RECEIVED', userId, {
+          deviceId,
+          data: data.data,
+        })
       }
 
       if (data.command === 'STOPPED') {
         child.kill()
-        this.workers.delete(id)
+        this.workers.delete(deviceId)
       }
       if (data.command === 'DB_CONNECTION_ERROR') {
         child.kill()
-        this.workers.delete(id)
+        this.workers.delete(deviceId)
 
         Logger.error('Database connection error', 'WhatsappsService')
       }
     })
 
-    this.workers.set(id, {
+    this.workers.set(deviceId, {
       process: child,
       meta: {
         status: null,

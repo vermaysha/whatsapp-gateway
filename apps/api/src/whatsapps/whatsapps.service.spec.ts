@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { WhatsappsService } from './whatsapps.service'
 import { LogsModule } from '../logs/logs.module'
+import { EventsGateway } from '../events/events.gateway'
 
 describe('WhatsappsService', () => {
   let service: WhatsappsService
@@ -8,7 +9,7 @@ describe('WhatsappsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [LogsModule],
-      providers: [WhatsappsService],
+      providers: [WhatsappsService, EventsGateway],
     }).compile()
 
     service = module.get<WhatsappsService>(WhatsappsService)
