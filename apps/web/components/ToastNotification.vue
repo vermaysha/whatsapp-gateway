@@ -15,6 +15,7 @@ const { notifications } = storeToRefs(notifyStore);
         'alert-error': notification.type === NotificationType.Error,
         'alert-warning': notification.type === NotificationType.Warning,
         'alert-info': notification.type === NotificationType.Info,
+        'text-white': true,
       }"
     >
       <!-- Info Icon -->
