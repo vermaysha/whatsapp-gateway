@@ -1,6 +1,6 @@
 import { Controller, HttpException, Req, Res } from '@nestjs/common'
 import { Auth } from '../auth/auth.decorator'
-import { FastifyReply } from 'fastify'
+import { FastifyReply, FastifyRequest } from 'fastify'
 import { WhatsappsService } from './whatsapps.service'
 import { TypedParam, TypedRoute } from '@nestia/core'
 
@@ -13,8 +13,14 @@ export class WhatsappsController {
   start(
     @TypedParam('deviceId', 'string') deviceId: string,
     @Res() res: FastifyReply,
+    @Req() req: FastifyRequest,
   ) {
-    const status = this.whatsappService.start(deviceId)
+    const status = this.whatsappService.start(deviceId, req.session.user || '')
+
+    if (!status) {
+      throw new HttpException('Failed to start', 400)
+    }
+
     res.send({
       status,
     })
@@ -26,8 +32,34 @@ export class WhatsappsController {
     @Res() res: FastifyReply,
   ) {
     const status = this.whatsappService.stop(deviceId)
+
+    if (!status) {
+      throw new HttpException('Failed to stop', 400)
+    }
+
     res.send({
       status,
+    })
+  }
+
+  @TypedRoute.Get('/restart/:deviceId')
+  restart(
+    @TypedParam('deviceId', 'string') deviceId: string,
+    @Res() res: FastifyReply,
+    @Req() req: FastifyRequest,
+  ) {
+    if (!this.whatsappService.stop(deviceId)) {
+      throw new HttpException('Service not running', 400)
+    }
+
+    const status = this.whatsappService.start(deviceId, req.session.user || '')
+
+    if (!status) {
+      throw new HttpException('Failed to restart', 400)
+    }
+
+    res.send({
+      status: true,
     })
   }
 
