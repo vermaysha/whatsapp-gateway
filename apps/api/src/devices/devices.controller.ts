@@ -54,7 +54,7 @@ export class DevicesController {
       req.session.user,
       query.search,
     )
-    res.send(data)
+    res.send({ data })
   }
 
   @TypedRoute.Get('/:id')
@@ -76,7 +76,7 @@ export class DevicesController {
       throw new NotFoundException('Device not found')
     }
 
-    res.send(data)
+    res.send({ data })
   }
 
   @TypedRoute.Put('/:id')
@@ -91,7 +91,6 @@ export class DevicesController {
     })
 
     res.send({
-      status: true,
       message: 'Device updated successfully',
       data,
     })
@@ -113,7 +112,6 @@ export class DevicesController {
     })
 
     res.send({
-      status: true,
       message: 'Device created successfully',
       data,
     })
@@ -127,7 +125,6 @@ export class DevicesController {
   ) {
     await this.deviceService.delete(id, req.session.user)
     res.send({
-      status: true,
       message: 'Device deleted successfully',
     })
   }

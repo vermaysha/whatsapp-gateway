@@ -13,6 +13,7 @@ export interface IPagination {
 export interface IResponse<T> {
   data: T;
   pagination?: IPagination;
+  message?: string;
 }
 
 /**
