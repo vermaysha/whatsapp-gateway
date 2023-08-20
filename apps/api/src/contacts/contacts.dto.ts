@@ -3,7 +3,6 @@ export class DefaultDTO {
    * The device UUID.
    *
    * @default null
-   * @format uuid
    */
   device?: string | null
 }

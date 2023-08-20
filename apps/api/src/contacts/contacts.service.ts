@@ -9,10 +9,10 @@ export class ContactsService {
    * Finds all items based on the provided parameters.
    *
    * @param {ListDTO} params - The parameters for filtering and pagination.
-   * @param {string} deviceId - The ID of the device.
+   * @param {string} userId - The ID of the device.
    * @return {Promise<Prisma.ContactGetPayload<any>[]>} An array of contacts that match the provided parameters.
    */
-  async findAll(params: ListDTO, deviceId: string) {
+  async findAll(params: ListDTO, userId: string) {
     const { page, perPage, order, orderBy, search, device } = params
 
     const orderQuery:
@@ -33,7 +33,10 @@ export class ContactsService {
 
     const where: Prisma.ContactWhereInput | undefined = device
       ? {
-          deviceId,
+          devices: {
+            id: device,
+            userId,
+          },
         }
       : undefined
 
