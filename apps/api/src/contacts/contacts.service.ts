@@ -1,83 +1,68 @@
-import { HttpException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { prisma, Prisma, Contact } from 'database'
-
-export interface PaginatedContact {
-  data: Contact[]
-  pagination: {
-    perPage: number
-    page: number
-    totalPages: number
-    total: number
-  }
-}
+import { paginate } from 'pagination'
+import { ListDTO } from './contacts.dto'
 
 @Injectable()
 export class ContactsService {
   /**
-   * Retrieves all contacts with pagination.
+   * Finds all items based on the provided parameters.
    *
-   * @param {number} page - The page number to retrieve.
-   * @param {number} perPage - The number of contacts to retrieve per page.
-   * @return {Promise<PaginatedContact>} A promise that resolves to a paginated list of contact.
+   * @param {ListDTO} params - The parameters for filtering and pagination.
+   * @param {string} deviceId - The ID of the device.
+   * @return {Promise<Prisma.ContactGetPayload<any>[]>} An array of contacts that match the provided parameters.
    */
-  async findAll(page = 1, perPage = 10): Promise<PaginatedContact> {
-    const skipAmount = (page - 1) * perPage
-    const totalCount = await this.count()
-    const totalPages = Math.ceil(totalCount / perPage)
+  async findAll(params: ListDTO, deviceId: string) {
+    const { page, perPage, order, orderBy, search, device } = params
 
-    const data = await prisma.contact.findMany({
-      skip: skipAmount,
-      take: perPage,
-      orderBy: {
-        updatedAt: 'desc',
+    const orderQuery:
+      | Prisma.ContactOrderByWithRelationAndSearchRelevanceInput
+      | undefined = search
+      ? {
+          _relevance: search
+            ? {
+                fields: ['name', 'notify', 'verifiedName'],
+                search,
+                sort: 'desc',
+              }
+            : undefined,
+        }
+      : {
+          [orderBy ?? 'updatedAt']: order ?? 'desc',
+        }
+
+    const where: Prisma.ContactWhereInput | undefined = device
+      ? {
+          deviceId,
+        }
+      : undefined
+
+    return paginate<Prisma.ContactFindManyArgs, Prisma.ContactGetPayload<any>>(
+      prisma.contact,
+      {
+        orderBy: orderQuery,
+        where,
       },
-    })
-
-    return {
-      data,
-      pagination: {
+      {
         page,
         perPage,
-        totalPages,
-        total: totalCount,
       },
-    }
+    )
   }
 
   /**
-   * Counts the number of contact.
+   * Finds a contact by its ID and device ID.
    *
-   * @return {Promise<number>} The number of contact.
+   * @param {string} id - The ID of the contact.
+   * @param {string} deviceId - The ID of the device.
+   * @return {Promise<Contact | null>} A promise that resolves to the found contact or null if not found.
    */
-  async count(): Promise<number> {
-    return prisma.contact.count()
-  }
-
-  async findOne(id: string): Promise<Contact | null> {
-    return prisma.contact.findUnique({
+  async findOne(id: string, deviceId?: string): Promise<Contact | null> {
+    return prisma.contact.findFirst({
       where: {
         id,
+        deviceId,
       },
-    })
-  }
-
-  /**
-   * Updates a contact record with the specified ID.
-   *
-   * @param {string} id - The ID of the contact to update.
-   * @param {Prisma.ContactUpdateInput} chat - The updated information for the contact.
-   * @return {Promise<Contact>} The updated contact record.
-   */
-  async update(id: string, chat: Prisma.ContactUpdateInput): Promise<Contact> {
-    if (!(await this.findOne(id))) {
-      throw new HttpException('Chat not found', 404)
-    }
-
-    return prisma.contact.update({
-      where: {
-        id,
-      },
-      data: chat,
     })
   }
 }
