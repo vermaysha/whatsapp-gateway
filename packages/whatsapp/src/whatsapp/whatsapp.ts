@@ -1,11 +1,19 @@
-import { type Contact, type WASocket } from '@whiskeysockets/baileys'
-import type { Boom } from '@hapi/boom'
+import {
+  type Contact,
+  type WASocket,
+  makeWASocket,
+  DisconnectReason,
+  jidNormalizedUser,
+  fetchLatestWaWebVersion,
+} from '@whiskeysockets/baileys'
+import { Boom } from '@hapi/boom'
 import type { AxiosRequestConfig } from 'axios'
+import { EventEmitter } from 'node:events'
 import { prisma, type Prisma } from 'database'
 import { upsertContact } from './event'
 import { sendMessage } from '../worker/worker.helper'
+import { listenWhatsappEvent } from './whatsapp.storage'
 import { logger } from './whatsapp.logger'
-import { EventEmitter } from 'node:events'
 
 export class Whatapp {
   /**
@@ -41,6 +49,9 @@ export class Whatapp {
       })
       return false
     }
+
+    const { state, saveCreds, clearCreds } = await useDBAuthState(deviceId)
+    const { version } = await fetchLatestWaWebVersion(axiosConfig)
 
     /**
      * Updates a device in the database.
@@ -104,17 +115,6 @@ export class Whatapp {
         'Cache-Control': 'max-age=0',
       },
     }
-
-    const {
-      makeWASocket,
-      DisconnectReason,
-      jidNormalizedUser,
-      fetchLatestWaWebVersion,
-    } = await import('@whiskeysockets/baileys')
-    const { listenWhatsappEvent } = await import('./whatsapp.event')
-    const { useDBAuthState } = await import('./whatsapp.storage')
-    const { state, saveCreds, clearCreds } = await useDBAuthState(deviceId)
-    const { version } = await fetchLatestWaWebVersion(axiosConfig)
 
     await updateDevice({
       startedAt: new Date(),
@@ -288,7 +288,6 @@ export class Whatapp {
    * @return {Promise<void>} Promise that resolves when the function is stopped.
    */
   async stop(): Promise<void> {
-    const { Boom } = await import('@hapi/boom')
     this.socket?.end(
       new Boom('Service Stopped', {
         statusCode: 400,
