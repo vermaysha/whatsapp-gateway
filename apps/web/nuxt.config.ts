@@ -28,4 +28,9 @@ export default defineNuxtConfig({
   pinia: {
     autoImports: ['defineStore', 'storeToRefs'],
   },
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => ['ion-icon'].includes(tag),
+    },
+  },
 });
