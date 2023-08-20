@@ -5,7 +5,7 @@ export async function restart(
   params: { deviceId: string },
   whatsapp?: Whatapp,
 ) {
-  whatsapp?.restart(params.deviceId)
+  await whatsapp?.restart()
   sendMessage({
     command: 'RESTART_SERVICE',
     status: true,
