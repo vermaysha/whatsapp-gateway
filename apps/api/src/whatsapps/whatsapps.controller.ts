@@ -27,11 +27,11 @@ export class WhatsappsController {
   }
 
   @TypedRoute.Get('/stop/:deviceId')
-  stop(
+  async stop(
     @TypedParam('deviceId', 'string') deviceId: string,
     @Res() res: FastifyReply,
   ) {
-    const status = this.whatsappService.stop(deviceId)
+    const status = await this.whatsappService.stop(deviceId)
 
     if (!status) {
       throw new HttpException('Failed to stop', 400)
@@ -43,12 +43,12 @@ export class WhatsappsController {
   }
 
   @TypedRoute.Get('/restart/:deviceId')
-  restart(
+  async restart(
     @TypedParam('deviceId', 'string') deviceId: string,
     @Res() res: FastifyReply,
     @Req() req: FastifyRequest,
   ) {
-    if (!this.whatsappService.stop(deviceId)) {
+    if (!(await this.whatsappService.stop(deviceId))) {
       throw new HttpException('Service not running', 400)
     }
 

@@ -175,9 +175,12 @@ export class WhatsappsService {
 
     if (child) {
       await this.sendCommand(id, 'STOP_SERVICE')
+      child.process.kill()
+      this.workers.delete(id)
+      return true
     }
 
-    return this.workers.delete(id)
+    return false
   }
 
   /**
@@ -201,9 +204,9 @@ export class WhatsappsService {
     id: string,
     command: InputCommand | OutputCommand,
   ): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      const child = this.workers.get(id)
+    const child = this.workers.get(id)
 
+    return new Promise<any>((resolve, reject) => {
       if (!child) {
         return reject(new Error('Whatsapp service not found or not running'))
       }
@@ -216,6 +219,10 @@ export class WhatsappsService {
       }
 
       child.process.on('message', handleResponse)
+
+      setTimeout(() => {
+        resolve(false)
+      }, 5000)
 
       child.process.send({
         command,
