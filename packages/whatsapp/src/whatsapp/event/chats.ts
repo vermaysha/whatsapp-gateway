@@ -6,6 +6,7 @@ import {
 import { prisma } from 'database'
 import { upsertContact } from './contacts'
 import { convert2Timestamp } from '../whatsapp.helper'
+import { logger } from '../whatsapp.logger'
 
 /**
  * Processes a batch of chat events and updates the database accordingly.
@@ -83,10 +84,14 @@ export async function chatEvent(
           },
         },
       })
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      logger.warn(
+        {
+          jid,
+          trace: error?.stack,
+        },
+        `Failed to upsert chat`,
+      )
     }
-
-    console.log('chatEvent', JSON.stringify({ chat }))
   }
 }

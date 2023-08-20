@@ -4,7 +4,7 @@ import type { AxiosRequestConfig } from 'axios'
 import { prisma, type Prisma } from 'database'
 import { upsertContact } from './event'
 import { sendMessage } from '../worker/worker.helper'
-import pino from 'pino'
+import { logger } from './whatsapp.logger'
 
 export class Whatapp {
   public socket: WASocket | null = null
@@ -44,7 +44,14 @@ export class Whatapp {
           },
           data,
         })
-      } catch (e) {}
+      } catch (error: any) {
+        logger.warn(
+          {
+            trace: error?.stack,
+          },
+          `Failed to update device`,
+        )
+      }
     }
 
     const device = await prisma?.device.findUnique({
@@ -83,11 +90,6 @@ export class Whatapp {
         'Cache-Control': 'max-age=0',
       },
     }
-    const logger = pino({
-      name: device.name,
-      enabled: true,
-      timestamp: () => `,"time":"${new Date().toJSON()}"`,
-    })
 
     const {
       makeWASocket,
@@ -143,8 +145,13 @@ export class Whatapp {
             },
           },
         })
-      } catch (e) {
-        // silent is gold
+      } catch (error: any) {
+        logger.warn(
+          {
+            trace: error?.stack,
+          },
+          `Failed to update device contact after connected`,
+        )
       }
     }
 
@@ -167,7 +174,7 @@ export class Whatapp {
         sendMessage({
           status: true,
           command: 'CONNECTION_UPDATE',
-          data: 'receiving_qr',
+          data: 'receivingQr',
         })
         sendMessage({
           status: true,
@@ -176,7 +183,7 @@ export class Whatapp {
         })
         await updateDevice({
           qr,
-          status: 'receiving_qr',
+          status: 'receivingQr',
         })
       }
 
@@ -193,10 +200,15 @@ export class Whatapp {
             qr: null,
             stoppedAt: new Date(),
           })
+          sendMessage({
+            status: true,
+            command: 'CONNECTION_UPDATE',
+            data: 'loggedOut',
+          })
           clearCreds()
         } else {
           await updateDevice({
-            status: 'closed',
+            status: 'close',
             stoppedAt: new Date(),
           })
         }
@@ -252,11 +264,18 @@ export class Whatapp {
             id: this.deviceId,
           },
           data: {
-            status: 'closed',
+            status: 'close',
             stoppedAt: new Date(),
           },
         })
-      } catch (e) {}
+      } catch (error: any) {
+        logger.warn(
+          {
+            trace: error?.stack,
+          },
+          `Failed to update device status to closed`,
+        )
+      }
     }
 
     sendMessage({
@@ -281,11 +300,18 @@ export class Whatapp {
             id: this.deviceId,
           },
           data: {
-            status: 'closed',
+            status: 'loggedOut',
             stoppedAt: new Date(),
           },
         })
-      } catch (e) {}
+      } catch (error: any) {
+        logger.warn(
+          {
+            trace: error?.stack,
+          },
+          `Failed to update device status to closed (logout)`,
+        )
+      }
     }
 
     sendMessage({

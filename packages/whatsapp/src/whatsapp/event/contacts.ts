@@ -2,6 +2,7 @@ import type { Contact, WASocket } from '@whiskeysockets/baileys'
 import { jidNormalizedUser } from '@whiskeysockets/baileys'
 import { prisma } from 'database'
 import { downloadMediaUri } from '../whatsapp.helper'
+import { logger } from '../whatsapp.logger'
 
 /**
  * Upserts a contact in the database with the provided information.
@@ -29,11 +30,27 @@ export async function upsertContact(
     if (image) {
       avatar = await downloadMediaUri(image, jid)
     }
-  } catch (error) {}
+  } catch (error: any) {
+    logger.warn(
+      {
+        jid,
+        trace: error?.stack,
+      },
+      `Failed to fetch profile picture`,
+    )
+  }
 
   try {
     status = (await sock.fetchStatus(jid))?.status ?? undefined
-  } catch (error) {}
+  } catch (error: any) {
+    logger.warn(
+      {
+        jid,
+        trace: error?.stack,
+      },
+      `Failed to fetch status`,
+    )
+  }
 
   const data = {
     avatar,
@@ -59,8 +76,14 @@ export async function upsertContact(
       },
       update: data,
     })
-  } catch (error) {
-    console.error(error, data)
+  } catch (error: any) {
+    logger.warn(
+      {
+        jid,
+        trace: error?.stack,
+      },
+      `Failed to upsert contact`,
+    )
   }
 }
 
