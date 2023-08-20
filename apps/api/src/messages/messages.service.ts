@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common'
 import { prisma, type Message, Prisma } from 'database'
 import { ListDTO } from './messages.dto'
-import { PaginatedResult, paginate } from 'pagination'
+import { paginate } from 'pagination'
 
 @Injectable()
 export class MessagesService {

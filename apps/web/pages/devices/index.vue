@@ -333,7 +333,9 @@ function closeModal(): void {
                       <div class="mask mask-squircle w-10 h-10">
                         <img
                           v-if="device.owner?.avatar"
-                          :src="device.owner.avatar"
+                          :src="
+                            serverAsset(`contacts/avatar/${device.owner.id}`)
+                          "
                           :alt="device.owner.name"
                           width="40"
                           height="40"
