@@ -250,7 +250,6 @@ export class Whatapp {
               disconnectReason: statusCode,
             },
           })
-          this.deviceId = null
           this.socket = null
 
           this.localEvent.emit('close')
