@@ -3,21 +3,8 @@
     <div
       class="flex justify-between items-center border-b p-4 bg-base-100 rounded"
     >
-      <div class="mb-4 flex items-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewbox="0 0 24 24"
-          strokewidth="1.5"
-          stroke="currentColor"
-          class="w-6 h-6 mr-2"
-        >
-          <path
-            strokelinecap="round"
-            strokelinejoin="round"
-            d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"
-          />
-        </svg>
+      <div class="mb-4 flex items-center gap-2">
+        <ion-icon name="mail-outline" class="text-2xl"></ion-icon>
         <h1 class="text-xl font-bold">Message</h1>
       </div>
       <div class="text-sm breadcrumbs">
@@ -48,27 +35,7 @@
             <div
               class="join-item items-center flex input-sm place-content-center border"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-4 h-4"
-                viewBox="0 0 512 512"
-              >
-                <path
-                  d="M221.09 64a157.09 157.09 0 10157.09 157.09A157.1 157.1 0 00221.09 64z"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-miterlimit="10"
-                  stroke-width="32"
-                />
-                <path
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-miterlimit="10"
-                  stroke-width="32"
-                  d="M338.29 338.29L448 448"
-                />
-              </svg>
+              <ion-icon name="search-outline" class="text-xl"></ion-icon>
             </div>
           </div>
         </div>
@@ -126,36 +93,10 @@
                       href="/message/info?uuid=123456789"
                       class="btn btn-ghost btn-xs"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-5 w-5"
-                        viewBox="0 0 512 512"
-                      >
-                        <path
-                          d="M248 64C146.39 64 64 146.39 64 248s82.39 184 184 184 184-82.39 184-184S349.61 64 248 64z"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-miterlimit="10"
-                          stroke-width="32"
-                        />
-                        <path
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="32"
-                          d="M220 220h32v116"
-                        />
-                        <path
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-miterlimit="10"
-                          stroke-width="32"
-                          d="M208 340h88"
-                        />
-                        <path d="M248 130a26 26 0 1026 26 26 26 0 00-26-26z" />
-                      </svg>
+                      <ion-icon
+                        name="information-circle-outline"
+                        class="text-xl"
+                      ></ion-icon>
                       Details
                     </NuxtLink>
                   </div>

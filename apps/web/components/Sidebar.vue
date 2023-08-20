@@ -15,22 +15,7 @@
             :class="{
               active: $route.path === '/',
             }"
-            ><span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewbox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-                />
-              </svg>
-            </span>
+            ><ion-icon name="home-outline" class="text-2xl"></ion-icon>
             <span class="capitalize">Dashboard</span></NuxtLink
           >
         </li>
@@ -40,22 +25,7 @@
             :class="{
               active: $route.path.startsWith('/devices'),
             }"
-            ><span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"
-                />
-              </svg>
-            </span>
+            ><ion-icon name="desktop-outline" class="text-2xl"></ion-icon>
             <span class="capitalize">Devices</span></NuxtLink
           >
         </li>
@@ -65,22 +35,8 @@
             :class="{
               active: $route.path.startsWith('/messages'),
             }"
-            ><span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                />
-              </svg>
-            </span>
+          >
+            <ion-icon name="mail-outline" class="text-2xl"></ion-icon>
             <span class="capitalize">Messages</span></NuxtLink
           >
         </li>
@@ -118,42 +74,13 @@
             :class="{
               active: $route.path.startsWith('/api-token'),
             }"
-            ><span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"
-                />
-              </svg>
-            </span>
+            ><ion-icon name="key-outline" class="text-2xl"></ion-icon>
             <span class="capitalize">API Token</span></NuxtLink
           >
         </li>
         <li class="mb-2">
           <a href="https://example.com/api-documentation" target="_blank"
-            ><span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5"
-                />
-              </svg>
-            </span>
+            ><ion-icon name="flag-outline" class="text-2xl"></ion-icon>
             <span class="capitalize">API Documentation</span></a
           >
         </li>

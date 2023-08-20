@@ -3,21 +3,8 @@
     <div
       class="flex justify-between items-center border-b p-4 bg-base-100 rounded"
     >
-      <div class="mb-4 flex items-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokewidth="1.5"
-          stroke="currentColor"
-          class="w-6 h-6 mr-2"
-        >
-          <path
-            strokelinecap="round"
-            strokelinejoin="round"
-            d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"
-          />
-        </svg>
+      <div class="mb-4 flex items-center gap-2">
+        <ion-icon name="mail-outline" class="text-2xl"></ion-icon>
         <h1 class="text-xl font-bold">Message: John Doe</h1>
       </div>
       <div class="text-sm breadcrumbs">
@@ -39,20 +26,7 @@
             <div
               class="join-item items-center flex input-sm place-content-center border"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokewidth="1.5"
-                stroke="currentColor"
-                class="w-4 h-4"
-              >
-                <path
-                  strokelinecap="round"
-                  strokelinejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                />
-              </svg>
+              <ion-icon name="search-outline" class="text-xl"></ion-icon>
             </div>
 
             <input
@@ -119,40 +93,20 @@
                 <td>
                   <div class="tooltip" data-tip="Seen">
                     <span class="badge badge-info badge-md">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="w-4 h-4 text-white"
-                        viewBox="0 0 512 512"
-                      >
-                        <path
-                          fill="none"
-                          stroke="currentColor"
-                          strokelinecap="round"
-                          strokelinejoin="round"
-                          strokewidth="32"
-                          d="M464 128L240 384l-96-96m0 96l-96-96m320-160L232 284"
-                        ></path>
-                      </svg>
+                      <ion-icon
+                        name="checkmark-done-outline"
+                        class="text-base p-1 block"
+                      ></ion-icon>
                     </span>
                   </div>
                 </td>
                 <td>
                   <div class="flex items-center gap-2">
                     <button class="btn btn-ghost btn-xs">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokewidth="1.5"
-                        stroke="currentColor"
-                        class="w-5 h-5"
-                      >
-                        <path
-                          strokelinecap="round"
-                          strokelinejoin="round"
-                          d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                        />
-                      </svg>
+                      <ion-icon
+                        name="information-circle-outline"
+                        class="text-xl"
+                      ></ion-icon>
                       Details
                     </button>
                   </div>

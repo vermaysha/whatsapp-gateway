@@ -3,21 +3,8 @@
     <div
       class="flex justify-between items-center border-b p-4 bg-base-100 rounded"
     >
-      <div class="mb-4 flex items-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          class="w-6 h-6 mr-2"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"
-          />
-        </svg>
+      <div class="mb-4 flex items-center gap-2">
+        <ion-icon name="desktop-outline" class="text-2xl"></ion-icon>
         <h1 class="text-xl font-bold">Device Info</h1>
       </div>
       <div class="text-sm breadcrumbs">
@@ -132,21 +119,11 @@
         <div
           class="col-span-12 border rounded-md px-5 pt-7.5 pb-5 sm:px-7.5 xl:col-span-6 p-4"
         >
-          <div class="mb-4 flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              class="w-6 h-6 mr-2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-              />
-            </svg>
+          <div class="mb-4 flex items-center gap-2">
+            <ion-icon
+              name="information-circle-outline"
+              class="text-2xl"
+            ></ion-icon>
 
             <h4 class="text-xl font-semibold">General Information</h4>
           </div>
@@ -211,22 +188,8 @@
         <div
           class="col-span-12 border rounded-md px-5 pt-7.5 pb-5 sm:px-7.5 xl:col-span-6 p-4"
         >
-          <div class="mb-4 flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              class="w-6 h-6 mr-2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-              />
-            </svg>
-
+          <div class="mb-4 flex items-center gap-2">
+            <ion-icon name="globe-outline" class="text-2xl"></ion-icon>
             <h4 class="text-xl font-semibold">Connectivity Information</h4>
           </div>
           <table class="table">
