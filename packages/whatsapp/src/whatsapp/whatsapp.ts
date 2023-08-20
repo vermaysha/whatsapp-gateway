@@ -8,16 +8,28 @@ import { logger } from './whatsapp.logger'
 import { EventEmitter } from 'node:events'
 
 export class Whatapp {
+  /**
+   * The WebSocket connection object.
+   */
   public socket: WASocket | null = null
+
+  /**
+   * The ID of the device.
+   */
   public deviceId: string | null = null
+
+  /**
+   * The event emitter.
+   */
   public localEvent: EventEmitter = new EventEmitter()
 
   /**
-   * Asynchronously starts the function.
+   * Starts the device with the specified deviceId.
    *
-   * @param {string} deviceId - The ID of the device.
+   * @param {string} deviceId - The ID of the device to start.
+   * @return {Promise<boolean>} A promise that resolves to true if the device is successfully started, false otherwise.
    */
-  async start(deviceId: string) {
+  async start(deviceId: string): Promise<boolean> {
     try {
       await prisma.$connect()
     } catch (error) {
@@ -27,7 +39,7 @@ export class Whatapp {
         data: error,
         message: 'Failed to connect to database',
       })
-      return
+      return false
     }
 
     /**
@@ -68,7 +80,7 @@ export class Whatapp {
         command: 'DEVICE_NOT_FOUND',
         data: { deviceId },
       })
-      return
+      return false
     }
 
     if (this.socket !== null) {
@@ -77,7 +89,7 @@ export class Whatapp {
         command: 'DEVICE_ALREADY_STARTED',
         data: { deviceId },
       })
-      return
+      return false
     }
 
     this.deviceId = deviceId
@@ -162,7 +174,7 @@ export class Whatapp {
     // Listen another events
     listenWhatsappEvent(sock, deviceId)
 
-    return new Promise((resolve) => {
+    return new Promise<boolean>((resolve) => {
       sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update
 
@@ -258,13 +270,17 @@ export class Whatapp {
   }
 
   /**
-   * Reconnects the device with the specified ID.
+   * Restarts the function.
    *
-   * @param {string} deviceId - The ID of the device to reconnect.
+   * @return {Promise<boolean>} A promise that resolves to a boolean value indicating whether the function was successfully restarted.
    */
-  async restart(deviceId: string) {
+  async restart(): Promise<boolean> {
+    if (!this.deviceId) {
+      return false
+    }
+
     await this.stop()
-    await this.start(deviceId)
+    return await this.start(this.deviceId)
   }
 
   /**
