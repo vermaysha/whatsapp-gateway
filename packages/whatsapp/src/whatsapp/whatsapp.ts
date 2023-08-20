@@ -1,21 +1,44 @@
-import { type Contact, type WASocket } from '@whiskeysockets/baileys'
-import type { Boom } from '@hapi/boom'
+import {
+  type Contact,
+  type WASocket,
+  makeWASocket,
+  DisconnectReason,
+  jidNormalizedUser,
+  fetchLatestWaWebVersion,
+} from '@whiskeysockets/baileys'
+import { Boom } from '@hapi/boom'
 import type { AxiosRequestConfig } from 'axios'
+import { EventEmitter } from 'node:events'
 import { prisma, type Prisma } from 'database'
 import { upsertContact } from './event'
 import { sendMessage } from '../worker/worker.helper'
+import { listenWhatsappEvent } from './whatsapp.event'
+import { useDBAuthState } from './whatsapp.storage'
 import { logger } from './whatsapp.logger'
 
 export class Whatapp {
+  /**
+   * The WebSocket connection object.
+   */
   public socket: WASocket | null = null
+
+  /**
+   * The ID of the device.
+   */
   public deviceId: string | null = null
 
   /**
-   * Asynchronously starts the function.
-   *
-   * @param {string} deviceId - The ID of the device.
+   * The event emitter.
    */
-  async start(deviceId: string) {
+  public localEvent: EventEmitter = new EventEmitter()
+
+  /**
+   * Starts the device with the specified deviceId.
+   *
+   * @param {string} deviceId - The ID of the device to start.
+   * @return {Promise<boolean>} A promise that resolves to true if the device is successfully started, false otherwise.
+   */
+  async start(deviceId: string): Promise<boolean> {
     try {
       await prisma.$connect()
     } catch (error) {
@@ -25,7 +48,7 @@ export class Whatapp {
         data: error,
         message: 'Failed to connect to database',
       })
-      return
+      return false
     }
 
     /**
@@ -66,7 +89,7 @@ export class Whatapp {
         command: 'DEVICE_NOT_FOUND',
         data: { deviceId },
       })
-      return
+      return false
     }
 
     if (this.socket !== null) {
@@ -75,7 +98,7 @@ export class Whatapp {
         command: 'DEVICE_ALREADY_STARTED',
         data: { deviceId },
       })
-      return
+      return false
     }
 
     this.deviceId = deviceId
@@ -91,14 +114,6 @@ export class Whatapp {
       },
     }
 
-    const {
-      makeWASocket,
-      DisconnectReason,
-      jidNormalizedUser,
-      fetchLatestWaWebVersion,
-    } = await import('@whiskeysockets/baileys')
-    const { listenWhatsappEvent } = await import('./whatsapp.event')
-    const { useDBAuthState } = await import('./whatsapp.storage')
     const { state, saveCreds, clearCreds } = await useDBAuthState(deviceId)
     const { version } = await fetchLatestWaWebVersion(axiosConfig)
 
@@ -155,93 +170,117 @@ export class Whatapp {
       }
     }
 
-    sock.ev.on('connection.update', async (update) => {
-      const { connection, lastDisconnect, qr } = update
-
-      if (connection) {
-        sendMessage({
-          status: true,
-          command: 'CONNECTION_UPDATE',
-          data: connection,
-        })
-        await updateDevice({
-          status: connection,
-          qr: null,
-        })
-      }
-
-      if (qr) {
-        sendMessage({
-          status: true,
-          command: 'CONNECTION_UPDATE',
-          data: 'receivingQr',
-        })
-        sendMessage({
-          status: true,
-          command: 'QR_RECEIVED',
-          data: qr,
-        })
-        await updateDevice({
-          qr,
-          status: 'receivingQr',
-        })
-      }
-
-      if (connection === 'close') {
-        const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
-        const shouldReconnect =
-          [DisconnectReason.loggedOut, 400].includes(statusCode) === false
-
-        if (shouldReconnect) {
-          return this.start(deviceId)
-        } else if (DisconnectReason.loggedOut === statusCode) {
-          await updateDevice({
-            status: 'loggedOut',
-            qr: null,
-            stoppedAt: new Date(),
-          })
-          sendMessage({
-            status: true,
-            command: 'CONNECTION_UPDATE',
-            data: 'loggedOut',
-          })
-          clearCreds()
-        } else {
-          await updateDevice({
-            status: 'close',
-            stoppedAt: new Date(),
-          })
-        }
-        sendMessage({
-          command: 'STOPPED',
-          status: true,
-          message: 'Service Stopped',
-        })
-        return
-      }
-
-      if (connection === 'open') {
-        if (sock.user?.id) {
-          updateDeviceContact(sock.user)
-        }
-        this.socket = sock
-      }
-    })
-
     sock.ev.on('creds.update', saveCreds)
 
     // Listen another events
     listenWhatsappEvent(sock, deviceId)
+
+    return new Promise<boolean>((resolve) => {
+      sock.ev.on('connection.update', async (update) => {
+        const { connection, lastDisconnect, qr } = update
+
+        if (connection) {
+          sendMessage({
+            status: true,
+            command: 'CONNECTION_UPDATE',
+            data: connection,
+          })
+          await updateDevice({
+            status: connection,
+            qr: null,
+          })
+        }
+
+        if (qr) {
+          sendMessage({
+            status: true,
+            command: 'CONNECTION_UPDATE',
+            data: 'receivingQr',
+          })
+          sendMessage({
+            status: true,
+            command: 'QR_RECEIVED',
+            data: qr,
+          })
+          await updateDevice({
+            qr,
+            status: 'receivingQr',
+          })
+        }
+
+        if (connection === 'close') {
+          const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode
+          const shouldReconnect =
+            [DisconnectReason.loggedOut, 400].includes(statusCode) === false
+
+          if (shouldReconnect) {
+            logger.info(
+              {
+                statusCode,
+                shouldReconnect,
+              },
+              'Device restarted automatically',
+            )
+            return this.start(deviceId)
+          } else if (DisconnectReason.loggedOut === statusCode) {
+            await updateDevice({
+              status: 'loggedOut',
+              qr: null,
+              stoppedAt: new Date(),
+            })
+            sendMessage({
+              status: true,
+              command: 'CONNECTION_UPDATE',
+              data: 'loggedOut',
+            })
+            await clearCreds()
+          } else {
+            await updateDevice({
+              status: 'close',
+              qr: null,
+              stoppedAt: new Date(),
+            })
+          }
+
+          await this.socket?.ws.close()
+          sendMessage({
+            command: 'STOPPED',
+            status: true,
+            message: 'Service Stopped',
+            data: {
+              disconnectReason: statusCode,
+            },
+          })
+          this.socket = null
+
+          this.localEvent.emit('close')
+          return resolve(false)
+        }
+
+        if (connection === 'open') {
+          if (sock.user?.id) {
+            updateDeviceContact(sock.user)
+          }
+          this.socket = sock
+
+          return resolve(true)
+        }
+      })
+    })
   }
 
   /**
-   * Reconnects the device with the specified ID.
+   * Restarts the function.
    *
-   * @param {string} deviceId - The ID of the device to reconnect.
+   * @return {Promise<boolean>} A promise that resolves to a boolean value indicating whether the function was successfully restarted.
    */
-  async restart(deviceId: string) {
-    this.stop()
-    this.start(deviceId)
+  async restart(): Promise<boolean> {
+    if (!this.deviceId) {
+      return false
+    }
+
+    await this.stop()
+    return await this.start(this.deviceId)
   }
 
   /**
@@ -250,38 +289,21 @@ export class Whatapp {
    * @return {Promise<void>} Promise that resolves when the function is stopped.
    */
   async stop(): Promise<void> {
-    const { Boom } = await import('@hapi/boom')
     this.socket?.end(
       new Boom('Service Stopped', {
         statusCode: 400,
       }),
     )
 
-    if (this.deviceId) {
-      try {
-        await prisma.device.update({
-          where: {
-            id: this.deviceId,
-          },
-          data: {
-            status: 'close',
-            stoppedAt: new Date(),
-          },
-        })
-      } catch (error: any) {
-        logger.warn(
-          {
-            trace: error?.stack,
-          },
-          `Failed to update device status to closed`,
-        )
+    return new Promise((resolve) => {
+      const handleResponse = () => {
+        this.localEvent.removeListener('close', handleResponse)
+        resolve()
       }
-    }
 
-    sendMessage({
-      command: 'STOPPED',
-      status: true,
-      message: 'Service Stopped',
+      this.localEvent.on('close', handleResponse)
+
+      setTimeout(handleResponse, 5000)
     })
   }
 
@@ -293,31 +315,15 @@ export class Whatapp {
   async logout(): Promise<void> {
     await this.socket?.logout('Logged Out')
 
-    if (this.deviceId) {
-      try {
-        await prisma.device.update({
-          where: {
-            id: this.deviceId,
-          },
-          data: {
-            status: 'loggedOut',
-            stoppedAt: new Date(),
-          },
-        })
-      } catch (error: any) {
-        logger.warn(
-          {
-            trace: error?.stack,
-          },
-          `Failed to update device status to closed (logout)`,
-        )
+    return new Promise((resolve) => {
+      const handleResponse = () => {
+        this.localEvent.removeListener('close', handleResponse)
+        resolve()
       }
-    }
 
-    sendMessage({
-      command: 'STOPPED',
-      status: true,
-      message: 'Service Stopped',
+      this.localEvent.on('close', handleResponse)
+
+      setTimeout(handleResponse, 5000)
     })
   }
 }
