@@ -5,6 +5,7 @@ export type InputCommand =
   | 'GET_CPU_USAGE'
   | 'GET_MEMORY_USAGE'
   | 'SEND_MESSAGE'
+  | 'GET_UPTIME'
 
 export type OutputCommand =
   | 'QR_RECEIVED'
