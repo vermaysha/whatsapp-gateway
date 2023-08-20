@@ -18,6 +18,7 @@ import {
   downloadMedia,
 } from '../whatsapp.helper'
 import { upsertContact } from './contacts'
+import { logger } from '../whatsapp.logger'
 
 /**
  * Upserts messages into the database based on the provided event.
@@ -183,7 +184,15 @@ export async function messageUpsertEvent(
           messageContextInfo: messageContextInfo as Prisma.JsonObject,
         },
       })
-    } catch (error) {}
+    } catch (error: any) {
+      logger.warn(
+        {
+          jid,
+          trace: error?.stack,
+        },
+        `Failed to upsert message`,
+      )
+    }
     console.log('messageUpsertEvent', JSON.stringify({ m, msg, type }))
   }
 }
@@ -233,9 +242,15 @@ export async function messageUpdateEvent(
           },
         })
       }
-    } catch (error) {}
-
-    console.log('messageUpdateEvent', JSON.stringify({ m, msg, jid }))
+    } catch (error: any) {
+      logger.warn(
+        {
+          jid,
+          trace: error?.stack,
+        },
+        `Failed to update message`,
+      )
+    }
   }
 }
 
@@ -267,6 +282,14 @@ export async function messageReactionEvent(
         },
         data: {},
       })
-    } catch (error) {}
+    } catch (error: any) {
+      logger.warn(
+        {
+          jid,
+          trace: error?.stack,
+        },
+        `Failed to update reaction message`,
+      )
+    }
   }
 }

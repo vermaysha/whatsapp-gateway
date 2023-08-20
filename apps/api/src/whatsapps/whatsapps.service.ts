@@ -56,15 +56,9 @@ export class WhatsappsService {
         const meta = Object.keys(dataJson)
           .filter(
             (key) =>
-              ![
-                'level',
-                'name',
-                'hostname',
-                'pid',
-                'time',
-                'trace',
-                'msg',
-              ].includes(key),
+              !['level', 'hostname', 'pid', 'time', 'trace', 'msg'].includes(
+                key,
+              ),
           )
           .reduce((acc: any, key) => {
             acc[key] = dataJson[key]
@@ -78,7 +72,6 @@ export class WhatsappsService {
             },
           },
           level: dataJson.level,
-          name: dataJson.name,
           hostname: dataJson.hostname,
           msg: dataJson.msg,
           pid: dataJson.pid,

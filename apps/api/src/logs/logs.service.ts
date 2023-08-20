@@ -25,7 +25,7 @@ export class LogsService {
       ? {
           _relevance: search
             ? {
-                fields: ['msg', 'trace', 'name'],
+                fields: ['msg', 'trace'],
                 search,
                 sort: 'desc',
               }

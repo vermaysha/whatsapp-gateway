@@ -164,7 +164,7 @@ async function stopDevice(uuid: string): Promise<void> {
 
   if (data.value) {
     const device = findDevice(uuid);
-    if (device) device.status = 'closed';
+    if (device) device.status = 'close';
     notifyStore.notify('Device stopped', NotificationType.Success);
   }
 
@@ -414,12 +414,12 @@ function closeModal(): void {
                   >
                   <span
                     class="badge badge-info badge-md"
-                    v-else-if="device.status === 'receiving_qr'"
+                    v-else-if="device.status === 'receivingQr'"
                     >Receiving QR</span
                   >
                   <span
                     class="badge badge-error badge-md"
-                    v-else-if="device.status === 'closed'"
+                    v-else-if="device.status === 'close'"
                     >Close</span
                   >
                   <span class="badge badge-error badge-md" v-else>Close</span>
@@ -468,7 +468,7 @@ function closeModal(): void {
                     </NuxtLink>
                     <button
                       class="btn btn-ghost btn-xs"
-                      v-if="device.status === 'receiving_qr'"
+                      v-if="device.status === 'receivingQr'"
                       @click="scanQr(device.id)"
                     >
                       <svg
@@ -593,7 +593,7 @@ function closeModal(): void {
                       <button
                         class="btn btn-outline btn-sm btn-success join-item"
                         @click="startDevice(device.id)"
-                        :disabled="device.status !== 'closed'"
+                        :disabled="device.status !== 'close'"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -618,6 +618,7 @@ function closeModal(): void {
                       <button
                         class="btn btn-outline btn-sm btn-warning join-item"
                         @click="restartDevice(device.id)"
+                        :disabled="device.status === 'close'"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -639,7 +640,7 @@ function closeModal(): void {
                       <button
                         class="btn btn-outline btn-sm btn-error join-item"
                         @click="stopDevice(device.id)"
-                        :disabled="device.status === 'closed'"
+                        :disabled="device.status === 'close'"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"

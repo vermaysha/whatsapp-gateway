@@ -38,6 +38,7 @@ model User {
   createdAt DateTime @default(now()) @db.Timestamptz()
 
   apiTokens ApiToken[]
+  devices   Device[]
 }
 
 model Session {
@@ -60,7 +61,6 @@ model Logs {
   time      DateTime? @db.Timestamptz()
   pid       Int?
   hostname  String?
-  name      String?
   node      Json?     @db.JsonB
   msg       String?
   trace     String?
@@ -71,12 +71,21 @@ model Logs {
   device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 }
 
+enum DeviceStatus {
+  open
+  close
+  connecting
+  loggedOut
+  receivingQr
+}
+
 model Device {
-  id        String  @id @default(uuid()) @db.Uuid
-  contactId String? @db.Uuid
+  id        String       @id @default(uuid()) @db.Uuid
+  contactId String?      @db.Uuid
+  userId    String       @db.Uuid
   name      String
   qr        String?
-  status    String?
+  status    DeviceStatus @default(close)
 
   startedAt DateTime? @db.Timestamptz()
   stoppedAt DateTime? @db.Timestamptz()
@@ -85,6 +94,7 @@ model Device {
 
   owner    Contact?  @relation("ownDevice", fields: [contactId], references: [id], onDelete: Cascade)
   contacts Contact[] @relation("devices")
+  user     User      @relation(fields: [userId], references: [id])
   sessions Session[]
   logs     Logs[]
   chats    Chat[]

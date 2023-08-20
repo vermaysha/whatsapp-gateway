@@ -32,6 +32,10 @@ process.on('message', async (message: InputMessage) => {
     case 'SEND_MESSAGE':
       await actions.sendWAMessage(params, whatsapp)
       break
+
+    case 'GET_UPTIME':
+      actions.getUptime()
+      break
   }
 })
 

@@ -5,6 +5,9 @@ import { randomBytes } from 'crypto'
 import { createWriteStream } from 'fs'
 import { resolve as pathResolve } from 'path'
 import { cwd } from 'process'
+import { logger } from './whatsapp.logger'
+import { existsSync } from 'fs'
+import { mkdirSync } from 'fs'
 
 export const ASSETS_PATH = pathResolve(
   cwd(),
@@ -29,28 +32,22 @@ export async function downloadMedia(
   extension: string,
 ): Promise<string> {
   return new Promise<string>(async (resolve, reject) => {
-    const { default: pino } = await import('pino')
-    const { randomBytes } = await import('crypto')
-    const { mkdirSync, createWriteStream } = await import('fs')
-    const { downloadMediaMessage } = await import('@whiskeysockets/baileys')
+    const { downloadMediaMessage, jidNormalizedUser } = await import(
+      '@whiskeysockets/baileys'
+    )
 
     const buffer = await downloadMediaMessage(
       message,
       'buffer',
       {},
       {
-        logger: pino({
-          level: 'warn',
-        }),
+        logger,
         reuploadRequest: sock.updateMediaMessage,
       },
     )
 
-    const fixFileName = (file?: string) =>
-      file?.replace(/\//g, '__')?.replace(/:/g, '-')
-
     const user =
-      fixFileName(getKeyAuthor(message.key, sock.user?.id)) || 'default'
+      jidNormalizedUser(getKeyAuthor(message.key, sock.user?.id)) || 'default'
 
     const fileName = randomBytes(8).toString('hex')
 
@@ -76,13 +73,13 @@ export async function downloadMedia(
 /**
  * Converts a number into a timestamp by multiplying it with a multiple.
  *
- * @param {number | null} data - The number to be converted into a timestamp. Can be null.
+ * @param {number | null | Long} data - The number to be converted into a timestamp. Can be null.
  * @param {number} [multiple=1000] - The number to multiply the data with. Default value is 1000.
  * @return {Date | undefined} - The converted timestamp as a Date object. Returns undefined if data is falsy.
  */
 export function convert2Timestamp(
   data?: number | null | Long,
-  multiple = 1000,
+  multiple: number = 1000,
 ): Date | undefined {
   if (!data) {
     return undefined
@@ -182,18 +179,24 @@ export async function downloadMediaUri(
 ): Promise<string> {
   try {
     const fileName = `${randomBytes(8).toString('hex')}.jpg`
-    const savedPath = pathResolve(ASSETS_PATH, outputPath, fileName)
+    const savedPath = pathResolve(ASSETS_PATH, outputPath)
     const response = await axios.get(url, { responseType: 'stream' })
 
-    const outputStream = createWriteStream(savedPath)
+    if (!existsSync(savedPath)) {
+      mkdirSync(savedPath, { recursive: true })
+    }
+
+    const outputStream = createWriteStream(pathResolve(savedPath, fileName), {
+      flags: 'w+',
+    })
     response.data.pipe(outputStream)
 
-    return new Promise<string>((resolve, reject) => {
-      outputStream.on('finish', () => {
-        resolve(`${outputPath}/${fileName}.jpg`)
-      })
+    await new Promise((resolve, reject) => {
+      outputStream.on('finish', resolve)
       outputStream.on('error', reject)
     })
+
+    return `${outputPath}/${fileName}`
   } catch (error) {
     throw new Error(`Failed to download file: ${(error as Error).message}`)
   }

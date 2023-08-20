@@ -24,7 +24,7 @@ export class DevicesService implements OnApplicationBootstrap {
   async onApplicationBootstrap(): Promise<void> {
     await prisma.device.updateMany({
       data: {
-        status: 'closed',
+        status: 'close',
         stoppedAt: new Date(),
         qr: null,
       },
@@ -38,6 +38,7 @@ export class DevicesService implements OnApplicationBootstrap {
    * @return {Promise<Pick<Device, 'id' | 'name'>[]>} - A promise that resolves to an array of devices with only the 'id' and 'name' properties.
    */
   async summary(
+    userId: string,
     search?: string | null,
   ): Promise<Pick<Device, 'id' | 'name'>[]> {
     return prisma.device.findMany({
@@ -54,6 +55,9 @@ export class DevicesService implements OnApplicationBootstrap {
         id: true,
         name: true,
       },
+      where: {
+        userId,
+      },
     })
   }
 
@@ -65,6 +69,7 @@ export class DevicesService implements OnApplicationBootstrap {
    */
   async findAll(
     params: DeviceListDTO,
+    userId: string,
   ): Promise<PaginatedResult<DeviceFindAll>> {
     const { page, perPage, order, orderBy, search } = params
 
@@ -89,6 +94,9 @@ export class DevicesService implements OnApplicationBootstrap {
       {
         orderBy: orderQuery,
         include: devicesInclude,
+        where: {
+          userId,
+        },
       },
       {
         page,
@@ -98,24 +106,16 @@ export class DevicesService implements OnApplicationBootstrap {
   }
 
   /**
-   * Counts the number of devices in the database.
-   *
-   * @return {Promise<number>} The number of device.
-   */
-  async count(): Promise<number> {
-    return prisma.device.count()
-  }
-
-  /**
    * Retrieves a single device by its ID.
    *
    * @param {string} id - The ID of the device.
    * @return {Promise<Device | null>} A promise that resolves to the device object or null if not found.
    */
-  async findOne(id: string): Promise<Device | null> {
+  async findOne(id: string, userId: string): Promise<Device | null> {
     return prisma.device.findUnique({
       where: {
         id,
+        userId,
       },
       include: {
         owner: true,
@@ -143,14 +143,15 @@ export class DevicesService implements OnApplicationBootstrap {
    * @param {Prisma.DeviceUpdateInput} device - The updated device data.
    * @return {Promise<Device>} - A promise that resolves to the updated device.
    */
-  async update(id: string, device: Prisma.DeviceUpdateInput): Promise<Device> {
-    if (!(await this.findOne(id))) {
-      throw new HttpException('Device not found', 404)
-    }
-
+  async update(
+    id: string,
+    userId: string,
+    device: Prisma.DeviceUpdateInput,
+  ): Promise<Device> {
     return prisma.device.update({
       where: {
         id,
+        userId,
       },
       data: device,
     })
@@ -162,14 +163,11 @@ export class DevicesService implements OnApplicationBootstrap {
    * @param {string} id - The ID of the device to delete.
    * @return {Promise<void>} - A promise that resolves when the device is deleted.
    */
-  async delete(id: string): Promise<void> {
-    if (!(await this.findOne(id))) {
-      throw new HttpException('Device not found', 404)
-    }
-
+  async delete(id: string, userId: string): Promise<void> {
     await prisma.device.delete({
       where: {
         id,
+        userId,
       },
     })
   }
