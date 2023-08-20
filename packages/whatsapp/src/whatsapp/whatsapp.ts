@@ -12,7 +12,8 @@ import { EventEmitter } from 'node:events'
 import { prisma, type Prisma } from 'database'
 import { upsertContact } from './event'
 import { sendMessage } from '../worker/worker.helper'
-import { listenWhatsappEvent } from './whatsapp.storage'
+import { listenWhatsappEvent } from './whatsapp.event'
+import { useDBAuthState } from './whatsapp.storage'
 import { logger } from './whatsapp.logger'
 
 export class Whatapp {
@@ -49,9 +50,6 @@ export class Whatapp {
       })
       return false
     }
-
-    const { state, saveCreds, clearCreds } = await useDBAuthState(deviceId)
-    const { version } = await fetchLatestWaWebVersion(axiosConfig)
 
     /**
      * Updates a device in the database.
@@ -115,6 +113,9 @@ export class Whatapp {
         'Cache-Control': 'max-age=0',
       },
     }
+
+    const { state, saveCreds, clearCreds } = await useDBAuthState(deviceId)
+    const { version } = await fetchLatestWaWebVersion(axiosConfig)
 
     await updateDevice({
       startedAt: new Date(),
