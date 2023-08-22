@@ -148,6 +148,11 @@ export async function messageUpsertEvent(
               jid,
             },
           },
+          device: {
+            connect: {
+              id: deviceId,
+            },
+          },
           chat: {
             connectOrCreate: {
               where: {
@@ -193,7 +198,6 @@ export async function messageUpsertEvent(
         `Failed to upsert message`,
       )
     }
-    console.log('messageUpsertEvent', JSON.stringify({ m, msg, type }))
   }
 }
 

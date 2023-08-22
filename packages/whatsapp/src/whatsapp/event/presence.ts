@@ -5,6 +5,4 @@ export function presenceEvent(data: {
   presences: {
     [participant: string]: PresenceData
   }
-}) {
-  console.log('presenceEvent', data)
-}
+}) {}

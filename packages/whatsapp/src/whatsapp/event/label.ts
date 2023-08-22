@@ -5,9 +5,9 @@ export function labelAssociationEvent(data: {
   association: LabelAssociation
   type: 'add' | 'remove'
 }) {
-  console.log('labelAssociationEvent', data)
+  //
 }
 
 export function labelEvent(data: Label) {
-  console.log('labelEvent', data)
+  //
 }

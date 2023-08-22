@@ -173,12 +173,12 @@ export function decodeBuffer(obj: any): any {
  * @param {string} [outputPath=''] - The output path to save the downloaded file. Defaults to an empty string.
  * @return {Promise<string>} A promise that resolves with the path of the saved file.
  */
-export async function downloadMediaUri(
+export async function downloadAvatarUri(
   url: string,
   outputPath: string = '',
 ): Promise<string> {
   try {
-    const fileName = `${randomBytes(8).toString('hex')}.jpg`
+    const fileName = `avatar_${randomBytes(4).toString('hex')}.jpg`
     const savedPath = pathResolve(ASSETS_PATH, outputPath)
     const response = await axios.get(url, { responseType: 'stream' })
 
@@ -191,12 +191,12 @@ export async function downloadMediaUri(
     })
     response.data.pipe(outputStream)
 
-    await new Promise((resolve, reject) => {
-      outputStream.on('finish', resolve)
+    return new Promise<string>((resolve, reject) => {
+      outputStream.on('finish', () => {
+        return resolve(`${outputPath}/${fileName}`)
+      })
       outputStream.on('error', reject)
     })
-
-    return `${outputPath}/${fileName}`
   } catch (error) {
     throw new Error(`Failed to download file: ${(error as Error).message}`)
   }
