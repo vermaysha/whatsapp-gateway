@@ -98,6 +98,7 @@ model Device {
   sessions Session[]
   logs     Logs[]
   chats    Chat[]
+  messages Message[]
 }
 
 model Contact {
@@ -149,6 +150,7 @@ model Chat {
 model Message {
   id        String @id @default(uuid()) @db.Uuid
   contactId String @db.Uuid
+  deviceId  String @db.Uuid
   chatId    String @db.Uuid
 
   keyId     String
@@ -174,6 +176,7 @@ model Message {
 
   contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
   chat    Chat    @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  message Device  @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 
   @@unique([keyId, remoteJid])
 }

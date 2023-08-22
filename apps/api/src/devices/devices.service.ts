@@ -118,8 +118,23 @@ export class DevicesService implements OnApplicationBootstrap {
         userId,
       },
       include: {
+        _count: {
+          select: {
+            contacts: true,
+            messages: {
+              where: {
+                fromMe: true,
+              },
+            },
+          },
+        },
         owner: true,
-        logs: true,
+        logs: {
+          orderBy: {
+            time: 'desc',
+          },
+          take: 10,
+        },
       },
     })
   }
