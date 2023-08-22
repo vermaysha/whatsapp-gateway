@@ -12,6 +12,11 @@ interface IMemoryUsage {
   arrayBuffers: number
 }
 
+interface ICpuUsage {
+  user: number
+  system: number
+}
+
 export type WhatsappWorker = {
   process: ChildProcess
   meta: {
@@ -193,6 +198,14 @@ export class WhatsappsService {
     return this.sendCommand(id, 'GET_MEMORY_USAGE')
   }
 
+  cpuUsage(id: string): Promise<ICpuUsage> {
+    return this.sendCommand(id, 'GET_CPU_USAGE')
+  }
+
+  uptime(id: string): Promise<number> {
+    return this.sendCommand(id, 'GET_UPTIME')
+  }
+
   /**
    * Sends a command to the specified worker identified by the given ID and waits for the response.
    *
@@ -208,7 +221,7 @@ export class WhatsappsService {
 
     return new Promise<any>((resolve, reject) => {
       if (!child) {
-        return reject(new Error('Whatsapp service not found or not running'))
+        return resolve(false)
       }
 
       function handleResponse(response: OutputMessage) {

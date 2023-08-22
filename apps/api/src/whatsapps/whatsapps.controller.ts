@@ -69,9 +69,39 @@ export class WhatsappsController {
     @Res() res: FastifyReply,
   ) {
     try {
-      const status = await this.whatsappService.memoryUsage(deviceId)
+      const memoryUsage = await this.whatsappService.memoryUsage(deviceId)
       res.send({
-        status,
+        data: memoryUsage,
+      })
+    } catch (error) {
+      throw new HttpException(error.message, 500)
+    }
+  }
+
+  @TypedRoute.Get('/cpuUsage/:deviceId')
+  async cpuUsage(
+    @TypedParam('deviceId', 'string') deviceId: string,
+    @Res() res: FastifyReply,
+  ) {
+    try {
+      const cpuUsage = await this.whatsappService.cpuUsage(deviceId)
+      res.send({
+        data: cpuUsage,
+      })
+    } catch (error) {
+      throw new HttpException(error.message, 500)
+    }
+  }
+
+  @TypedRoute.Get('/uptime/:deviceId')
+  async uptime(
+    @TypedParam('deviceId', 'string') deviceId: string,
+    @Res() res: FastifyReply,
+  ) {
+    try {
+      const uptime = await this.whatsappService.uptime(deviceId)
+      res.send({
+        data: uptime,
       })
     } catch (error) {
       throw new HttpException(error.message, 500)
