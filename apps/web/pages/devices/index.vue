@@ -399,7 +399,7 @@ function closeModal(): void {
                       ></ion-icon>
                       Info
                     </NuxtLink>
-                    <NuxtLink
+                    <!-- <NuxtLink
                       :href="`/devices/system?uuid=${device.id}`"
                       class="btn btn-ghost btn-xs"
                     >
@@ -408,7 +408,7 @@ function closeModal(): void {
                         class="text-xl"
                       ></ion-icon>
                       System
-                    </NuxtLink>
+                    </NuxtLink> -->
                     <button
                       class="btn btn-ghost btn-xs"
                       v-if="device.status === 'receivingQr'"
