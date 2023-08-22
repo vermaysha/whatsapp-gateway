@@ -176,7 +176,7 @@ model Message {
 
   contact Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
   chat    Chat    @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  message Device  @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  device  Device  @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 
   @@unique([keyId, remoteJid])
 }

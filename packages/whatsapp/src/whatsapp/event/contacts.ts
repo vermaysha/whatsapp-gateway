@@ -1,7 +1,7 @@
 import type { Contact, WASocket } from '@whiskeysockets/baileys'
 import { jidNormalizedUser } from '@whiskeysockets/baileys'
 import { prisma } from 'database'
-import { downloadMediaUri } from '../whatsapp.helper'
+import { downloadAvatarUri } from '../whatsapp.helper'
 import { logger } from '../whatsapp.logger'
 
 /**
@@ -28,7 +28,7 @@ export async function upsertContact(
   try {
     const image = await sock.profilePictureUrl(jid, 'image')
     if (image) {
-      avatar = await downloadMediaUri(image, jid)
+      avatar = await downloadAvatarUri(image, jid)
     }
   } catch (error: any) {
     logger.warn(
@@ -102,7 +102,5 @@ export async function contactEvent(
 ): Promise<void> {
   for (const contact of contacts) {
     await upsertContact(contact, sock, deviceId)
-
-    console.log('contactEvent', JSON.stringify({ contact }))
   }
 }
