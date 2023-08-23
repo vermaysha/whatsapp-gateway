@@ -103,8 +103,8 @@ importers:
         specifier: ^10.0.2
         version: 10.0.2(chokidar@3.5.3)(typescript@5.1.6)
       '@nestjs/testing':
-        specifier: ^10.2.0
-        version: 10.2.0(@nestjs/common@10.2.0)(@nestjs/core@10.2.0)(@nestjs/platform-express@10.1.3)
+        specifier: ^10.2.1
+        version: 10.2.1(@nestjs/common@10.2.0)(@nestjs/core@10.2.0)(@nestjs/platform-express@10.1.3)
       '@types/express':
         specifier: ^4.17.17
         version: 4.17.17
@@ -2267,8 +2267,8 @@ packages:
       - chokidar
     dev: true
 
-  /@nestjs/testing@10.2.0(@nestjs/common@10.2.0)(@nestjs/core@10.2.0)(@nestjs/platform-express@10.1.3):
-    resolution: {integrity: sha512-jJjk76maTh2rFq7DR0E3KagI6dt9RIiym+ifjsswZml3lALoHSRAyQFhXdx1biLs0GhGTk+mw75intmsG50rjQ==}
+  /@nestjs/testing@10.2.1(@nestjs/common@10.2.0)(@nestjs/core@10.2.0)(@nestjs/platform-express@10.1.3):
+    resolution: {integrity: sha512-NZp79hk5WigRkfraBwAIIEczzk+ionPSqpEr1qJxSXAF2HARtEDX8WqrHWe83k6Wff5d4S4D1ZRDtGp88/d8PQ==}
     peerDependencies:
       '@nestjs/common': ^10.0.0
       '@nestjs/core': ^10.0.0
