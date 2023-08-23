@@ -33,7 +33,7 @@
     "@nestjs/jwt": "^10.1.0",
     "@nestjs/platform-fastify": "^10.2.1",
     "@nestjs/platform-socket.io": "^10.2.1",
-    "@nestjs/websockets": "^10.2.0",
+    "@nestjs/websockets": "^10.2.1",
     "database": "workspace:^",
     "fastify": "^4.21.0",
     "hash": "workspace:^",
