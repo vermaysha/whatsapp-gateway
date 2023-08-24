@@ -13,7 +13,7 @@
     "@nuxt/devtools": "latest",
     "@pinia/nuxt": "^0.4.11",
     "@tailwindcss/typography": "^0.5.9",
-    "@types/node": "^20.5.3",
+    "@types/node": "^20.5.4",
     "autoprefixer": "10.4.15",
     "daisyui": "^3.6.1",
     "date-fns": "^2.30.0",
