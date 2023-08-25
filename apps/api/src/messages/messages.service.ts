@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common'
 import { prisma, type Message, Prisma } from 'database'
 import { ListDTO } from './messages.dto'
-import { paginate } from 'pagination'
+import { exclude, paginate } from 'pagination'
 
 @Injectable()
 export class MessagesService {
@@ -46,7 +46,7 @@ export class MessagesService {
       Prisma.MessageGetPayload<{
         include: typeof messageInclude
       }>,
-      undefined
+      'contactId' | 'deviceId' | 'chatId'
     >(
       prisma.message,
       {
@@ -58,6 +58,7 @@ export class MessagesService {
         page,
         perPage,
       },
+      ['contactId', 'deviceId', 'chatId'],
     )
   }
 
@@ -76,7 +77,7 @@ export class MessagesService {
    * @param {string} id - The ID of the message.
    */
   async findOne(id: string) {
-    return prisma.message.findUnique({
+    const data = await prisma.message.findUnique({
       where: {
         id,
       },
@@ -85,6 +86,12 @@ export class MessagesService {
         chat: true,
       },
     })
+
+    if (!data) {
+      return null
+    }
+
+    return exclude(data, ['contactId', 'deviceId', 'chatId'])
   }
 
   /**

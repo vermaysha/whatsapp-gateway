@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { prisma, Prisma, Chat } from 'database'
 import { IChatsList } from './chats.dto'
-import { paginate } from 'pagination'
+import { exclude, paginate } from 'pagination'
 
 @Injectable()
 export class ChatsService {
@@ -45,7 +45,7 @@ export class ChatsService {
       Prisma.ChatGetPayload<{
         include: typeof chatInclude
       }>,
-      undefined
+      'deviceId' | 'contactId'
     >(
       prisma.chat,
       {
@@ -57,6 +57,7 @@ export class ChatsService {
         page,
         perPage,
       },
+      ['deviceId', 'contactId'],
     )
   }
 
@@ -67,7 +68,7 @@ export class ChatsService {
    * @param {string | null} deviceId - The optional device ID of the chat.
    */
   async findOne(id: string, deviceId?: string | null) {
-    return prisma.chat.findUnique({
+    const data = await prisma.chat.findUnique({
       include: {
         contact: true,
       },
@@ -76,5 +77,11 @@ export class ChatsService {
         deviceId: deviceId || undefined,
       },
     })
+
+    if (!data) {
+      return null
+    }
+
+    return exclude(data, ['deviceId', 'contactId'])
   }
 }

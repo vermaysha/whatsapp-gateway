@@ -1,6 +1,6 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common'
 import { Device, Prisma, prisma } from 'database'
-import { PaginatedResult, paginate } from 'pagination'
+import { PaginatedResult, exclude, paginate } from 'pagination'
 import { DeviceListDTO } from './devices.dto'
 
 @Injectable()
@@ -83,7 +83,7 @@ export class DevicesService implements OnApplicationBootstrap {
       Prisma.DeviceGetPayload<{
         include: typeof devicesInclude
       }>,
-      undefined
+      'userId' | 'contactId'
     >(
       prisma.device,
       {
@@ -97,6 +97,7 @@ export class DevicesService implements OnApplicationBootstrap {
         page,
         perPage,
       },
+      ['userId', 'contactId'],
     )
   }
 
@@ -107,7 +108,7 @@ export class DevicesService implements OnApplicationBootstrap {
    * @return {Promise<object | null>} A promise that resolves to the device object or null if not found.
    */
   async findOne(id: string, userId: string) {
-    return prisma.device.findUnique({
+    const data = await prisma.device.findUnique({
       where: {
         id,
         userId,
@@ -132,6 +133,12 @@ export class DevicesService implements OnApplicationBootstrap {
         },
       },
     })
+
+    if (!data) {
+      return null
+    }
+
+    return exclude(data, ['userId', 'contactId'])
   }
 
   /**
