@@ -38,7 +38,7 @@ export class ApiTokenService {
             : undefined,
         }
       : {
-          [orderBy ?? 'created']: order ?? 'desc',
+          [orderBy ?? 'createdAt']: order ?? 'desc',
         }
 
     const data = await paginate<
