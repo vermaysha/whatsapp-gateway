@@ -40,7 +40,11 @@ export class ContactsService {
         }
       : undefined
 
-    return paginate<Prisma.ContactFindManyArgs, Prisma.ContactGetPayload<any>>(
+    return paginate<
+      Prisma.ContactFindManyArgs,
+      Prisma.ContactGetPayload<any>,
+      undefined
+    >(
       prisma.contact,
       {
         orderBy: orderQuery,

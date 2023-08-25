@@ -45,7 +45,8 @@ export class MessagesService {
       Prisma.MessageFindManyArgs,
       Prisma.MessageGetPayload<{
         include: typeof messageInclude
-      }>
+      }>,
+      undefined
     >(
       prisma.message,
       {

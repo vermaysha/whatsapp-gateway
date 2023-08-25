@@ -1,17 +1,7 @@
-import { HttpException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { prisma, Prisma, Chat } from 'database'
 import { IChatsList } from './chats.dto'
 import { paginate } from 'pagination'
-
-export interface PaginatedChat {
-  data: Chat[]
-  pagination: {
-    perPage: number
-    page: number
-    totalPages: number
-    total: number
-  }
-}
 
 @Injectable()
 export class ChatsService {
@@ -54,7 +44,8 @@ export class ChatsService {
       Prisma.ChatFindManyArgs,
       Prisma.ChatGetPayload<{
         include: typeof chatInclude
-      }>
+      }>,
+      undefined
     >(
       prisma.chat,
       {
@@ -67,15 +58,6 @@ export class ChatsService {
         perPage,
       },
     )
-  }
-
-  /**
-   * Counts the number of chat.
-   *
-   * @return {Promise<number>} The number of chat.
-   */
-  async count(): Promise<number> {
-    return prisma.chat.count()
   }
 
   /**

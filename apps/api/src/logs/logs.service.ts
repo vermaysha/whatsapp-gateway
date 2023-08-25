@@ -41,7 +41,7 @@ export class LogsService {
         }
       : undefined
 
-    return paginate<Prisma.LogsFindManyArgs, Logs>(
+    return paginate<Prisma.LogsFindManyArgs, Logs, undefined>(
       prisma.message,
       {
         orderBy: orderQuery,

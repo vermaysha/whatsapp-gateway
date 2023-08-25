@@ -1,18 +1,7 @@
-import {
-  HttpException,
-  Injectable,
-  OnApplicationBootstrap,
-} from '@nestjs/common'
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common'
 import { Device, Prisma, prisma } from 'database'
 import { PaginatedResult, paginate } from 'pagination'
 import { DeviceListDTO } from './devices.dto'
-
-const devicesInclude = Prisma.validator<Prisma.DeviceInclude>()({
-  owner: true,
-})
-type DeviceFindAll = Prisma.DeviceGetPayload<{
-  include: typeof devicesInclude
-}>
 
 @Injectable()
 export class DevicesService implements OnApplicationBootstrap {
@@ -65,13 +54,13 @@ export class DevicesService implements OnApplicationBootstrap {
    * Finds all devices based on the provided parameters.
    *
    * @param {DeviceListDTO} params - The parameters for the device list.
-   * @return {Promise<PaginatedResult<DeviceFindAll>>} A promise that resolves to a paginated result of the found devices.
+   * @return {Promise<object[]>} A promise that resolves to a paginated result of the found devices.
    */
-  async findAll(
-    params: DeviceListDTO,
-    userId: string,
-  ): Promise<PaginatedResult<DeviceFindAll>> {
+  async findAll(params: DeviceListDTO, userId: string) {
     const { page, perPage, order, orderBy, search } = params
+    const devicesInclude = Prisma.validator<Prisma.DeviceInclude>()({
+      owner: true,
+    })
 
     const orderQuery:
       | Prisma.DeviceOrderByWithRelationAndSearchRelevanceInput
@@ -89,7 +78,13 @@ export class DevicesService implements OnApplicationBootstrap {
           [orderBy ?? 'createdAt']: order ?? 'desc',
         }
 
-    return paginate<Prisma.DeviceFindManyArgs, DeviceFindAll>(
+    return paginate<
+      Prisma.DeviceFindManyArgs,
+      Prisma.DeviceGetPayload<{
+        include: typeof devicesInclude
+      }>,
+      undefined
+    >(
       prisma.device,
       {
         orderBy: orderQuery,
@@ -109,9 +104,9 @@ export class DevicesService implements OnApplicationBootstrap {
    * Retrieves a single device by its ID.
    *
    * @param {string} id - The ID of the device.
-   * @return {Promise<Device | null>} A promise that resolves to the device object or null if not found.
+   * @return {Promise<object | null>} A promise that resolves to the device object or null if not found.
    */
-  async findOne(id: string, userId: string): Promise<Device | null> {
+  async findOne(id: string, userId: string) {
     return prisma.device.findUnique({
       where: {
         id,
