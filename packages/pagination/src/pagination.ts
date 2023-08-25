@@ -1,18 +1,38 @@
 import { PaginateOptions, PaginatedResult } from './pagination.interface'
 
 /**
+ * Exclude specified fields from a given model object.
+ *
+ * @param {Model} model - The model object from which to exclude fields.
+ * @param {Field[]} fields - An array of fields to exclude from the model object.
+ * @return {Omit<Model, Field>} - A new model object with the specified fields excluded.
+ */
+export function exclude<Model, Field extends keyof Model>(
+  model: Model,
+  fields: Field[],
+): Omit<Model, Field> {
+  const data = Object.fromEntries(
+    Object.entries(model as any).filter(
+      ([field]) => !fields.includes(field as any),
+    ),
+  )
+
+  return data as unknown as Omit<Model, Field>
+}
+
+/**
  * Retrieves paginated data from a model.
  *
  * @param {any} model - The model to retrieve data from.
  * @param {any} args - Optional arguments for filtering the data.
  * @param {PaginateOptions} options - Optional pagination options.
- * @returns {Promise<PaginatedResult<K>>} A promise that resolves to a paginated result.
  */
-export async function paginate<T, K>(
+export async function paginate<Args, Model, Field extends keyof Model>(
   model: any,
-  args: T,
+  args: Args,
   options?: PaginateOptions,
-): Promise<PaginatedResult<K>> {
+  excluded?: string[],
+) {
   const page = options?.page ?? 1
   const perPage = options?.perPage ?? 10
 
@@ -28,7 +48,7 @@ export async function paginate<T, K>(
   const lastPage = Math.ceil(total / perPage)
 
   return {
-    data,
+    data: excluded ? data.map((item: any) => exclude(item, excluded)) : data,
     pagination: {
       total,
       lastPage,
@@ -37,5 +57,5 @@ export async function paginate<T, K>(
       prev: page > 1 ? page - 1 : null,
       next: page < lastPage ? page + 1 : null,
     },
-  }
+  } as PaginatedResult<Omit<Model, Field>>
 }

@@ -1,17 +1,7 @@
-import { HttpException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { prisma, Prisma, Chat } from 'database'
 import { IChatsList } from './chats.dto'
-import { paginate } from 'pagination'
-
-export interface PaginatedChat {
-  data: Chat[]
-  pagination: {
-    perPage: number
-    page: number
-    totalPages: number
-    total: number
-  }
-}
+import { exclude, paginate } from 'pagination'
 
 @Injectable()
 export class ChatsService {
@@ -54,7 +44,8 @@ export class ChatsService {
       Prisma.ChatFindManyArgs,
       Prisma.ChatGetPayload<{
         include: typeof chatInclude
-      }>
+      }>,
+      'deviceId' | 'contactId'
     >(
       prisma.chat,
       {
@@ -66,16 +57,8 @@ export class ChatsService {
         page,
         perPage,
       },
+      ['deviceId', 'contactId'],
     )
-  }
-
-  /**
-   * Counts the number of chat.
-   *
-   * @return {Promise<number>} The number of chat.
-   */
-  async count(): Promise<number> {
-    return prisma.chat.count()
   }
 
   /**
@@ -85,7 +68,7 @@ export class ChatsService {
    * @param {string | null} deviceId - The optional device ID of the chat.
    */
   async findOne(id: string, deviceId?: string | null) {
-    return prisma.chat.findUnique({
+    const data = await prisma.chat.findUnique({
       include: {
         contact: true,
       },
@@ -94,5 +77,11 @@ export class ChatsService {
         deviceId: deviceId || undefined,
       },
     })
+
+    if (!data) {
+      return null
+    }
+
+    return exclude(data, ['deviceId', 'contactId'])
   }
 }

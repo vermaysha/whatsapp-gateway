@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Logs, Prisma, prisma } from 'database'
 import { ILogsList } from './logs.dto'
-import { paginate } from 'pagination'
+import { exclude, paginate } from 'pagination'
 
 @Injectable()
 export class LogsService {
@@ -41,7 +41,7 @@ export class LogsService {
         }
       : undefined
 
-    return paginate<Prisma.LogsFindManyArgs, Logs>(
+    return paginate<Prisma.LogsFindManyArgs, Logs, 'deviceId'>(
       prisma.message,
       {
         orderBy: orderQuery,
@@ -51,6 +51,7 @@ export class LogsService {
         page,
         perPage,
       },
+      ['deviceId'],
     )
   }
 
@@ -61,12 +62,18 @@ export class LogsService {
    * @param {string | null} device - The optional device ID. Defaults to null.
    */
   async findOne(id: string, device?: string | null) {
-    return prisma.logs.findUnique({
+    const data = await prisma.logs.findUnique({
       where: {
         id,
         deviceId: device || undefined,
       },
     })
+
+    if (!data) {
+      return null
+    }
+
+    return exclude(data, ['deviceId'])
   }
 
   /**

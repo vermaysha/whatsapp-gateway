@@ -1,82 +1,106 @@
-import { HttpException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { ApiToken, Prisma, prisma } from 'database'
 import { randomBytes } from 'crypto'
-
-export interface PaginatedApiToken {
-  data: ApiToken[]
-  pagination: {
-    perPage: number
-    page: number
-    totalPages: number
-    total: number
-  }
-}
+import { ListDTO } from './api-token.dto'
+import { exclude, paginate } from 'pagination'
 
 @Injectable()
 export class ApiTokenService {
   /**
-   * Retrieves paginated API tokens.
+   * Retrieves a list of API tokens for a given user.
    *
-   * @param {number} page - The page number to retrieve (default: 1).
-   * @param {number} perPage - The number of items per page (default: 10).
-   * @return {Promise<PaginatedApiToken>} The paginated API tokens.
+   * @param {ListDTO} params - The parameters for filtering and pagination.
+   * @param {string} userId - The ID of the user.
+   * @return {object[]} The list of API tokens.
    */
-  async findAll(page = 1, perPage = 10): Promise<PaginatedApiToken> {
-    const skipAmount = (page - 1) * perPage
-    const totalCount = await this.count()
-    const totalPages = Math.ceil(totalCount / perPage)
+  async findAll(params: ListDTO, userId: string) {
+    const { page, perPage, order, orderBy, search } = params
 
-    const data = await prisma.apiToken.findMany({
-      skip: skipAmount,
-      take: perPage,
-      orderBy: {
-        id: 'desc',
+    const include = Prisma.validator<Prisma.ApiTokenInclude>()({
+      history: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 1,
       },
     })
 
-    return {
-      data,
-      pagination: {
+    const orderQuery:
+      | Prisma.ApiTokenOrderByWithRelationAndSearchRelevanceInput
+      | undefined = search
+      ? {
+          _relevance: search
+            ? {
+                fields: ['name', 'description'],
+                search,
+                sort: 'desc',
+              }
+            : undefined,
+        }
+      : {
+          [orderBy ?? 'createdAt']: order ?? 'desc',
+        }
+
+    const data = await paginate<
+      Prisma.ApiTokenFindManyArgs,
+      Prisma.ApiTokenGetPayload<{
+        include: typeof include
+      }>,
+      'userId' | 'token'
+    >(
+      prisma.apiToken,
+      {
+        orderBy: orderQuery,
+        include,
+        where: {
+          userId,
+        },
+      },
+      {
         page,
         perPage,
-        totalPages,
-        total: totalCount,
       },
-    }
-  }
+      ['userId', 'token'],
+    )
 
-  /**
-   * Counts the number of API tokens.
-   *
-   * @return {Promise<number>} The number of API tokens.
-   */
-  async count(): Promise<number> {
-    return prisma.apiToken.count()
+    return data
   }
 
   /**
    * Retrieves a single API token by its ID.
    *
    * @param {string} id - The ID of the API token to retrieve.
-   * @return {Promise<ApiToken | null>} A Promise that resolves to the retrieved API token, or null if no token is found.
+   * @return {Promise<object | null>} The API token object, or null if not found.
    */
-  async findOne(id: string): Promise<ApiToken | null> {
-    return prisma.apiToken.findUnique({
+  async findOne(id: string) {
+    const data = await prisma.apiToken.findUnique({
       where: {
         id,
       },
+      include: {
+        history: {
+          take: 5,
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
     })
+
+    if (!data) {
+      return null
+    }
+
+    return exclude(data, ['userId', 'token'])
   }
 
   /**
    * Creates a new API token.
    *
    * @param {Omit<Prisma.ApiTokenCreateInput, 'token'>} data - The data for creating the API token.
-   * @return {Promise<ApiToken>} The newly created API token.
+   * @return {Promise<object>} The newly created API token.
    */
-  async create(
-    data: Omit<Prisma.ApiTokenCreateInput, 'token'>,
-  ): Promise<ApiToken> {
+  async create(data: Omit<Prisma.ApiTokenCreateInput, 'token'>) {
     const input: Prisma.ApiTokenCreateInput = {
       name: data.name,
       description: data.description,
@@ -84,9 +108,12 @@ export class ApiTokenService {
       user: data.user,
       token: this.generateToken(),
     }
-    return prisma.apiToken.create({
-      data: input,
-    })
+    return exclude(
+      await prisma.apiToken.create({
+        data: input,
+      }),
+      ['userId'],
+    )
   }
 
   /**
@@ -106,10 +133,6 @@ export class ApiTokenService {
    * @return {Promise<void>} A promise that resolves when the API token is deleted.
    */
   async delete(id: string): Promise<void> {
-    if (!(await this.findOne(id))) {
-      throw new HttpException('Api Token not found', 404)
-    }
-
     await prisma.apiToken.delete({
       where: {
         id,

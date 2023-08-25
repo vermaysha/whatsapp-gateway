@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { prisma, Prisma, Contact } from 'database'
-import { paginate } from 'pagination'
+import { exclude, paginate } from 'pagination'
 import { ListDTO } from './contacts.dto'
 
 @Injectable()
@@ -40,7 +40,11 @@ export class ContactsService {
         }
       : undefined
 
-    return paginate<Prisma.ContactFindManyArgs, Prisma.ContactGetPayload<any>>(
+    return paginate<
+      Prisma.ContactFindManyArgs,
+      Prisma.ContactGetPayload<any>,
+      'deviceId'
+    >(
       prisma.contact,
       {
         orderBy: orderQuery,
@@ -50,6 +54,7 @@ export class ContactsService {
         page,
         perPage,
       },
+      ['deviceId'],
     )
   }
 
@@ -58,14 +63,20 @@ export class ContactsService {
    *
    * @param {string} id - The ID of the contact.
    * @param {string} deviceId - The ID of the device.
-   * @return {Promise<Contact | null>} A promise that resolves to the found contact or null if not found.
+   * @return {Promise<object | null>} A promise that resolves to the found contact or null if not found.
    */
-  async findOne(id: string, deviceId?: string): Promise<Contact | null> {
-    return prisma.contact.findFirst({
+  async findOne(id: string, deviceId?: string) {
+    const data = await prisma.contact.findFirst({
       where: {
         id,
         deviceId,
       },
     })
+
+    if (!data) {
+      return null
+    }
+
+    return exclude(data, ['deviceId'])
   }
 }
