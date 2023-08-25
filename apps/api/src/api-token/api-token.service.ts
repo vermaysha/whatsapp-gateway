@@ -60,6 +60,7 @@ export class ApiTokenService {
         page,
         perPage,
       },
+      ['userId', 'token'],
     )
 
     return data
@@ -97,11 +98,9 @@ export class ApiTokenService {
    * Creates a new API token.
    *
    * @param {Omit<Prisma.ApiTokenCreateInput, 'token'>} data - The data for creating the API token.
-   * @return {Promise<ApiToken>} The newly created API token.
+   * @return {Promise<object>} The newly created API token.
    */
-  async create(
-    data: Omit<Prisma.ApiTokenCreateInput, 'token'>,
-  ): Promise<ApiToken> {
+  async create(data: Omit<Prisma.ApiTokenCreateInput, 'token'>) {
     const input: Prisma.ApiTokenCreateInput = {
       name: data.name,
       description: data.description,
@@ -109,9 +108,12 @@ export class ApiTokenService {
       user: data.user,
       token: this.generateToken(),
     }
-    return prisma.apiToken.create({
-      data: input,
-    })
+    return exclude(
+      await prisma.apiToken.create({
+        data: input,
+      }),
+      ['userId'],
+    )
   }
 
   /**
