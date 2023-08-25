@@ -23,7 +23,20 @@ model ApiToken {
   createdAt   DateTime? @default(now()) @db.Timestamptz()
   updatedAt   DateTime? @updatedAt @db.Timestamptz()
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  history apiTokenHistory[]
+}
+
+model apiTokenHistory {
+  id         String    @id @default(uuid()) @db.Uuid
+  apiTokenId String?   @db.Uuid
+  ip         String?   @db.Inet
+  userAgent  String?
+  fullpath   String?
+  createdAt  DateTime? @db.Timestamptz()
+  updatedAt  DateTime? @updatedAt @db.Timestamptz()
+
+  apiToken ApiToken? @relation(fields: [apiTokenId], references: [id], onDelete: Cascade)
 }
 
 model User {
