@@ -47,7 +47,7 @@ export class ApiTokenController {
 
     res.send({
       status: true,
-      message: 'Device created successfully',
+      message: 'API Token has been generated',
       data,
     })
   }
