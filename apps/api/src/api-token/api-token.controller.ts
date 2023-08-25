@@ -2,7 +2,7 @@
 import '@fastify/session'
 import { Controller, Req, Res } from '@nestjs/common'
 import { ApiTokenService } from './api-token.service'
-import { ApiTokenCreateDto, ApiTokenListDto } from './api-token.dto'
+import { ApiTokenCreateDto, ListDTO } from './api-token.dto'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core'
 
@@ -11,11 +11,12 @@ export class ApiTokenController {
   constructor(private apiTokenService: ApiTokenService) {}
 
   @TypedRoute.Get('/')
-  async index(@TypedQuery() params: ApiTokenListDto, @Res() res: FastifyReply) {
-    const data = await this.apiTokenService.findAll(
-      params.page ?? 1,
-      params.perPage ?? 10,
-    )
+  async index(
+    @TypedQuery() params: ListDTO,
+    @Res() res: FastifyReply,
+    @Req() req: FastifyRequest,
+  ) {
+    const data = await this.apiTokenService.findAll(params, req.session.user)
     res.send(data)
   }
 
