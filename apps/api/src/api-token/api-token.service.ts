@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { ApiToken, Prisma, prisma } from 'database'
-import { randomBytes } from 'crypto'
+import { createHash, createHmac, randomBytes } from 'crypto'
 import { ListDTO } from './api-token.dto'
 import { exclude, paginate } from 'pagination'
 
@@ -79,7 +79,7 @@ export class ApiTokenService {
       },
       include: {
         history: {
-          take: 5,
+          take: 10,
           orderBy: {
             createdAt: 'desc',
           },
@@ -101,19 +101,39 @@ export class ApiTokenService {
    * @return {Promise<object>} The newly created API token.
    */
   async create(data: Omit<Prisma.ApiTokenCreateInput, 'token'>) {
+    const token = this.generateToken()
     const input: Prisma.ApiTokenCreateInput = {
       name: data.name,
       description: data.description,
       expiredAt: data.expiredAt,
       user: data.user,
-      token: this.generateToken(),
+      token,
     }
-    return exclude(
+
+    const result = exclude(
       await prisma.apiToken.create({
         data: input,
       }),
       ['userId'],
     )
+
+    return result
+  }
+
+  /**
+   * Verifies the given token.
+   *
+   * @param {string} token - The token to be verified.
+   * @return {Promise<boolean>} A boolean indicating whether the token is valid or not.
+   */
+  async verifyToken(token: string): Promise<boolean> {
+    const result = await prisma.apiToken.count({
+      where: {
+        token,
+      },
+    })
+
+    return result > 0
   }
 
   /**
@@ -122,8 +142,17 @@ export class ApiTokenService {
    * @return {string} The generated token.
    */
   generateToken(): string {
-    const rand = randomBytes(64).toString('hex')
-    return `at_${rand}`
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    const bytes = randomBytes(64)
+    let token = 'at_'
+
+    for (const byteElement of bytes) {
+      const index = byteElement % characters.length
+      token += characters[index]
+    }
+
+    return token
   }
 
   /**

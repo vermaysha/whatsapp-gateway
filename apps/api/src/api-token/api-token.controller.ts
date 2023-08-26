@@ -5,7 +5,9 @@ import { ApiTokenService } from './api-token.service'
 import { ApiTokenCreateDto, ListDTO } from './api-token.dto'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core'
+import { Auth } from '../auth/auth.decorator'
 
+@Auth()
 @Controller('api-token')
 export class ApiTokenController {
   constructor(private apiTokenService: ApiTokenService) {}
@@ -25,7 +27,11 @@ export class ApiTokenController {
     @TypedParam('id', 'string') id: string,
     @Res() res: FastifyReply,
   ) {
-    res.send(await this.apiTokenService.findOne(id))
+    const data = await this.apiTokenService.findOne(id)
+
+    res.send({
+      data,
+    })
   }
 
   @TypedRoute.Post('/')
