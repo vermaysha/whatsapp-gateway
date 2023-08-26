@@ -13,9 +13,35 @@ import { WhatsappsModule } from './whatsapps/whatsapps.module'
 import { LogsModule } from './logs/logs.module'
 import { ApiTokenModule } from './api-token/api-token.module'
 import { EventsModule } from './events/events.module'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import configuration from './config/configuration'
+import validationSchema from './env.schema'
+import { JwtModule } from '@nestjs/jwt'
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+      cache: true,
+      expandVariables: true,
+      validationSchema,
+      validationOptions: {
+        allowUnknown: true,
+        abortEarly: true,
+      },
+    }),
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('encryptionKey'),
+        signOptions: {
+          expiresIn: '7d',
+        },
+      }),
+      inject: [ConfigService],
+    }),
     UsersModule,
     AuthModule,
     DevicesModule,
