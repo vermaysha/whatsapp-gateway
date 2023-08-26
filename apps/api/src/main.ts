@@ -44,6 +44,7 @@ async function bootstrap() {
     cookieName: 'sessions',
     cookie: cookieOptions,
     store,
+    saveUninitialized: false,
   } as FastifySessionOptions)
 
   await app.register(cors, {
