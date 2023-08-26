@@ -5,7 +5,7 @@ import { TypedParam, TypedQuery, TypedRoute } from '@nestia/core'
 import { FastifyReply } from 'fastify'
 import { DefaultDTO, IChatsList } from './chats.dto'
 
-@Auth(true)
+@Auth()
 @Controller('chats')
 export class ChatsController {
   constructor(private chatService: ChatsService) {}
