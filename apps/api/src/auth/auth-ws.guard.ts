@@ -6,10 +6,14 @@ import {
 import { JwtService } from '@nestjs/jwt'
 import { WsException } from '@nestjs/websockets'
 import { Socket } from 'socket.io'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class AuthWsGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
 
   /**
    * Authenticates the user based on the provided token in the request header.
@@ -30,7 +34,7 @@ export class AuthWsGuard implements CanActivate {
 
     try {
       await this.jwtService.verifyAsync(token, {
-        secret: process.env.ENCRYPTION_KEY,
+        secret: this.configService.getOrThrow('encryptionKey'),
       })
     } catch (e) {
       throw new WsException({
