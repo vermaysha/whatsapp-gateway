@@ -29,6 +29,8 @@
     "vue-tailwind-datepicker": "^1.4.6"
   },
   "dependencies": {
-    "uqr": "^0.1.2"
+    "chart.js": "^4.4.0",
+    "uqr": "^0.1.2",
+    "vue-chartjs": "^5.2.0"
   }
 }

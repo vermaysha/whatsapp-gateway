@@ -308,13 +308,16 @@ function closeModal(): void {
                 </td>
                 <td>
                   <div class="join">
-                    <div class="tooltip tooltip-info" data-tip="Detail History">
-                      <button class="btn btn-outline btn-sm btn-info join-item">
+                    <div class="tooltip tooltip-info" data-tip="Detail">
+                      <NuxtLink
+                        :href="`/api-token/info?uuid=${token.id}`"
+                        class="btn btn-outline btn-sm btn-info join-item"
+                      >
                         <ion-icon
                           name="infinite-outline"
                           class="text-xl"
                         ></ion-icon>
-                      </button>
+                      </NuxtLink>
                     </div>
                     <div class="tooltip tooltip-error" data-tip="Delete Token">
                       <button
