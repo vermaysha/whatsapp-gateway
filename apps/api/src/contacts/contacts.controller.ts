@@ -8,7 +8,7 @@ import { join } from 'path'
 import { existsSync } from 'fs'
 
 @Controller('contacts')
-@Auth()
+@Auth('all')
 export class ContactsController {
   constructor(private contactsService: ContactsService) {}
 
@@ -26,7 +26,10 @@ export class ContactsController {
     @TypedQuery() query: ListDTO,
     @Req() req: FastifyRequest,
   ) {
-    const data = await this.contactsService.findAll(query, req.session.user)
+    const data = await this.contactsService.findAll(
+      query,
+      req.session.get('user') || req.user.uuid,
+    )
 
     res.send(data)
   }

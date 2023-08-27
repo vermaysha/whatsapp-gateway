@@ -2,7 +2,7 @@
 import '@fastify/session'
 import { Controller, Req, Res } from '@nestjs/common'
 import { ApiTokenService } from './api-token.service'
-import { ApiTokenCreateDto, ListDTO } from './api-token.dto'
+import { ApiTokenCreateDto, ListDTO, PaginationDTO } from './api-token.dto'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { TypedBody, TypedParam, TypedQuery, TypedRoute } from '@nestia/core'
 import { Auth } from '../auth/auth.decorator'
@@ -23,15 +23,28 @@ export class ApiTokenController {
   }
 
   @TypedRoute.Get('/:id')
-  async detail(
-    @TypedParam('id', 'string') id: string,
-    @Res() res: FastifyReply,
-  ) {
+  async detail(@TypedParam('id', 'uuid') id: string, @Res() res: FastifyReply) {
     const data = await this.apiTokenService.findOne(id)
 
     res.send({
       data,
     })
+  }
+
+  @TypedRoute.Get('/history/:id')
+  async history(
+    @TypedParam('id', 'uuid') id: string,
+    @TypedQuery() params: PaginationDTO,
+    @Res() res: FastifyReply,
+    @Req() req: FastifyRequest,
+  ) {
+    const data = await this.apiTokenService.history(
+      params,
+      req.session.user,
+      id,
+    )
+
+    res.send(data)
   }
 
   @TypedRoute.Post('/')
@@ -46,7 +59,7 @@ export class ApiTokenController {
       expiredAt: body.expiredAt,
       user: {
         connect: {
-          id: req.session.user,
+          id: req.session.get('user'),
         },
       },
     })
@@ -59,10 +72,7 @@ export class ApiTokenController {
   }
 
   @TypedRoute.Delete('/:id')
-  async delete(
-    @TypedParam('id', 'string') id: string,
-    @Res() res: FastifyReply,
-  ) {
+  async delete(@TypedParam('id', 'uuid') id: string, @Res() res: FastifyReply) {
     await this.apiTokenService.delete(id)
     res.send({
       status: true,

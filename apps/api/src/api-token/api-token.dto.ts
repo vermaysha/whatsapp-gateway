@@ -1,4 +1,4 @@
-export class ListDTO {
+export class PaginationDTO {
   /**
    * The page number to retrieve.
    *
@@ -16,7 +16,9 @@ export class ListDTO {
    * @default 1
    */
   perPage?: number | null
+}
 
+export class ListDTO extends PaginationDTO {
   /**
    * The search query keyword.
    */
@@ -38,9 +40,20 @@ export class ListDTO {
 }
 
 export class ApiTokenCreateDto {
+  /**
+   * The name of the API token.
+   */
   name: string
 
+  /**
+   * The description of the API token.
+   */
   description?: string | null
 
-  expiredAt?: Date | null
+  /**
+   * The expiration date of the API token.
+   *
+   * @format date-time
+   */
+  expiredAt?: string | null
 }

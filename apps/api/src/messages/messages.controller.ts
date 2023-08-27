@@ -14,7 +14,7 @@ import { Auth } from '../auth/auth.decorator'
 import '@fastify/static'
 
 @Controller('messages')
-@Auth()
+@Auth('all')
 export class MessagesController {
   constructor(private messsageService: MessagesService) {}
 
