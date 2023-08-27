@@ -208,6 +208,9 @@ importers:
       '@pinia/nuxt':
         specifier: ^0.4.11
         version: 0.4.11(typescript@5.2.2)(vue@3.3.4)
+      '@tailwindcss/forms':
+        specifier: ^0.5.5
+        version: 0.5.5(tailwindcss@3.3.3)
       '@tailwindcss/typography':
         specifier: ^0.5.9
         version: 0.5.9(tailwindcss@3.3.3)
@@ -223,6 +226,9 @@ importers:
       date-fns:
         specifier: ^2.30.0
         version: 2.30.0
+      dayjs:
+        specifier: ^1.11.9
+        version: 1.11.9
       nuxt:
         specifier: ^3.6.5
         version: 3.6.5(@types/node@20.5.6)(typescript@5.2.2)
@@ -244,6 +250,9 @@ importers:
       typescript:
         specifier: ^5.2.2
         version: 5.2.2
+      vue-tailwind-datepicker:
+        specifier: ^1.4.6
+        version: 1.4.6(dayjs@1.11.9)(tailwindcss@3.3.3)(vite@4.4.9)(vue@3.3.4)
 
   packages/database:
     dependencies:
@@ -3111,6 +3120,15 @@ packages:
   /@socket.io/component-emitter@3.1.0:
     resolution: {integrity: sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==}
 
+  /@tailwindcss/forms@0.5.5(tailwindcss@3.3.3):
+    resolution: {integrity: sha512-03sXK1DcPt44GZ0Yg6AcAfQln89IKdbE79g2OwoKqBm1ukaadLO2AH3EiB3mXHeQnxa3tzm7eE0x7INXSjbuug==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
+    dependencies:
+      mini-svg-data-uri: 1.4.4
+      tailwindcss: 3.3.3(ts-node@10.9.1)
+    dev: true
+
   /@tailwindcss/typography@0.5.9(tailwindcss@3.3.3):
     resolution: {integrity: sha512-t8Sg3DyynFysV9f4JDOVISGsjazNb48AeIYQwcL+Bsq5uf4RYL75C1giZ43KISjeDGBaTN3Kxh7Xj/vRSMJUUg==}
     peerDependencies:
@@ -5613,6 +5631,10 @@ packages:
 
   /dateformat@4.6.3:
     resolution: {integrity: sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==}
+    dev: true
+
+  /dayjs@1.11.9:
+    resolution: {integrity: sha512-QvzAURSbQ0pKdIye2txOzNaHmxtUBXerpY0FJsFXUMKbIZeFm5ht1LS/jFsrncjnmtv8HsG0W2g6c0zUjZWmpA==}
     dev: true
 
   /debug@2.6.9:
@@ -9023,6 +9045,11 @@ packages:
   /min-indent@1.0.1:
     resolution: {integrity: sha512-I9jwMn07Sy/IwOj3zVkVik2JTvgpaykDZEigL6Rx6N9LbMywwUSMtxET+7lVoDLLd3O3IXwJwvuuns8UB/HeAg==}
     engines: {node: '>=4'}
+    dev: true
+
+  /mini-svg-data-uri@1.4.4:
+    resolution: {integrity: sha512-r9deDe9p5FJUPZAk3A59wGH7Ii9YrjjWw0jmw/liSbHl2CHiyXj6FcDXDu2K3TjVAXqiJdaw3xxwlZZr9E6nHg==}
+    hasBin: true
     dev: true
 
   /minimatch@3.0.8:
@@ -13027,6 +13054,14 @@ packages:
       vscode-uri: 3.0.7
     dev: true
 
+  /vite-plugin-css-injected-by-js@2.4.0(vite@4.4.9):
+    resolution: {integrity: sha512-fQkJ5baPEasjjJLxHINLjXuPREO61VIDFUeUqleEBghOLfZZe/k/zrxG5b3kFZXu6JtdI11pnwtj3dh3CN9X4Q==}
+    peerDependencies:
+      vite: '>2.0.0-0'
+    dependencies:
+      vite: 4.4.9(@types/node@20.5.6)
+    dev: true
+
   /vite-plugin-inspect@0.7.38(@nuxt/kit@3.6.5)(vite@4.4.9):
     resolution: {integrity: sha512-+p6pJVtBOLGv+RBrcKAFUdx+euizg0bjL35HhPyM0MjtKlqoC5V9xkCmO9Ctc8JrTyXqODbHqiLWJKumu5zJ7g==}
     engines: {node: '>=14'}
@@ -13212,6 +13247,21 @@ packages:
     dependencies:
       '@vue/devtools-api': 6.5.0
       vue: 3.3.4
+    dev: true
+
+  /vue-tailwind-datepicker@1.4.6(dayjs@1.11.9)(tailwindcss@3.3.3)(vite@4.4.9)(vue@3.3.4):
+    resolution: {integrity: sha512-+tfiVCLSdURAMRA6JW2eC6uss44SoPANOFDcOCWIXe+14ngKPsyzGjoAJMXnxB+ZwaBKDJI4Hsis4DPqyr4flg==}
+    peerDependencies:
+      dayjs: ^1.11.5
+      tailwindcss: ^3.1.8
+      vue: ^3.2.38
+    dependencies:
+      dayjs: 1.11.9
+      tailwindcss: 3.3.3(ts-node@10.9.1)
+      vite-plugin-css-injected-by-js: 2.4.0(vite@4.4.9)
+      vue: 3.3.4
+    transitivePeerDependencies:
+      - vite
     dev: true
 
   /vue@3.3.4:
