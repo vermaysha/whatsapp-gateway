@@ -38,9 +38,20 @@ export class ListDTO {
 }
 
 export class ApiTokenCreateDto {
+  /**
+   * The name of the API token.
+   */
   name: string
 
+  /**
+   * The description of the API token.
+   */
   description?: string | null
 
-  expiredAt?: Date | null
+  /**
+   * The expiration date of the API token.
+   *
+   * @format date-time
+   */
+  expiredAt?: string | null
 }
