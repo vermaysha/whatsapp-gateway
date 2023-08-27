@@ -15,14 +15,19 @@ interface IQuery {
   search: string | null;
   page: number;
 }
+interface IAPIHistory {
+  ip: string | null;
+  userAgent: string | null;
+  updatedAt: string | null;
+}
 interface IAPIToken {
   id: string;
   name: string;
   description: string | null;
   expiredAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  history: any[];
+  createdAt: string | null;
+  updatedAt: string | null;
+  history: IAPIHistory[];
 }
 interface IAPITokenData extends IAPIToken {
   token: string;
@@ -87,7 +92,6 @@ async function fetchData() {
   if (error.value) {
     notifyStore.notify(error.value.data.reason, NotificationType.Error);
   }
-
   loading.value = false;
 }
 
@@ -295,7 +299,10 @@ function closeModal(): void {
                   </div>
                 </td>
                 <td>
-                  <div class="badge badge-primary badge-outline">
+                  <div v-if="token.history[0]?.updatedAt">
+                    {{ formatDate(token.history[0].updatedAt) }}
+                  </div>
+                  <div v-else class="badge badge-primary badge-outline">
                     Never Accessed
                   </div>
                 </td>
