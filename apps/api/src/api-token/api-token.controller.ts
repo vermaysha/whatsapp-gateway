@@ -46,7 +46,7 @@ export class ApiTokenController {
       expiredAt: body.expiredAt,
       user: {
         connect: {
-          id: req.session.user,
+          id: req.session.get('user'),
         },
       },
     })

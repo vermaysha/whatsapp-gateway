@@ -20,6 +20,11 @@ export class ApiTokenService {
 
     const include = Prisma.validator<Prisma.ApiTokenInclude>()({
       history: {
+        select: {
+          updatedAt: true,
+          ip: true,
+          userAgent: true,
+        },
         orderBy: {
           createdAt: 'desc',
         },
@@ -128,16 +133,15 @@ export class ApiTokenService {
    * Verifies the given token.
    *
    * @param {string} token - The token to be verified.
-   * @return {Promise<boolean>} A boolean indicating whether the token is valid or not.
    */
-  async verifyToken(token: string): Promise<boolean> {
-    const result = await prisma.apiToken.count({
+  async verifyToken(token: string) {
+    const result = await prisma.apiToken.findFirst({
       where: {
         token: this.hash(token),
       },
     })
 
-    return result > 0
+    return result
   }
 
   /**
@@ -187,6 +191,29 @@ export class ApiTokenService {
     await prisma.apiToken.delete({
       where: {
         id,
+      },
+    })
+  }
+
+  /**
+   * Inserts a new history record for an API token.
+   *
+   * @param {Prisma.ApiTokenHistoryCreateInput} data - The data to be inserted.
+   * @param {string} tokenId - The ID of the token to insert the history for.
+   * @return {Promise<void>} - A promise that resolves when the insertion is complete.
+   */
+  async insertHistory(
+    data: Prisma.ApiTokenHistoryCreateInput,
+    tokenId: string,
+  ) {
+    await prisma.apiToken.update({
+      where: {
+        id: tokenId,
+      },
+      data: {
+        history: {
+          create: data,
+        },
       },
     })
   }

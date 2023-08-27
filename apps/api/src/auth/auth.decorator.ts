@@ -1,5 +1,6 @@
 import { SetMetadata } from '@nestjs/common'
 
-export const IS_PUBLIC_KEY = false
-export const Auth = (mustAuthenticated: boolean = true) =>
-  SetMetadata(IS_PUBLIC_KEY, mustAuthenticated)
+export type AuthType = 'session' | 'token' | 'all' | undefined | null
+export const AUTH_TYPE: AuthType = 'session'
+export const Auth = (authType: AuthType = 'session') =>
+  SetMetadata(AUTH_TYPE, authType)
