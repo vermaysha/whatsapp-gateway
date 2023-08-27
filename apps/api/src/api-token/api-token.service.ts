@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma, prisma } from 'database'
 import { createHmac, randomBytes } from 'crypto'
-import { ListDTO } from './api-token.dto'
+import { ListDTO, PaginationDTO } from './api-token.dto'
 import { exclude, paginate } from 'pagination'
 import { ConfigService } from '@nestjs/config'
 
@@ -74,23 +74,60 @@ export class ApiTokenService {
   }
 
   /**
+   * Retrieves the history of API token based on the provided parameters.
+   *
+   * @param {PaginationDTO} params - The pagination parameters for retrieving the history.
+   * @param {string} userId - The ID of the user.
+   * @param {string} tokenId - The ID of the API token.
+   * @return {Promise<any>} The API token history data.
+   */
+  async history(params: PaginationDTO, userId: string, tokenId: string) {
+    const { page, perPage } = params
+
+    const data = await paginate<
+      Prisma.ApiTokenHistoryFindManyArgs,
+      Prisma.ApiTokenHistoryGetPayload<object>,
+      'apiTokenId'
+    >(
+      prisma.apiTokenHistory,
+      {
+        where: {
+          apiToken: {
+            userId,
+            id: tokenId,
+          },
+        },
+        orderBy: {
+          updatedAt: 'desc',
+        },
+      },
+      {
+        page,
+        perPage,
+      },
+      ['apiTokenId'],
+    )
+
+    return data
+  }
+
+  /**
    * Retrieves a single API token by its ID.
    *
    * @param {string} id - The ID of the API token to retrieve.
    * @return {Promise<object | null>} The API token object, or null if not found.
    */
   async findOne(id: string) {
+    const today = new Date()
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate(),
+    )
+
     const data = await prisma.apiToken.findUnique({
       where: {
         id,
-      },
-      include: {
-        history: {
-          take: 10,
-          orderBy: {
-            createdAt: 'desc',
-          },
-        },
       },
     })
 
@@ -98,7 +135,25 @@ export class ApiTokenService {
       return null
     }
 
-    return exclude(data, ['userId', 'token'])
+    const todayUsage = await prisma.apiTokenHistory.count({
+      where: {
+        apiTokenId: data.id,
+        createdAt: {
+          gte: startOfToday,
+        },
+      },
+    })
+
+    const totalUsage = await prisma.apiTokenHistory.count({
+      where: {
+        apiTokenId: data.id,
+      },
+    })
+
+    return Object.assign(exclude(data, ['userId', 'token']), {
+      todayUsage,
+      totalUsage,
+    })
   }
 
   /**

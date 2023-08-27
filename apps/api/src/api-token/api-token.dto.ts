@@ -1,4 +1,4 @@
-export class ListDTO {
+export class PaginationDTO {
   /**
    * The page number to retrieve.
    *
@@ -16,7 +16,9 @@ export class ListDTO {
    * @default 1
    */
   perPage?: number | null
+}
 
+export class ListDTO extends PaginationDTO {
   /**
    * The search query keyword.
    */
