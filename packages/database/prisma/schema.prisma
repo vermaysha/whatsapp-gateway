@@ -25,10 +25,10 @@ model ApiToken {
   updatedAt   DateTime? @updatedAt @db.Timestamptz()
 
   user    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  history apiTokenHistory[]
+  history ApiTokenHistory[]
 }
 
-model apiTokenHistory {
+model ApiTokenHistory {
   id         String    @id @default(uuid()) @db.Uuid
   apiTokenId String?   @db.Uuid
   ip         String?   @db.Inet
