@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common'
-import { ApiToken, Prisma, prisma } from 'database'
-import { createHash, createHmac, randomBytes } from 'crypto'
+import { Prisma, prisma } from 'database'
+import { createHmac, randomBytes } from 'crypto'
 import { ListDTO } from './api-token.dto'
 import { exclude, paginate } from 'pagination'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class ApiTokenService {
+  constructor(private configService: ConfigService) {}
   /**
    * Retrieves a list of API tokens for a given user.
    *
@@ -101,13 +103,13 @@ export class ApiTokenService {
    * @return {Promise<object>} The newly created API token.
    */
   async create(data: Omit<Prisma.ApiTokenCreateInput, 'token'>) {
-    const token = this.generateToken()
+    const [token, hashed] = this.generateToken()
     const input: Prisma.ApiTokenCreateInput = {
       name: data.name,
       description: data.description,
       expiredAt: data.expiredAt,
       user: data.user,
-      token,
+      token: hashed,
     }
 
     const result = exclude(
@@ -116,6 +118,8 @@ export class ApiTokenService {
       }),
       ['userId'],
     )
+
+    result.token = token
 
     return result
   }
@@ -129,7 +133,7 @@ export class ApiTokenService {
   async verifyToken(token: string): Promise<boolean> {
     const result = await prisma.apiToken.count({
       where: {
-        token,
+        token: this.hash(token),
       },
     })
 
@@ -137,14 +141,30 @@ export class ApiTokenService {
   }
 
   /**
-   * Generates a token using a random string of bytes and returns it.
+   * Hashes a given token using the HMAC-SHA1 algorithm.
    *
-   * @return {string} The generated token.
+   * @param {string} token - The token to be hashed.
+   * @return {string} - The hashed token.
    */
-  generateToken(): string {
+  hash(token: string): string {
+    const hmac = createHmac(
+      'sha1',
+      this.configService.getOrThrow('encryptionKey'),
+    )
+
+    return hmac.update(token).digest('hex')
+  }
+
+  /**
+   * Generates a token consisting of random characters and returns an array
+   * containing the token and its hashed value.
+   *
+   * @return {string[]} An array containing the generated token and its hashed value.
+   */
+  generateToken(): string[] {
     const characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    const bytes = randomBytes(64)
+    const bytes = randomBytes(32)
     let token = 'at_'
 
     for (const byteElement of bytes) {
@@ -152,7 +172,9 @@ export class ApiTokenService {
       token += characters[index]
     }
 
-    return token
+    const hashed = this.hash(token)
+
+    return [token, hashed]
   }
 
   /**
