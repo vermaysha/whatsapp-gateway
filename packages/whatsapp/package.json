@@ -31,7 +31,7 @@
   "homepage": "https://github.com/vermaysha/whatsapp-gateway#readme",
   "dependencies": {
     "@hapi/boom": "^10.0.1",
-    "@whiskeysockets/baileys": "^6.4.0",
+    "@whiskeysockets/baileys": "^6.4.1",
     "database": "workspace:^",
     "ffmpeg": "^0.0.4",
     "link-preview-js": "^3.0.5",
