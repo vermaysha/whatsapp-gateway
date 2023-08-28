@@ -39,7 +39,7 @@
     "dotenv-expand": "^10.0.0",
     "fastify": "^4.21.0",
     "hash": "workspace:^",
-    "joi": "^17.9.2",
+    "joi": "^17.10.0",
     "pagination": "workspace:^",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
