@@ -81,8 +81,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/hash
       joi:
-        specifier: ^17.9.2
-        version: 17.9.2
+        specifier: ^17.10.0
+        version: 17.10.0
       pagination:
         specifier: workspace:^
         version: link:../../packages/pagination
@@ -4085,7 +4085,7 @@ packages:
       cache-manager: 5.2.3
       futoin-hkdf: 1.5.3
       libphonenumber-js: 1.10.41
-      libsignal: github.com/adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
+      libsignal: git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97
       link-preview-js: 3.0.5
       music-metadata: 7.13.4
       node-cache: 5.1.2
@@ -8399,8 +8399,8 @@ packages:
     hasBin: true
     dev: true
 
-  /joi@17.9.2:
-    resolution: {integrity: sha512-Itk/r+V4Dx0V3c7RLFdRh12IOjySm2/WGPMubBT92cQvRfYZhPM2W0hZlctjj72iES8jsRCwp7S/cRmWBnJ4nw==}
+  /joi@17.10.0:
+    resolution: {integrity: sha512-hrazgRSlhzacZ69LdcKfhi3Vu13z2yFfoAzmEov3yFIJlatTdVGUW6vle1zjH8qkzdCn/qGw8rapjqsObbYXAg==}
     dependencies:
       '@hapi/hoek': 9.3.0
       '@hapi/topo': 5.1.0
@@ -13283,7 +13283,7 @@ packages:
     hasBin: true
     dependencies:
       axios: 0.27.2
-      joi: 17.9.2
+      joi: 17.10.0
       lodash: 4.17.21
       minimist: 1.2.8
       rxjs: 7.8.1
@@ -13673,8 +13673,8 @@ packages:
       readable-stream: 3.6.2
     dev: true
 
-  github.com/adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
-    resolution: {tarball: https://codeload.github.com/adiwajshing/libsignal-node/tar.gz/11dbd962ea108187c79a7c46fe4d6f790e23da97}
+  git@github.com+adiwajshing/libsignal-node/11dbd962ea108187c79a7c46fe4d6f790e23da97:
+    resolution: {commit: 11dbd962ea108187c79a7c46fe4d6f790e23da97, repo: git@github.com:adiwajshing/libsignal-node.git, type: git}
     name: libsignal
     version: 2.0.1
     dependencies:
