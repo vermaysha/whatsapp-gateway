@@ -37,41 +37,56 @@ async function bootstrap() {
     maxAge: config.get<number>('cookie.maxAge', 1) * 1000, // 1weeks
   }
 
-  await app.register(cookie, {
-    secret,
-    parseOptions: cookieOptions,
-  } as FastifyCookieOptions)
+  await app.register(
+    cookie as any,
+    {
+      secret,
+      parseOptions: cookieOptions,
+    } as FastifyCookieOptions,
+  )
 
-  await app.register(session, {
-    secret,
-    cookieName: config.getOrThrow<string>('session.name'),
-    cookie: cookieOptions,
-    store,
-    saveUninitialized: false,
-  } as FastifySessionOptions)
+  await app.register(
+    session as any,
+    {
+      secret,
+      cookieName: config.getOrThrow<string>('session.name'),
+      cookie: cookieOptions,
+      store,
+      saveUninitialized: false,
+    } as FastifySessionOptions,
+  )
 
-  await app.register(cors, {
-    origin: config.get('cors.origin'),
-    credentials: true,
-    exposedHeaders: ['Date', 'Content-Range'],
-    preflightContinue: true,
-  } as FastifyCorsOptions)
+  await app.register(
+    cors as any,
+    {
+      origin: config.get('cors.origin'),
+      credentials: true,
+      exposedHeaders: ['Date', 'Content-Range'],
+      preflightContinue: true,
+    } as FastifyCorsOptions,
+  )
 
-  await app.register(etag, {
-    algorithm: 'sha1',
-  } as FastifyEtagOptions)
+  await app.register(
+    etag as any,
+    {
+      algorithm: 'sha1',
+    } as FastifyEtagOptions,
+  )
 
-  await app.register(staticFiles, {
-    root: join(__dirname, '..', 'assets'),
-    decorateReply: true,
-    serve: false,
-    cacheControl: true,
-    dotfiles: 'ignore',
-    etag: true,
-    index: false,
-    lastModified: true,
-    maxAge: '1w',
-  } as FastifyStaticOptions)
+  await app.register(
+    staticFiles as any,
+    {
+      root: join(__dirname, '..', 'assets'),
+      decorateReply: true,
+      serve: false,
+      cacheControl: true,
+      dotfiles: 'ignore',
+      etag: true,
+      index: false,
+      lastModified: true,
+      maxAge: '1w',
+    } as FastifyStaticOptions,
+  )
 
   app.setGlobalPrefix('api')
 
