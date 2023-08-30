@@ -151,8 +151,8 @@ importers:
         specifier: ^29.6.4
         version: 29.6.4(@types/node@20.5.7)(ts-node@10.9.1)
       nestia:
-        specifier: ^4.4.0
-        version: 4.4.0
+        specifier: ^4.5.0
+        version: 4.5.0
       prettier:
         specifier: ^3.0.3
         version: 3.0.3
@@ -9693,8 +9693,8 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: true
 
-  /nestia@4.4.0:
-    resolution: {integrity: sha512-4Wq05TtkEO4u0C4PuWpTcDcgEpC/qJJA007VnBR5fOLw9cs1gENZVgzBuVvGEaOQDfGK5WFn2C7GPx3EGJnToQ==}
+  /nestia@4.5.0:
+    resolution: {integrity: sha512-S68dmpCnT21zfadUjet3PWmwW991/24unFsVNAennVHej1TdMZE5Cm2CAc6gaWOrwX2BqSfmUE/oXJPa5P8TEA==}
     hasBin: true
     dependencies:
       commander: 10.0.1
