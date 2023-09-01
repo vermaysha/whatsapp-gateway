@@ -81,8 +81,8 @@ importers:
         specifier: workspace:^
         version: link:../../packages/hash
       joi:
-        specifier: ^17.10.0
-        version: 17.10.0
+        specifier: ^17.10.1
+        version: 17.10.1
       pagination:
         specifier: workspace:^
         version: link:../../packages/pagination
@@ -8800,8 +8800,8 @@ packages:
     hasBin: true
     dev: true
 
-  /joi@17.10.0:
-    resolution: {integrity: sha512-hrazgRSlhzacZ69LdcKfhi3Vu13z2yFfoAzmEov3yFIJlatTdVGUW6vle1zjH8qkzdCn/qGw8rapjqsObbYXAg==}
+  /joi@17.10.1:
+    resolution: {integrity: sha512-vIiDxQKmRidUVp8KngT8MZSOcmRVm2zV7jbMjNYWuHcJWI0bUck3nRTGQjhpPlQenIQIBC5Vp9AhcnHbWQqafw==}
     dependencies:
       '@hapi/hoek': 9.3.0
       '@hapi/topo': 5.1.0
@@ -13709,7 +13709,7 @@ packages:
     hasBin: true
     dependencies:
       axios: 0.27.2
-      joi: 17.10.0
+      joi: 17.10.1
       lodash: 4.17.21
       minimist: 1.2.8
       rxjs: 7.8.1
