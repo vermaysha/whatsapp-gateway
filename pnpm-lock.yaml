@@ -46,7 +46,7 @@ importers:
         version: 6.10.2
       '@nestia/core':
         specifier: ^1.6.7
-        version: 1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.3)(@nestjs/core@10.2.3)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.3)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3)
+        version: 1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.3)(@nestjs/core@10.2.3)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.4)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3)
       '@nestjs/common':
         specifier: ^10.2.3
         version: 10.2.3(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -60,8 +60,8 @@ importers:
         specifier: ^10.1.0
         version: 10.1.0(@nestjs/common@10.2.3)
       '@nestjs/platform-fastify':
-        specifier: ^10.2.3
-        version: 10.2.3(@fastify/static@6.10.2)(@nestjs/common@10.2.3)(@nestjs/core@10.2.3)
+        specifier: ^10.2.4
+        version: 10.2.4(@fastify/static@6.10.2)(@nestjs/common@10.2.3)(@nestjs/core@10.2.3)
       '@nestjs/platform-socket.io':
         specifier: ^10.2.3
         version: 10.2.3(@nestjs/common@10.2.3)(@nestjs/websockets@10.2.3)(rxjs@7.8.1)
@@ -2237,7 +2237,7 @@ packages:
       - encoding
       - supports-color
 
-  /@nestia/core@1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.3)(@nestjs/core@10.2.3)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.3)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3):
+  /@nestia/core@1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.3)(@nestjs/core@10.2.3)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.4)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3):
     resolution: {integrity: sha512-UAp7BbjKelBj3QHLN9dP4jSlQYz8+hOWXU8WNt+r88mgn60mCvwVgV9Pa91XrO4alS8sqZ7GJyyOBnMBcekTnQ==}
     peerDependencies:
       '@nestia/fetcher': '>=1.6.7'
@@ -2255,7 +2255,7 @@ packages:
       '@nestjs/common': 10.2.3(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 10.2.3(@nestjs/common@10.2.3)(@nestjs/platform-express@10.1.3)(@nestjs/websockets@10.2.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/platform-express': 10.1.3(@nestjs/common@10.2.3)(@nestjs/core@10.2.3)
-      '@nestjs/platform-fastify': 10.2.3(@fastify/static@6.10.2)(@nestjs/common@10.2.3)(@nestjs/core@10.2.3)
+      '@nestjs/platform-fastify': 10.2.4(@fastify/static@6.10.2)(@nestjs/common@10.2.3)(@nestjs/core@10.2.3)
       detect-ts-node: 1.0.5
       glob: 7.2.3
       raw-body: 2.5.2
@@ -2447,8 +2447,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@nestjs/platform-fastify@10.2.3(@fastify/static@6.10.2)(@nestjs/common@10.2.3)(@nestjs/core@10.2.3):
-    resolution: {integrity: sha512-g6R6T5s2JkyN5O1T0ThEP0yt9QicM8px7EJ4jdQ9UN1Iv7pdD6T0nHPDD8hcNpIf9G4jcP/5fS+Z8k0CUF2RIA==}
+  /@nestjs/platform-fastify@10.2.4(@fastify/static@6.10.2)(@nestjs/common@10.2.3)(@nestjs/core@10.2.3):
+    resolution: {integrity: sha512-tkFjvAjWzhE0C8GzjESBA7QYeNomCy4F4j3gsfTrLKQVGWBRjAyjzfdV8gWxAz6I1RF7uV7fAQ6tpxepymqEwQ==}
     peerDependencies:
       '@fastify/static': ^6.0.0
       '@fastify/view': ^7.0.0 || ^8.0.0
