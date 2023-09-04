@@ -303,8 +303,8 @@ importers:
   packages/hash:
     dependencies:
       argon2:
-        specifier: ^0.31.0
-        version: 0.31.0
+        specifier: ^0.31.1
+        version: 0.31.1
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
@@ -328,8 +328,8 @@ importers:
   packages/pagination:
     dependencies:
       argon2:
-        specifier: ^0.31.0
-        version: 0.31.0
+        specifier: ^0.31.1
+        version: 0.31.1
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
@@ -4692,8 +4692,8 @@ packages:
     resolution: {integrity: sha512-PYjyFOLKQ9y57JvQ6QLo8dAgNqswh8M1RMJYdQduT6xbWSgK36P/Z/v+p888pM69jMMfS8Xd8F6I1kQ/I9HUGg==}
     dev: true
 
-  /argon2@0.31.0:
-    resolution: {integrity: sha512-r56NWwlE3tjD/FIqL1T+V4Ka+Mb5yMF35w1YWHpwpEjeONXBUbxmjhWkWqY63mse8lpcZ+ZZIGpKL+s+qXhyfg==}
+  /argon2@0.31.1:
+    resolution: {integrity: sha512-ik2xnJrLXazya7m4Nz1XfBSRjXj8Koq8qF9PsQC8059p20ifWc9zx/hgU3ItZh/3TnwXkv0RbhvjodPkmFf0bg==}
     engines: {node: '>=14.0.0'}
     requiresBuild: true
     dependencies:
