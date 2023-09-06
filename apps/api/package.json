@@ -43,7 +43,7 @@
     "pagination": "workspace:^",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "typia": "^4.3.3",
+    "typia": "^5.0.2",
     "whatsapp": "workspace:^"
   },
   "devDependencies": {
