@@ -25,7 +25,7 @@
     "@fastify/cookie": "^9.0.4",
     "@fastify/cors": "^8.3.0",
     "@fastify/etag": "^4.2.0",
-    "@fastify/session": "^10.4.0",
+    "@fastify/session": "^10.5.0",
     "@fastify/static": "^6.11.0",
     "@nestia/core": "^1.6.7",
     "@nestjs/common": "^10.2.4",
