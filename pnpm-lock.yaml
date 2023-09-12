@@ -39,8 +39,8 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0
       '@fastify/session':
-        specifier: ^10.4.0
-        version: 10.4.0
+        specifier: ^10.5.0
+        version: 10.5.0
       '@fastify/static':
         specifier: ^6.11.0
         version: 6.11.0
@@ -1645,8 +1645,8 @@ packages:
       mime: 3.0.0
     dev: false
 
-  /@fastify/session@10.4.0:
-    resolution: {integrity: sha512-0lABZ0Rcg0VjiRj5xWeAwC1LBwgclaoAPikaONxTz0LJQTPPWSfSDDXafLkGDAqrl5KF8sC3jqLiZ9CbRHZ0Jg==}
+  /@fastify/session@10.5.0:
+    resolution: {integrity: sha512-2oXXSQ4Yy6pzLgbBoooblgHJ55DYqyxSLoKMq2CGmDZI2WPMrOIvN1bJbllWuUuCe7luPdQju3RJTRvNMW+j/g==}
     dependencies:
       fastify-plugin: 4.5.1
       safe-stable-stringify: 2.4.3
