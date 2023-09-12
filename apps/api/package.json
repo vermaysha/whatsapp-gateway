@@ -37,7 +37,7 @@
     "@nestjs/websockets": "^10.2.5",
     "database": "workspace:^",
     "dotenv-expand": "^10.0.0",
-    "fastify": "^4.22.2",
+    "fastify": "^4.23.0",
     "hash": "workspace:^",
     "joi": "^17.10.1",
     "pagination": "workspace:^",
