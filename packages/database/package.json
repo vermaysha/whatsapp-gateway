@@ -37,7 +37,7 @@
   "devDependencies": {
     "@types/node": "^20.5.9",
     "dotenv-cli": "^7.3.0",
-    "eslint": "^8.48.0",
+    "eslint": "^8.49.0",
     "prettier": "^3.0.3",
     "prisma": "^5.2.0",
     "rimraf": "^5.0.1",
