@@ -18,7 +18,7 @@
     "autoprefixer": "10.4.15",
     "daisyui": "^3.7.5",
     "date-fns": "^2.30.0",
-    "dayjs": "^1.11.9",
+    "dayjs": "^1.11.10",
     "nuxt": "^3.7.3",
     "nuxt-socket-io": "^3.0.13",
     "pinia": "^2.1.6",
