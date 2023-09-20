@@ -37,7 +37,7 @@
     "link-preview-js": "^3.0.5",
     "mime-types": "^2.1.35",
     "pino": "^8.15.1",
-    "sharp": "^0.32.5"
+    "sharp": "^0.32.6"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.1",
