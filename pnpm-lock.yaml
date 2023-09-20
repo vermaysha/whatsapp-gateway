@@ -359,7 +359,7 @@ importers:
         version: 10.0.1
       '@whiskeysockets/baileys':
         specifier: ^6.4.1
-        version: 6.4.1(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.5)
+        version: 6.4.1(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)
       database:
         specifier: workspace:^
         version: link:../database
@@ -376,8 +376,8 @@ importers:
         specifier: ^8.15.1
         version: 8.15.1
       sharp:
-        specifier: ^0.32.5
-        version: 0.32.5
+        specifier: ^0.32.6
+        version: 0.32.6
     devDependencies:
       '@types/mime-types':
         specifier: ^2.1.1
@@ -4171,7 +4171,7 @@ packages:
       webpack-cli: 5.1.4(webpack@5.88.2)
     dev: true
 
-  /@whiskeysockets/baileys@6.4.1(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.5):
+  /@whiskeysockets/baileys@6.4.1(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6):
     resolution: {integrity: sha512-u4eFC4fhBD6zvgzXFm/SdcFivG87CJK/xQ2H7O9wDiu3MIYrPF117lH5EQkRNqQ1Hg2jw8CgsYe7+soeA993ew==}
     peerDependencies:
       jimp: ^0.16.1
@@ -4202,7 +4202,7 @@ packages:
       pino: 7.11.0
       protobufjs: 6.11.4
       qrcode-terminal: 0.12.0
-      sharp: 0.32.5
+      sharp: 0.32.6
       uuid: 9.0.0
       ws: 8.13.0
     transitivePeerDependencies:
@@ -11448,8 +11448,8 @@ packages:
       kind-of: 6.0.3
     dev: true
 
-  /sharp@0.32.5:
-    resolution: {integrity: sha512-0dap3iysgDkNaPOaOL4X/0akdu0ma62GcdC2NBQ+93eqpePdDdr2/LM0sFdDSMmN7yS+odyZtPsb7tx/cYBKnQ==}
+  /sharp@0.32.6:
+    resolution: {integrity: sha512-KyLTWwgcR9Oe4d9HwCwNM2l7+J0dUQwn/yf7S0EnTtb0eVS4RxO0eUSvxPtzT4F3SY+C4K6fqdv/DO27sJ/v/w==}
     engines: {node: '>=14.15.0'}
     requiresBuild: true
     dependencies:
