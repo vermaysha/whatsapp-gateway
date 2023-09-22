@@ -227,8 +227,8 @@ importers:
         specifier: 10.4.16
         version: 10.4.16(postcss@8.4.30)
       daisyui:
-        specifier: ^3.7.6
-        version: 3.7.6(ts-node@10.9.1)
+        specifier: ^3.7.7
+        version: 3.7.7(ts-node@10.9.1)
       date-fns:
         specifier: ^2.30.0
         version: 2.30.0
@@ -5748,8 +5748,8 @@ packages:
     resolution: {integrity: sha512-axn2UMEnkhyDUPWOwVKBMVIzSQy2ejH2xRGy1wq81dqRwApXfIzfbE3hIX0ZRFBIihf/KDqK158DLwESu4AK1w==}
     dev: false
 
-  /daisyui@3.7.6(ts-node@10.9.1):
-    resolution: {integrity: sha512-7MsD3J1/LpRkxvkjm0OQBjmVhzEhQdi6lTfEP2Wrvgl/fjKst4KmfkM39g0iInroaFq1fEJbB/vobGDqFgXoYw==}
+  /daisyui@3.7.7(ts-node@10.9.1):
+    resolution: {integrity: sha512-2/nFdW/6R9MMnR8tTm07jPVyPaZwpUSkVsFAADb7Oq8N2Ynbls57laDdNqxTCUmn0QvcZi01TKl8zQbAwRfw1w==}
     engines: {node: '>=16.9.0'}
     dependencies:
       colord: 2.9.3
