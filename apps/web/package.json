@@ -16,7 +16,7 @@
     "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^20.6.5",
     "autoprefixer": "10.4.16",
-    "daisyui": "^3.7.7",
+    "daisyui": "^3.8.0",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.10",
     "nuxt": "^3.7.3",
