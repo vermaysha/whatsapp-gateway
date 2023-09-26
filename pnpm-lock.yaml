@@ -46,7 +46,7 @@ importers:
         version: 6.11.2
       '@nestia/core':
         specifier: ^1.6.7
-        version: 1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.6)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3)
+        version: 1.6.7(@nestia/fetcher@2.0.6)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.6)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3)
       '@nestjs/common':
         specifier: ^10.2.6
         version: 10.2.6(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -103,8 +103,8 @@ importers:
         specifier: ^0.3.6
         version: 0.3.6
       '@nestia/sdk':
-        specifier: ^1.6.7
-        version: 1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(reflect-metadata@0.1.13)(ts-node@10.9.1)(typescript@5.2.2)(typia@4.3.3)
+        specifier: ^2.0.6
+        version: 2.0.6(@nestia/fetcher@2.0.6)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(reflect-metadata@0.1.13)(ts-node@10.9.1)(typescript@5.2.2)(typia@4.3.3)
       '@nestjs/cli':
         specifier: ^10.1.18
         version: 10.1.18(webpack-cli@5.1.4)
@@ -2059,7 +2059,7 @@ packages:
       - encoding
       - supports-color
 
-  /@nestia/core@1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.6)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3):
+  /@nestia/core@1.6.7(@nestia/fetcher@2.0.6)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.6)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3):
     resolution: {integrity: sha512-UAp7BbjKelBj3QHLN9dP4jSlQYz8+hOWXU8WNt+r88mgn60mCvwVgV9Pa91XrO4alS8sqZ7GJyyOBnMBcekTnQ==}
     peerDependencies:
       '@nestia/fetcher': '>=1.6.7'
@@ -2073,7 +2073,7 @@ packages:
       typescript: '>=4.8.0'
       typia: '>=4.2.3 <5.0.0'
     dependencies:
-      '@nestia/fetcher': 1.6.7(typescript@5.2.2)
+      '@nestia/fetcher': 2.0.6(typescript@5.2.2)
       '@nestjs/common': 10.2.6(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 10.2.6(@nestjs/common@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/websockets@10.2.6)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/platform-express': 10.1.3(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)
@@ -2095,8 +2095,8 @@ packages:
       tstl: 2.5.13
     dev: true
 
-  /@nestia/fetcher@1.6.7(typescript@5.2.2):
-    resolution: {integrity: sha512-xn+UuA1ZTHqqpnlm2fD3hPDfkbyaXhwlGKo3RTGTuWRfH0h3wk6Pr4ZcawOT/lklMtpoFyQoGxY5y1nQhOm8xg==}
+  /@nestia/fetcher@2.0.6(typescript@5.2.2):
+    resolution: {integrity: sha512-Rph2P/g2x3NY1ONxTEZ2tWIk6x61hpu+5QA3xmugeqyJ8bKOUuMZBm9wG2ZKYgF9NgwhH2/oSsc+sEP381/Jrw==}
     peerDependencies:
       typescript: '>= 4.8.0'
     dependencies:
@@ -2106,26 +2106,26 @@ packages:
     transitivePeerDependencies:
       - encoding
 
-  /@nestia/sdk@1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(reflect-metadata@0.1.13)(ts-node@10.9.1)(typescript@5.2.2)(typia@4.3.3):
-    resolution: {integrity: sha512-0FBG+ZfaMTisqad5jBy3hNCHQ1ihGVJqs/frSnPRp04nREu+fIXQCbeZVoGYeOhBuQBsPZqIiNzW+taJaatcug==}
+  /@nestia/sdk@2.0.6(@nestia/fetcher@2.0.6)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(reflect-metadata@0.1.13)(ts-node@10.9.1)(typescript@5.2.2)(typia@4.3.3):
+    resolution: {integrity: sha512-nZsvGF9uWV3z5QaqSArGJrD2g69/kfzrn9KEQyP0n0AokLnh2+Y0vk63MF7LcWrorbElVVz6wpelOiX9FQJjeA==}
     hasBin: true
     peerDependencies:
-      '@nestia/fetcher': '>=1.6.7'
+      '@nestia/fetcher': '>=2.0.6'
       '@nestjs/common': '>=7.0.1'
       '@nestjs/core': '>=7.0.1'
       reflect-metadata: '>=0.1.12'
       ts-node: '>=10.6.0'
       typescript: '>=4.8.0'
-      typia: '>= 4.3.3 <5.0.0'
+      typia: '>=5.0.5 <6.0.0'
     dependencies:
-      '@nestia/fetcher': 1.6.7(typescript@5.2.2)
+      '@nestia/fetcher': 2.0.6(typescript@5.2.2)
       '@nestjs/common': 10.2.6(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 10.2.6(@nestjs/common@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/websockets@10.2.6)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       cli: 1.0.1
       glob: 7.2.3
       path-to-regexp: 6.2.1
       reflect-metadata: 0.1.13
-      tgrid: 0.8.7
+      tgrid: 0.8.8
       ts-node: 10.9.1(@types/node@20.7.0)(typescript@5.2.2)
       tsconfck: 2.1.2(typescript@5.2.2)
       tsconfig-paths: 4.2.0
@@ -12049,13 +12049,13 @@ packages:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
     dev: true
 
-  /tgrid@0.8.7:
-    resolution: {integrity: sha512-AJ3ApamDiK+4p5fzcmRMcnjgw+ITYpIkySxsicqoDoPOQbGBVsr0gm3gsb+9ZEEvWmt9Wq1hShzP1m6CV784aA==}
+  /tgrid@0.8.8:
+    resolution: {integrity: sha512-xRC/+ft3S4BJ5rOJu4APr6Gzhmqh+/vDQboN8V3Z5vyVbicDfMoyS29Vk7IIuGFyZFUH7WIDFn/JoggfABj/lw==}
     dependencies:
       import2: 1.0.3
       serialize-error: 4.1.0
       tstl: 2.5.13
-      uuid: 3.4.0
+      uuid: 9.0.0
       ws: 7.5.9
     transitivePeerDependencies:
       - bufferutil
@@ -12799,16 +12799,9 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
-  /uuid@3.4.0:
-    resolution: {integrity: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==}
-    deprecated: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
-    hasBin: true
-    dev: true
-
   /uuid@9.0.0:
     resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
     hasBin: true
-    dev: false
 
   /v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
