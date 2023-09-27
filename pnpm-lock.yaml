@@ -45,8 +45,8 @@ importers:
         specifier: ^6.11.2
         version: 6.11.2
       '@nestia/core':
-        specifier: ^1.6.7
-        version: 1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.6)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3)
+        specifier: ^2.1.1
+        version: 2.1.1(@nestia/fetcher@2.1.1)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.6)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3)
       '@nestjs/common':
         specifier: ^10.2.6
         version: 10.2.6(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -104,7 +104,7 @@ importers:
         version: 0.3.6
       '@nestia/sdk':
         specifier: ^1.6.7
-        version: 1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(reflect-metadata@0.1.13)(ts-node@10.9.1)(typescript@5.2.2)(typia@4.3.3)
+        version: 1.6.7(@nestia/fetcher@2.1.1)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(reflect-metadata@0.1.13)(ts-node@10.9.1)(typescript@5.2.2)(typia@4.3.3)
       '@nestjs/cli':
         specifier: ^10.1.18
         version: 10.1.18(webpack-cli@5.1.4)
@@ -2059,10 +2059,10 @@ packages:
       - encoding
       - supports-color
 
-  /@nestia/core@1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.6)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3):
-    resolution: {integrity: sha512-UAp7BbjKelBj3QHLN9dP4jSlQYz8+hOWXU8WNt+r88mgn60mCvwVgV9Pa91XrO4alS8sqZ7GJyyOBnMBcekTnQ==}
+  /@nestia/core@2.1.1(@nestia/fetcher@2.1.1)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/platform-fastify@10.2.6)(raw-body@2.5.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.2.2)(typia@4.3.3):
+    resolution: {integrity: sha512-XLO1yy+N/drRHp63bwdgGwDlbvcfWqEUKuGWPT5bpGyEf7NRaFuKZIaJaPoNe6ht3WcnFTosg3mRBwGjwzfGHg==}
     peerDependencies:
-      '@nestia/fetcher': '>=1.6.7'
+      '@nestia/fetcher': '>=2.1.1'
       '@nestjs/common': '>=7.0.1'
       '@nestjs/core': '>=7.0.1'
       '@nestjs/platform-express': '>=7.0.1'
@@ -2071,9 +2071,9 @@ packages:
       reflect-metadata: '>=0.1.12'
       rxjs: '>=6.0.0'
       typescript: '>=4.8.0'
-      typia: '>=4.2.3 <5.0.0'
+      typia: '>=5.1.1 <6.0.0'
     dependencies:
-      '@nestia/fetcher': 1.6.7(typescript@5.2.2)
+      '@nestia/fetcher': 2.1.1(typescript@5.2.2)
       '@nestjs/common': 10.2.6(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 10.2.6(@nestjs/common@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/websockets@10.2.6)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/platform-express': 10.1.3(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)
@@ -2095,8 +2095,8 @@ packages:
       tstl: 2.5.13
     dev: true
 
-  /@nestia/fetcher@1.6.7(typescript@5.2.2):
-    resolution: {integrity: sha512-xn+UuA1ZTHqqpnlm2fD3hPDfkbyaXhwlGKo3RTGTuWRfH0h3wk6Pr4ZcawOT/lklMtpoFyQoGxY5y1nQhOm8xg==}
+  /@nestia/fetcher@2.1.1(typescript@5.2.2):
+    resolution: {integrity: sha512-ptiCrXLRHEAWvKvTBIyfAjMssxfG3oK9UAbW4cX3ad/HzUwIBfWXofC3LOqDeeFWIkgIXxAS4R9WHht83KHY8A==}
     peerDependencies:
       typescript: '>= 4.8.0'
     dependencies:
@@ -2106,7 +2106,7 @@ packages:
     transitivePeerDependencies:
       - encoding
 
-  /@nestia/sdk@1.6.7(@nestia/fetcher@1.6.7)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(reflect-metadata@0.1.13)(ts-node@10.9.1)(typescript@5.2.2)(typia@4.3.3):
+  /@nestia/sdk@1.6.7(@nestia/fetcher@2.1.1)(@nestjs/common@10.2.6)(@nestjs/core@10.2.6)(reflect-metadata@0.1.13)(ts-node@10.9.1)(typescript@5.2.2)(typia@4.3.3):
     resolution: {integrity: sha512-0FBG+ZfaMTisqad5jBy3hNCHQ1ihGVJqs/frSnPRp04nREu+fIXQCbeZVoGYeOhBuQBsPZqIiNzW+taJaatcug==}
     hasBin: true
     peerDependencies:
@@ -2118,7 +2118,7 @@ packages:
       typescript: '>=4.8.0'
       typia: '>= 4.3.3 <5.0.0'
     dependencies:
-      '@nestia/fetcher': 1.6.7(typescript@5.2.2)
+      '@nestia/fetcher': 2.1.1(typescript@5.2.2)
       '@nestjs/common': 10.2.6(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 10.2.6(@nestjs/common@10.2.6)(@nestjs/platform-express@10.1.3)(@nestjs/websockets@10.2.6)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       cli: 1.0.1
