@@ -386,8 +386,8 @@ importers:
         specifier: ^20.7.0
         version: 20.7.0
       axios:
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.5.1
+        version: 1.5.1
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
@@ -4195,7 +4195,7 @@ packages:
       '@adiwajshing/keyed-db': 0.2.4
       '@hapi/boom': 9.1.4
       audio-decode: 2.1.4
-      axios: 1.5.0
+      axios: 1.5.1
       cache-manager: 5.2.3
       futoin-hkdf: 1.5.3
       libphonenumber-js: 1.10.41
@@ -4633,8 +4633,8 @@ packages:
       - debug
     dev: true
 
-  /axios@1.5.0:
-    resolution: {integrity: sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ==}
+  /axios@1.5.1:
+    resolution: {integrity: sha512-Q28iYCWzNHjAm+yEAot5QaAMxhMghWLFVf7rRdwhUI+c2jix2DUXjAHXVi+s1ibs3mjPO/cCgbA++3BjD0vP/A==}
     dependencies:
       follow-redirects: 1.15.2
       form-data: 4.0.0
