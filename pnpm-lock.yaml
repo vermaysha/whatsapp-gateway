@@ -358,8 +358,8 @@ importers:
         specifier: ^10.0.1
         version: 10.0.1
       '@whiskeysockets/baileys':
-        specifier: ^6.4.1
-        version: 6.4.1(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)
+        specifier: ^6.5.0
+        version: 6.5.0(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6)
       database:
         specifier: workspace:^
         version: link:../database
@@ -4178,8 +4178,8 @@ packages:
       webpack-cli: 5.1.4(webpack@5.88.2)
     dev: true
 
-  /@whiskeysockets/baileys@6.4.1(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6):
-    resolution: {integrity: sha512-u4eFC4fhBD6zvgzXFm/SdcFivG87CJK/xQ2H7O9wDiu3MIYrPF117lH5EQkRNqQ1Hg2jw8CgsYe7+soeA993ew==}
+  /@whiskeysockets/baileys@6.5.0(link-preview-js@3.0.5)(qrcode-terminal@0.12.0)(sharp@0.32.6):
+    resolution: {integrity: sha512-ary0RNivsrl56wnn0ta37LwVGpCDabthERCV5lHHsbhJJFfp04g6+reiQAKvxo61oYxwxKjqq33kvID+AOr++A==}
     peerDependencies:
       jimp: ^0.16.1
       link-preview-js: ^3.0.0
@@ -4211,7 +4211,7 @@ packages:
       qrcode-terminal: 0.12.0
       sharp: 0.32.6
       uuid: 9.0.0
-      ws: 8.13.0
+      ws: 8.14.2
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -13375,19 +13375,6 @@ packages:
       utf-8-validate:
         optional: true
 
-  /ws@8.13.0:
-    resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}
-    engines: {node: '>=10.0.0'}
-    peerDependencies:
-      bufferutil: ^4.0.1
-      utf-8-validate: '>=5.0.2'
-    peerDependenciesMeta:
-      bufferutil:
-        optional: true
-      utf-8-validate:
-        optional: true
-    dev: false
-
   /ws@8.14.2:
     resolution: {integrity: sha512-wEBG1ftX4jcglPxgFCMJmZ2PLtSbJ2Peg6TmpJFTbe9GZYOQCDPdMYu/Tm0/bGZkw8paZnJY45J4K2PZrLYq8g==}
     engines: {node: '>=10.0.0'}
@@ -13399,7 +13386,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-    dev: true
 
   /xmlhttprequest-ssl@2.0.0:
     resolution: {integrity: sha512-QKxVRxiRACQcVuQEYFsI1hhkrMlrXHPegbbd1yn9UHOmRxY+si12nQYzri3vbzt8VdTTRviqcKxcyllFas5z2A==}
