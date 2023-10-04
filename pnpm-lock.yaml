@@ -257,8 +257,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2
       vue-tailwind-datepicker:
-        specifier: ^1.5.1
-        version: 1.5.1(@types/node@20.8.0)(dayjs@1.11.10)(tailwindcss@3.3.3)(typescript@5.2.2)(vite@4.4.9)(vue@3.3.4)
+        specifier: ^1.5.2
+        version: 1.5.2(@types/node@20.8.0)(dayjs@1.11.10)(tailwindcss@3.3.3)(typescript@5.2.2)(vite@4.4.9)(vue@3.3.4)
 
   packages/database:
     dependencies:
@@ -13122,8 +13122,8 @@ packages:
       vue: 3.3.4
     dev: true
 
-  /vue-tailwind-datepicker@1.5.1(@types/node@20.8.0)(dayjs@1.11.10)(tailwindcss@3.3.3)(typescript@5.2.2)(vite@4.4.9)(vue@3.3.4):
-    resolution: {integrity: sha512-lXj4gtcEheqkpzpwbp7HoqvU1R7wL7oPh4soKKiaYMM/pywkOfaUtwaiJdqTG1xPu14UXNE8N7i8z2rV5gv8Hw==}
+  /vue-tailwind-datepicker@1.5.2(@types/node@20.8.0)(dayjs@1.11.10)(tailwindcss@3.3.3)(typescript@5.2.2)(vite@4.4.9)(vue@3.3.4):
+    resolution: {integrity: sha512-lKnDelGqrqvSpmBfuRox+efC7pqnJYu8lPSN+kZOq/uuMg7NF81Uf0HKl2ZwG95wivm7H1cmbJE2Q4fHBWnFLA==}
     peerDependencies:
       dayjs: ^1.11.10
       tailwindcss: ^3.3.3
