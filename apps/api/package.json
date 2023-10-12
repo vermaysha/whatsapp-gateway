@@ -64,7 +64,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "fast-glob": "^3.3.1",
     "jest": "^29.7.0",
-    "nestia": "^4.5.0",
+    "nestia": "^5.0.1",
     "prettier": "^3.0.3",
     "run-script-webpack-plugin": "^0.2.0",
     "source-map-support": "^0.5.21",
