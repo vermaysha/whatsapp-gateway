@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.2",
-    "@types/node": "^20.8.2",
+    "@types/node": "^20.8.6",
     "axios": "^1.5.1",
     "cross-env": "^7.0.3",
     "pino-pretty": "^10.2.3",
