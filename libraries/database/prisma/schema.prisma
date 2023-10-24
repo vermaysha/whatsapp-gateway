@@ -1,0 +1,18 @@
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+}
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  data      Json     @db.JsonB
+
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+  createdAt DateTime @default(now()) @db.Timestamptz()
+
+  @@unique([name])
+}
