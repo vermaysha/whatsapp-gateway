@@ -24,7 +24,12 @@ function getFiles(dir: string, files_: string[] = []): string[] {
   return files_;
 }
 
-;(async () => {
+/**
+ * Initializes the main worker process.
+ *
+ * @return {Promise<void>} The function does not return anything.
+ */
+const main = async (): Promise<void> => {
   const wa = new Whatapp();
   const logger = parentLogger.child({ module: 'Main Worker' });
 
@@ -50,4 +55,11 @@ function getFiles(dir: string, files_: string[] = []): string[] {
       await commands.get(msg.command)(msg.data ?? undefined);
     }
   });
-})()
+
+  process.on('disconnect', async () => {
+    await wa.stop();
+    process.exit(0);
+  })
+}
+
+main();
