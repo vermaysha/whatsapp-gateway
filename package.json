@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "description": "Whatsapp Gateway",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "build": "turbo build",
+    "start": "turbo start"
+  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/vermaysha/whatsapp-gateway.git"
