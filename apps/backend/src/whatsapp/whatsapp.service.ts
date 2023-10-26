@@ -59,7 +59,7 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
   async sendCommand(command: string, data: any = null) {
     return new Promise<any>((resolve, reject) => {
       if (!this._worker || this._worker.killed) {
-        resolve(null);
+        reject(new Error('Worker is not running'));
         return;
       }
 
@@ -72,20 +72,20 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
         const callback = (response: any) => {
           if (response.command === command) {
             this._worker?.removeListener('message', callback);
-            resolve(response.data);
+            resolve(response);
           }
         };
 
         this._worker.on('message', callback);
 
         setTimeout(() => {
-          resolve(true);
+          reject(new Error('Failed to send command, timeout'));
         }, 10_000);
 
         return;
       }
 
-      resolve(null);
+      reject(new Error('Failed to send command'));
     });
   }
 
@@ -97,7 +97,7 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
   async start(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (!this._worker || this._worker.killed) {
-        reject('Worker is not running');
+        reject(new Error('Worker is not running'));
         return;
       }
 
@@ -123,12 +123,12 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
         this._worker.on('message', callback);
         setTimeout(() => {
           this._worker?.removeListener('message', callback);
-          reject('Failed to start worker, timeout');
+          reject(new Error('Failed to start worker, timeout'));
         }, 10_000);
         return;
       }
 
-      reject('Failed to start worker');
+      reject(new Error('Failed to start worker'));
     });
   }
 
@@ -140,7 +140,7 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
   async stop(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (!this._worker || this._worker.killed) {
-        reject('Worker is not running');
+        reject(new Error('Worker is not running'));
         return;
       }
 
@@ -166,12 +166,12 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
         this._worker.on('message', callback);
         setTimeout(() => {
           this._worker?.removeListener('message', callback);
-          reject('Failed to stop whatsapp server, timeout');
+          reject(new Error('Failed to stop whatsapp server, timeout'));
         }, 10_000);
         return;
       }
 
-      reject('Failed to stop to whatsapp server');
+      reject(new Error('Failed to stop to whatsapp server'));
     });
   }
 
@@ -210,6 +210,12 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
       console.log(res.toString());
     });
 
+    this._worker.on('message', (res: any) => {
+      if (res.command === 'CONNECTION_UPDATED') {
+        this._connectionState = res.data.status;
+      }
+    });
+
     return true;
   }
 
@@ -221,7 +227,7 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
   async disconnect(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       if (!this._worker || this._worker?.killed) {
-        reject('Worker is not running');
+        reject(new Error('Worker is not running'));
         return;
       }
 
@@ -237,12 +243,12 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
         };
         this._worker.once('exit', callback);
         setTimeout(() => {
-          reject('Failed to kill worker, timeout');
+          reject(new Error('Failed to kill worker, timeout'));
         }, 10_000);
         return;
       }
 
-      reject('Failed to kill worker');
+      reject(new Error('Failed to kill worker'));
     });
   }
 

@@ -10,7 +10,7 @@ export default (wa: Whatapp, _logger: Logger) => {
       process.send?.({
         command: 'MEMORY_USAGE',
         status: true,
-        message: rss,
+        data: rss,
       })
     }
   }

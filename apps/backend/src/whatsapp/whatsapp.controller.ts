@@ -10,7 +10,10 @@ export class WhatsappController {
   async index() {
     const workerState = this.whatsapp.workerState;
     const connectionState = this.whatsapp.connectionState;
-    const memoryUsage = await this.whatsapp.sendCommand('MEMORY_USAGE');
+    let memoryUsage = 0;
+    try {
+      memoryUsage = (await this.whatsapp.sendCommand('MEMORY_USAGE')).data ?? 0;
+    } catch (error) {}
 
     return {
       connectionState: connectionState,

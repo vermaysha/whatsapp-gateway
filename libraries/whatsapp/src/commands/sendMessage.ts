@@ -15,7 +15,7 @@ export default (wa: Whatapp, logger: Logger) => {
           process.send?.({
             command: 'SEND_MESSAGE',
             status: false,
-            message: 'Failed to send message, WhatsApp is not running',
+            data: 'Failed to send message, WhatsApp is not running',
           })
           return;
         }
@@ -29,12 +29,12 @@ export default (wa: Whatapp, logger: Logger) => {
           process.send?.({
             command: 'SEND_MESSAGE',
             status: false,
-            message: 'Failed to send message, phone number not registered on WhatsApp',
+            data: 'Failed to send message, phone number not registered on WhatsApp',
           })
           return
         }
         console.log(result, data);
-        
+
         const msg = await socket.sendMessage(result.jid, {
           text: data.message,
         })
@@ -42,7 +42,7 @@ export default (wa: Whatapp, logger: Logger) => {
         process.send?.({
           command: 'SEND_MESSAGE',
           status: true,
-          message: 'Message sent successfully',
+          data: 'Message sent successfully',
         })
       } catch (error) {
         console.error(error)
