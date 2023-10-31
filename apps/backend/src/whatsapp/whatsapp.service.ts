@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { fork, type ChildProcess } from 'child_process';
 import { resolve as pathResolve } from 'path';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class WhatsappService implements OnModuleInit, OnModuleDestroy {
@@ -18,7 +19,7 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
    * Constructor for the class.
    *
    */
-  constructor() {
+  constructor(private readonly event: EventEmitter2) {
     const home = pathResolve(process.cwd(), '..', '..');
     this.workerPath = pathResolve(home, 'libraries/whatsapp/dist/main.js');
   }
@@ -56,7 +57,7 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
    * @param {any} data - Optional data to be sent along with the command.
    * @return {Promise<any>} A promise that resolves with the response from the worker.
    */
-  async sendCommand(command: string, data: any = null) {
+  async sendCommand(command: string, data: any = null): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       if (!this._worker || this._worker.killed) {
         reject(new Error('Worker is not running'));
@@ -69,6 +70,11 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
       });
 
       if (res) {
+        /**
+         * A callback function that handles the response from the worker.
+         *
+         * @param {any} response - The response object from the worker.
+         */
         const callback = (response: any) => {
           if (response.command === command) {
             this._worker?.removeListener('message', callback);
@@ -140,7 +146,7 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
   async stop(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (!this._worker || this._worker.killed) {
-        reject(new Error('Worker is not running'));
+        resolve();
         return;
       }
 
@@ -211,8 +217,14 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
     });
 
     this._worker.on('message', (res: any) => {
-      if (res.command === 'CONNECTION_UPDATED') {
-        this._connectionState = res.data.status;
+      switch (res.command) {
+        case 'CONNECTION_UPDATED':
+          this._connectionState = res.data.status;
+          this.event.emit('connection.update', this._connectionState);
+          break;
+        case 'QR_UPDATED':
+          this.event.emit('qr.update', res.data);
+          break;
       }
     });
 
@@ -227,7 +239,7 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
   async disconnect(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       if (!this._worker || this._worker?.killed) {
-        reject(new Error('Worker is not running'));
+        resolve(true);
         return;
       }
 
