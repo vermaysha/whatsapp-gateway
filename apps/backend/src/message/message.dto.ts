@@ -10,7 +10,17 @@ export interface ISendTextMessage {
   message: string;
 }
 
-export interface ISendMediaMessage extends ISendTextMessage {
+export interface ISendMediaMessage {
+  /**
+   * The phone number of the recipient.
+   */
+  to: string;
+
+  /**
+   * The message to be sent.
+   */
+  message: string;
+
   /**
    * The media to be sent.
    */
