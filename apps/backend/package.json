@@ -27,6 +27,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/event-emitter": "^2.0.2",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/serve-static": "^4.0.0",
     "axios": "^1.5.1",
     "database": "workspace:^",
     "reflect-metadata": "^0.1.13",
