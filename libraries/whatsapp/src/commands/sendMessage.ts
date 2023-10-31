@@ -3,7 +3,7 @@ import { type Logger } from 'pino'
 
 interface ISendMessage {
   to: string
-  message: string
+  data: any
 }
 
 export default (wa: Whatapp, logger: Logger) => {
@@ -33,19 +33,24 @@ export default (wa: Whatapp, logger: Logger) => {
           })
           return
         }
-        console.log(result, data);
+        await socket.sendPresenceUpdate('available');
+        await socket.sendPresenceUpdate('composing');
 
-        const msg = await socket.sendMessage(result.jid, {
-          text: data.message,
-        })
-        console.log(msg)
+        await socket.sendMessage(result.jid, data.data)
+
+        await socket.sendPresenceUpdate('available');
         process.send?.({
           command: 'SEND_MESSAGE',
           status: true,
           data: 'Message sent successfully',
         })
-      } catch (error) {
-        console.error(error)
+      } catch (err) {
+        const error = err as any;
+        process.send?.({
+          command: 'SEND_MESSAGE',
+          status: false,
+          data: error.message ?? error ?? 'Failed to send message',
+        })
       }
       return
     }

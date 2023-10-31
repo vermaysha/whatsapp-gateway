@@ -2,7 +2,7 @@ import { Controller, HttpException, Res } from '@nestjs/common';
 import { TypedRoute, TypedBody } from '@nestia/core';
 import { MessageService } from './message.service';
 import type { Response } from 'express';
-import { ISendTextMessage } from './message.dto';
+import { ISendMediaMessage, ISendTextMessage } from './message.dto';
 
 @Controller('message')
 export class MessageController {
@@ -21,9 +21,30 @@ export class MessageController {
     @TypedBody() body: ISendTextMessage,
   ) {
     try {
-      const result = await this.message.sendTextMessage(body.to, body.message);
+      const result = await this.message.sendTextMessage({
+        to: body.to,
+        message: body.message,
+      });
 
-      return res.send(result.message);
+      return res.send(result);
+    } catch (error) {
+      throw new HttpException(
+        error.message ?? error ?? 'Failed to send message',
+        500,
+      );
+    }
+  }
+
+  @TypedRoute.Post('/sendMediaMessage')
+  async sendMediaMessage(
+    @Res() res: Response,
+    @TypedBody() body: ISendMediaMessage,
+  ) {
+    try {
+      const result = await this.message.sendMediaMessage(body);
+      return res.send({
+        message: result,
+      });
     } catch (error) {
       throw new HttpException(
         error.message ?? error ?? 'Failed to send message',
