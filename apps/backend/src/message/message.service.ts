@@ -174,34 +174,4 @@ export class MessageService {
       mimeTypes: fileType,
     };
   }
-
-  /**
-   * Downloads media from the provided URL.
-   *
-   * @param {string} url - The URL of the media to download.
-   * @return {Promise<string>} The file path of the downloaded media.
-   */
-  async downloadMedia(url: string): Promise<string> {
-    try {
-      const response = await this.http.axiosRef.get(url, {
-        responseType: 'arraybuffer', // Menetapkan responseType ke 'arraybuffer'
-      });
-
-      if (response.status === 200) {
-        const urlParts = url.split('/');
-        const fileName = urlParts[urlParts.length - 1];
-        const folderPath = pathResolve(process.cwd(), 'public', 'media');
-        if (!existsSync(folderPath)) {
-          mkdirSync(folderPath, { recursive: true });
-        }
-        const filePath = pathResolve(folderPath, fileName);
-        const buffer = Buffer.from(response.data);
-        writeFileSync(filePath, buffer);
-        return filePath;
-      }
-      throw new Error(`Gagal mengunduh file. Kode status: ${response.status}`);
-    } catch (error) {
-      throw error;
-    }
-  }
 }
