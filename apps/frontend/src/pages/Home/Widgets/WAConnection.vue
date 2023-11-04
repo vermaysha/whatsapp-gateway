@@ -1,0 +1,140 @@
+<template>
+  <div class="card card-sm">
+    <div class="card-body border-bottom border-success">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <span class="bg-green text-white avatar">
+            <IconWifi />
+          </span>
+        </div>
+        <div class="col">
+          <strong>WA Connection</strong>
+          <div class="text-secondary">Connected</div>
+        </div>
+        <div class="col-auto">
+          <a
+            href="javascript:void(0);"
+            class="btn-action"
+            @click="qrModal?.show()"
+          >
+            <IconQrcode />
+          </a>
+        </div>
+        <div class="col-auto">
+          <div class="dropend">
+            <a
+              href="#"
+              class="btn-action"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <IconDotsVertical />
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <h6 class="dropdown-header">Services Actions</h6>
+              </li>
+              <li>
+                <a href="#" class="dropdown-item text-success">
+                  <IconPlayerPlay />
+                  <span class="px-2">Connect</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="dropdown-item text-danger">
+                  <IconPlayerStop />
+                  <span class="px-2">Disconnect</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="dropdown-item text-warning">
+                  <IconRefresh />
+                  <span class="px-2">Reconnect</span>
+                </a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <h6 class="dropdown-header">Whatsapp Actions</h6>
+              </li>
+              <li>
+                <a href="#" class="dropdown-item text-success">
+                  <IconLinkPlus />
+                  <span class="px-2">Link Devices</span>
+                </a>
+              </li>
+              <li>
+                <a href="#" class="dropdown-item text-danger">
+                  <IconLinkOff />
+                  <span class="px-2">Un-Link Devices</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal"
+      ref="qrModalTags"
+      id="scanQRModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Scan Whatsapp QR Code</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <QRCode
+              :size="1000"
+              :value="value"
+              :level="level"
+              :render-as="renderAs"
+              class="w-full h-full"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script lang="ts" setup>
+import {
+  IconWifi,
+  IconDotsVertical,
+  IconPlayerStop,
+  IconPlayerPlay,
+  IconRefresh,
+  IconQrcode,
+  IconLinkPlus,
+  IconLinkOff,
+} from "@tabler/icons-vue";
+import { Modal } from "bootstrap";
+import { ref, onMounted } from "vue";
+import QRCode, { Level, RenderAs } from "qrcode.vue";
+
+const qrModalTags = ref<Element | null>(null);
+const qrModal = ref<Modal | null>(null);
+
+const value = `2@X80KO4WwzP+ZX0662YWbJ9E0Q6e86SuEVfOjm7nbmh7TPXrQ/cx6CR1Mw60vDTp5zRk2ThsSgiWsyg==,9M/QNu5zK711Ei2fdGdpG5nfMJnrs9LfAK677n9ZK0M=,Xp+HMO/+ODGbdCmi5yQAKZrIZHYGxuOgxpVsY06tLDk=,zhKuH9R1rXXfMb3ORiJpBr0/UYEahvKfQKpG2EirmKk=,2`;
+const level = ref<Level>("L");
+const renderAs = ref<RenderAs>("svg");
+
+onMounted(() => {
+  if (qrModalTags.value) {
+    qrModal.value = new Modal(qrModalTags.value, {
+      backdrop: "static",
+      focus: true,
+      keyboard: false,
+    });
+  }
+});
+</script>
