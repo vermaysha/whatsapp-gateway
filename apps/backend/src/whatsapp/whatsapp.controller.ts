@@ -1,27 +1,23 @@
-import { HttpException, Controller, Res, Req } from '@nestjs/common';
+import { HttpException, Controller, Res } from '@nestjs/common';
 import { TypedRoute } from '@nestia/core';
 import { WhatsappService } from './whatsapp.service';
+import { Response } from 'express';
 
 @Controller('whatsapp')
 export class WhatsappController {
   constructor(private whatsapp: WhatsappService) {}
 
   @TypedRoute.Get('/')
-  async index() {
-    const workerState = this.whatsapp.workerState;
-    const connectionState = this.whatsapp.connectionState;
-    let memoryUsage = 0;
-    try {
-      memoryUsage = (await this.whatsapp.sendCommand('MEMORY_USAGE')).data ?? 0;
-    } catch (error) {}
+  async index(@Res() res: Response) {
+    const { workerStartedAt, connectedAt, workerState, connectionState } =
+      this.whatsapp;
 
-    return {
-      connectionState: connectionState,
-      workerState: workerState,
-      stats: {
-        memoryUsage: memoryUsage,
-      },
-    };
+    return res.send({
+      connectionState,
+      connectedAt,
+      workerState,
+      workerStartedAt,
+    });
   }
 
   @TypedRoute.Get('/start')

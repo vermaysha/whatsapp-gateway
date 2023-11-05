@@ -14,6 +14,8 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
   private workerPath: string;
   private logger = new Logger(WhatsappService.name);
   private _connectionState: 'open' | 'connecting' | 'close' = 'close';
+  private _workerStartedAt: Date | null = null;
+  private _connectedAt: Date | null = null;
 
   /**
    * Constructor for the class.
@@ -181,6 +183,11 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
+  /**
+   * Asynchronously restarts the function.
+   *
+   * @return {Promise<boolean>} Returns a Promise that resolves to true if the function is successfully restarted, or false if an error occurs.
+   */
   async restart() {
     try {
       await this.start();
@@ -216,11 +223,30 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
       console.log(res.toString());
     });
 
+    this._worker.once('spawn', () => {
+      this._workerStartedAt = new Date();
+      this.event.emit('process.state', 'connected');
+    });
+
+    this._worker.on('error', (err) => {
+      this.logger.fatal(
+        `Failed to spawn whatsapp process: ${err.message}`,
+        err.stack,
+      );
+    });
+
+    this._worker.on('exit', () => {
+      this._workerStartedAt = null;
+      this.event.emit('process.state', 'disconnected');
+    });
+
     this._worker.on('message', (res: any) => {
       switch (res.command) {
         case 'CONNECTION_UPDATED':
           this._connectionState = res.data.status;
           this.event.emit('connection.update', this._connectionState);
+          this._connectedAt =
+            this._connectionState === 'open' ? new Date() : null;
           break;
         case 'QR_UPDATED':
           this.event.emit('qr.update', res.data);
@@ -251,6 +277,8 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
           this._worker?.stderr?.removeAllListeners();
           this._worker?.removeAllListeners();
           this._worker = null;
+          this._workerStartedAt = null;
+          this._connectedAt = null;
           resolve(true);
         };
         this._worker.once('exit', callback);
@@ -308,5 +336,23 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
       return 'disconnected';
     }
     return this._worker?.connected ? 'connected' : 'disconnected';
+  }
+
+  /**
+   * Get the date when the object was connected.
+   *
+   * @return {Date | null} The date when the object was connected.
+   */
+  get connectedAt(): Date | null {
+    return this._connectedAt;
+  }
+
+  /**
+   * Get the value of the workerStartedAt property.
+   *
+   * @return {Date | null} The value of the workerStartedAt property.
+   */
+  get workerStartedAt(): Date | null {
+    return this._workerStartedAt;
   }
 }
