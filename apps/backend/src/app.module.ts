@@ -7,9 +7,17 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventModule } from './event/event.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ConfigModule } from '@nestjs/config';
+import AppConfig from './config/app';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      cache: true,
+      envFilePath: ['.env.local', '.env'],
+      isGlobal: true,
+      load: [AppConfig],
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
