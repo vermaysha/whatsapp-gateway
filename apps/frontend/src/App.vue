@@ -12,9 +12,15 @@
 
 <script lang="ts" setup>
 import { useToasts } from "./stores/useToasts";
+import { useProcess } from './stores/useProcess';
 import { onMounted, ref, watch } from "vue";
 import { Toast } from "bootstrap";
 const toast = useToasts();
+const process = useProcess();
+
+// onMounted(() => {
+//   process.getData();
+// })
 
 const toastContainer = ref<HTMLElement | Element | null>(null);
 

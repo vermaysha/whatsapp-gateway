@@ -1,17 +1,43 @@
 <template>
-  <div class="card card-sm">
-    <div class="card-body border-bottom border-success">
+  <div class="card card-sm placeholder-glow">
+    <div
+      :class="{
+        'card-body': true,
+        'border-bottom': true,
+        'border-success': !process.isLoading && process.isConnected,
+        'border-danger': !process.isLoading && !process.isConnected,
+      }"
+    >
       <div class="row align-items-center">
         <div class="col-auto">
-          <span class="bg-green text-white avatar">
-            <IconWifi />
+          <span
+            :class="{
+              'bg-green': !process.isLoading && process.isConnected,
+              'bg-danger': !process.isLoading && !process.isConnected,
+              'text-white': !process.isLoading,
+              avatar: true,
+              placeholder: process.isLoading,
+            }"
+          >
+            <IconWifi v-if="!process.isLoading && process.isConnected" />
+            <IconWifiOff
+              v-else-if="!process.isLoading && !process.isConnected"
+            />
           </span>
         </div>
         <div class="col">
           <strong>WA Connection</strong>
-          <div class="text-secondary">Connected</div>
+          <div class="text-secondary" v-if="!process.isLoading">
+            <span v-if="process.isConnected"
+              >Connected</span
+            >
+            <span v-else-if="!process.isConnected"
+              >Disconnected</span
+            >
+          </div>
+          <span class="placeholder placeholder-xs col-9" v-else></span>
         </div>
-        <div class="col-auto">
+        <div class="col-auto" v-if="!process.isLoading && value">
           <a
             href="javascript:void(0);"
             class="btn-action"
@@ -24,7 +50,7 @@
           <div class="dropend">
             <a
               href="#"
-              class="btn-action"
+              :class="{ 'btn-action': true, 'pe-none': process.isLoading }"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
@@ -40,29 +66,31 @@
                   <span class="px-2">Connect</span>
                 </a>
               </li>
-              <li>
+              <li v-if="!process.isLoading && process.isConnected">
                 <a href="#" class="dropdown-item text-danger">
                   <IconPlayerStop />
                   <span class="px-2">Disconnect</span>
                 </a>
               </li>
-              <li>
+              <li v-if="!process.isLoading && process.isConnected">
                 <a href="#" class="dropdown-item text-warning">
                   <IconRefresh />
                   <span class="px-2">Reconnect</span>
                 </a>
               </li>
-              <li><hr class="dropdown-divider" /></li>
-              <li>
+              <li v-if="!process.isLoading && process.isConnected">
+                <hr class="dropdown-divider" />
+              </li>
+              <li v-if="!process.isLoading && process.isConnected">
                 <h6 class="dropdown-header">Whatsapp Actions</h6>
               </li>
-              <li>
+              <li v-if="!process.isLoading && process.isConnected">
                 <a href="#" class="dropdown-item text-success">
                   <IconLinkPlus />
                   <span class="px-2">Link Devices</span>
                 </a>
               </li>
-              <li>
+              <li v-if="!process.isLoading && process.isConnected">
                 <a href="#" class="dropdown-item text-danger">
                   <IconLinkOff />
                   <span class="px-2">Un-Link Devices</span>
@@ -116,15 +144,21 @@ import {
   IconQrcode,
   IconLinkPlus,
   IconLinkOff,
+  IconWifiOff,
 } from "@tabler/icons-vue";
 import { Modal } from "bootstrap";
 import { ref, onMounted } from "vue";
 import QRCode, { Level, RenderAs } from "qrcode.vue";
+import { useProcess } from "../../../stores/useProcess";
+
+const process = useProcess();
 
 const qrModalTags = ref<Element | null>(null);
 const qrModal = ref<Modal | null>(null);
 
-const value = `2@X80KO4WwzP+ZX0662YWbJ9E0Q6e86SuEVfOjm7nbmh7TPXrQ/cx6CR1Mw60vDTp5zRk2ThsSgiWsyg==,9M/QNu5zK711Ei2fdGdpG5nfMJnrs9LfAK677n9ZK0M=,Xp+HMO/+ODGbdCmi5yQAKZrIZHYGxuOgxpVsY06tLDk=,zhKuH9R1rXXfMb3ORiJpBr0/UYEahvKfQKpG2EirmKk=,2`;
+const value = ref<string>(
+  `2@X80KO4WwzP+ZX0662YWbJ9E0Q6e86SuEVfOjm7nbmh7TPXrQ/cx6CR1Mw60vDTp5zRk2ThsSgiWsyg==,9M/QNu5zK711Ei2fdGdpG5nfMJnrs9LfAK677n9ZK0M=,Xp+HMO/+ODGbdCmi5yQAKZrIZHYGxuOgxpVsY06tLDk=,zhKuH9R1rXXfMb3ORiJpBr0/UYEahvKfQKpG2EirmKk=,2`,
+);
 const level = ref<Level>("L");
 const renderAs = ref<RenderAs>("svg");
 

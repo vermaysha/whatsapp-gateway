@@ -19,11 +19,11 @@
               placeholder: process.isLoading,
             }"
           >
-            <IconClock v-if="!process.isLoading" />
+            <IconAlarm v-if="!process.isLoading" />
           </span>
         </div>
         <div class="col">
-          <strong>Process Uptime</strong>
+          <strong>Connection Uptime</strong>
           <div class="text-secondary" v-if="!process.isLoading">{{ uptime }}</div>
           <div class="placeholder placeholder-xs col-9" v-else></div>
         </div>
@@ -31,19 +31,21 @@
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
-import { IconClock } from "@tabler/icons-vue";
+import { IconAlarm } from "@tabler/icons-vue";
 import { computed } from "vue";
 import { formatDistanceToNow } from "date-fns";
 import { useProcess } from "../../../stores/useProcess";
+
 const process = useProcess();
 
 const uptime = computed(() => {
-  if (!process.workerStartedAt) {
+  if (!process.connectedAt) {
     return "-";
   }
 
-  return formatDistanceToNow(process.workerStartedAt, {
+  return formatDistanceToNow(process.connectedAt, {
     addSuffix: true,
   });
 });
