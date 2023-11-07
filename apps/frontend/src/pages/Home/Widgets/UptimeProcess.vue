@@ -12,8 +12,8 @@
         <div class="col-auto">
           <span
             :class="{
-              'bg-green': !process.isLoading && process.isConnected,
-              'bg-danger': !process.isLoading && !process.isConnected,
+              'bg-green': !process.isLoading && process.isProcessConnected,
+              'bg-danger': !process.isLoading && !process.isProcessConnected,
               'text-white': !process.isLoading,
               avatar: true,
               placeholder: process.isLoading,
