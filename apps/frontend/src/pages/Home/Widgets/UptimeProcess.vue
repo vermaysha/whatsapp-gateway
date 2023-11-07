@@ -4,8 +4,8 @@
       :class="{
         'card-body': true,
         'border-bottom': true,
-        'border-success': !process.isLoading && process.isConnected,
-        'border-danger': !process.isLoading && !process.isConnected,
+        'border-success': !process.isLoading && process.isProcessConnected,
+        'border-danger': !process.isLoading && !process.isProcessConnected,
       }"
     >
       <div class="row align-items-center">
