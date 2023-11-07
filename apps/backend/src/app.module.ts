@@ -8,6 +8,7 @@ import { EventModule } from './event/event.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
+import { SystemModule } from './system/system.module';
 import AppConfig from './config/app';
 
 @Module({
@@ -25,6 +26,7 @@ import AppConfig from './config/app';
     WhatsappModule,
     MessageModule,
     EventModule,
+    SystemModule,
   ],
   controllers: [AppController],
   providers: [AppService],

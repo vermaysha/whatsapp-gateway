@@ -9,6 +9,12 @@ import { resolve as pathResolve } from 'path';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { prisma } from 'database';
 
+interface ISendCommand<K> {
+  command: string;
+  status: boolean;
+  data: K;
+}
+
 @Injectable()
 export class WhatsappService implements OnModuleInit, OnModuleDestroy {
   private _worker: ChildProcess | null = null;
@@ -62,7 +68,10 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
    * @param {any} data - Optional data to be sent along with the command.
    * @return {Promise<any>} A promise that resolves with the response from the worker.
    */
-  async sendCommand(command: string, data: any = null): Promise<any> {
+  async sendCommand<T>(
+    command: string,
+    data: any = null,
+  ): Promise<ISendCommand<T>> {
     return new Promise<any>((resolve, reject) => {
       if (!this._worker || this._worker.killed) {
         reject(new Error('Worker is not running'));

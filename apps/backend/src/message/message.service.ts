@@ -22,7 +22,7 @@ export class MessageService {
     try {
       // Limit the message to 4096 characters
       message = message.substring(0, 4096 - 1);
-      const res = await this.whatsapp.sendCommand('SEND_MESSAGE', {
+      const res = await this.whatsapp.sendCommand<any>('SEND_MESSAGE', {
         to,
         data: {
           text: message,
@@ -101,7 +101,7 @@ export class MessageService {
     try {
       // Limit the message to 4096 characters
       message = message.substring(0, 4096 - 1);
-      const res = await this.whatsapp.sendCommand('SEND_MESSAGE', {
+      const res = await this.whatsapp.sendCommand<any>('SEND_MESSAGE', {
         to,
         data,
       });
