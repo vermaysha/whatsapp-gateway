@@ -60,25 +60,25 @@
               <li>
                 <h6 class="dropdown-header">Services Actions</h6>
               </li>
-              <li>
-                <a href="#" class="dropdown-item text-success">
+              <li v-if="!process.isLoading && !process.isConnected">
+                <button type="button" @click="start" class="dropdown-item text-success">
                   <IconPlayerPlay />
                   <span class="px-2">Connect</span>
-                </a>
+                </button>
               </li>
               <li v-if="!process.isLoading && process.isConnected">
-                <a href="#" class="dropdown-item text-danger">
+                <button type="button" @click="stop" class="dropdown-item text-danger">
                   <IconPlayerStop />
                   <span class="px-2">Disconnect</span>
-                </a>
+                </button>
               </li>
               <li v-if="!process.isLoading && process.isConnected">
-                <a href="#" class="dropdown-item text-warning">
+                <button type="button" @click="restart" class="dropdown-item text-warning">
                   <IconRefresh />
                   <span class="px-2">Reconnect</span>
-                </a>
+                </button>
               </li>
-              <li v-if="!process.isLoading && process.isConnected">
+              <!--  <li v-if="!process.isLoading && process.isConnected">
                 <hr class="dropdown-divider" />
               </li>
               <li v-if="!process.isLoading && process.isConnected">
@@ -95,7 +95,7 @@
                   <IconLinkOff />
                   <span class="px-2">Un-Link Devices</span>
                 </a>
-              </li>
+              </li> -->
             </ul>
           </div>
         </div>
@@ -122,6 +122,7 @@
           </div>
           <div class="modal-body">
             <QRCode
+              v-if="value"
               :size="1000"
               :value="value"
               :level="level"
@@ -142,8 +143,8 @@ import {
   IconPlayerPlay,
   IconRefresh,
   IconQrcode,
-  IconLinkPlus,
-  IconLinkOff,
+  // IconLinkPlus,
+  // IconLinkOff,
   IconWifiOff,
 } from "@tabler/icons-vue";
 import { Modal } from "bootstrap";
@@ -151,14 +152,16 @@ import { ref, onMounted } from "vue";
 import QRCode, { Level, RenderAs } from "qrcode.vue";
 import { useProcess } from "../../../stores/useProcess";
 
+import { ofetch } from "ofetch";
+import { useToasts } from '../../../stores/useToasts';
+
 const process = useProcess();
+const toast = useToasts();
 
 const qrModalTags = ref<Element | null>(null);
 const qrModal = ref<Modal | null>(null);
 
-const value = ref<string>(
-  `2@X80KO4WwzP+ZX0662YWbJ9E0Q6e86SuEVfOjm7nbmh7TPXrQ/cx6CR1Mw60vDTp5zRk2ThsSgiWsyg==,9M/QNu5zK711Ei2fdGdpG5nfMJnrs9LfAK677n9ZK0M=,Xp+HMO/+ODGbdCmi5yQAKZrIZHYGxuOgxpVsY06tLDk=,zhKuH9R1rXXfMb3ORiJpBr0/UYEahvKfQKpG2EirmKk=,2`,
-);
+const value = ref<string | null>(process.qr);
 const level = ref<Level>("L");
 const renderAs = ref<RenderAs>("svg");
 
@@ -170,5 +173,105 @@ onMounted(() => {
       keyboard: false,
     });
   }
+  listenQR();
 });
+
+function listenQR() {
+  const event = new EventSource(new URL('event/qr', import.meta.env.VITE_API_URL), {
+    withCredentials: true,
+  });
+  event.addEventListener('error', (e) => {
+    toast.dispatch({
+      title: "Event Listener Error",
+      message: "Connection error to State Event Listener",
+      type: "danger",
+    })
+    console.error(e)
+  })
+  event.addEventListener('message', (ev) => {
+    value.value = ev.data
+    qrModal.value?.show();
+  })
+
+  process.$subscribe((_, data) => {
+    if (data.connectionState === 'open') {
+      qrModal.value?.hide();
+      value.value = null;
+    }
+
+    if (data.qr) {
+      value.value = data.qr
+      qrModal.value?.show();
+    }
+  })
+}
+
+function start() {
+  const res = ofetch('/whatsapp/start', {
+    baseURL: import.meta.env.VITE_API_URL,
+    credentials: 'include',
+  });
+
+  res.catch((err) => {
+    toast.dispatch({
+      type: 'danger',
+      title: 'Error',
+      message: err.data ?? err.message ?? 'Failed to start process',
+    })
+  })
+
+  res.then(() => {
+    toast.dispatch({
+      type: 'success',
+      title: "Connection Established",
+      message: 'Connection to the WhatsApp server has been established.'
+    })
+  })
+}
+
+function stop() {
+  const res = ofetch('/whatsapp/stop', {
+    baseURL: import.meta.env.VITE_API_URL,
+    credentials: 'include',
+  })
+
+  res.catch((err) => {
+    toast.dispatch({
+      type: 'danger',
+      title: 'Error',
+      message: err.data ?? err.message ?? 'Failed to stop process',
+    })
+  })
+
+  res.then(() => {
+    toast.dispatch({
+      type: 'danger',
+      title: "Connection Closed",
+      message: 'Connection to the WhatsApp server has been closed.'
+    })
+  })
+}
+
+function restart() {
+  const res = ofetch('/whatsapp/restart', {
+    baseURL: import.meta.env.VITE_API_URL,
+    credentials: 'include',
+  })
+
+  res.catch((err) => {
+    toast.dispatch({
+      type: 'danger',
+      title: 'Error',
+      message: err.data ?? err.message ?? 'Failed to restart connection',
+    })
+  })
+
+  res.then(() => {
+    toast.dispatch({
+      type: 'success',
+      title: "Connection Restarted",
+      message: 'Connection to the WhatsApp server has been restarted.'
+    })
+  })
+}
 </script>

@@ -12,17 +12,12 @@
 
 <script lang="ts" setup>
 import { useToasts } from "./stores/useToasts";
-import { useProcess } from './stores/useProcess';
-import { onMounted, ref, watch } from "vue";
+import { ref } from "vue";
 import { Toast } from "bootstrap";
 const toast = useToasts();
-const process = useProcess();
-
-// onMounted(() => {
-//   process.getData();
-// })
 
 const toastContainer = ref<HTMLElement | Element | null>(null);
+const delay = 5000;
 
 toast.$subscribe(
   (mutation, state) => {
@@ -49,7 +44,7 @@ toast.$subscribe(
         const toast = new Toast(el, {
           animation: true,
           autohide: false,
-          delay: 3000,
+          delay: delay,
         });
         toast.show();
 
@@ -63,7 +58,7 @@ toast.$subscribe(
           el.addEventListener('animationend', callback, {
             once: true
           });
-        }, 3000)
+        }, delay)
 
 
       });

@@ -14,7 +14,7 @@ export class EventController {
   getQr(): Observable<MessageEvent> {
     return fromEvent(this.event, 'qr.update').pipe(
       map((data: string) => {
-        return new MessageEvent('qr.update', { data });
+        return new MessageEvent('message', { data });
       }),
     );
   }
@@ -25,17 +25,21 @@ export class EventController {
     const processState = fromEvent(this.event, 'process.state');
     return merge(connectionUpdate, processState).pipe(
       map(() => {
-        const { workerStartedAt, connectedAt, workerState, connectionState } =
-          this.whatsapp;
+        const {
+          workerStartedAt,
+          connectedAt,
+          workerState,
+          connectionState,
+          hasSession,
+        } = this.whatsapp;
 
-        console.log('dispatch event');
-
-        return new MessageEvent('connection.update', {
+        return new MessageEvent('message', {
           data: {
             connectionState,
             connectedAt,
             workerState,
             workerStartedAt,
+            hasSession,
           },
         });
       }),

@@ -9,14 +9,22 @@ export class WhatsappController {
 
   @TypedRoute.Get('/')
   async index(@Res() res: Response) {
-    const { workerStartedAt, connectedAt, workerState, connectionState } =
-      this.whatsapp;
+    const {
+      workerStartedAt,
+      connectedAt,
+      workerState,
+      connectionState,
+      hasSession,
+      qr,
+    } = this.whatsapp;
 
     return res.send({
       connectionState,
       connectedAt,
       workerState,
       workerStartedAt,
+      hasSession,
+      qr,
     });
   }
 

@@ -7,6 +7,7 @@ import {
 import { fork, type ChildProcess } from 'child_process';
 import { resolve as pathResolve } from 'path';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { prisma } from 'database';
 
 @Injectable()
 export class WhatsappService implements OnModuleInit, OnModuleDestroy {
@@ -16,6 +17,8 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
   private _connectionState: 'open' | 'connecting' | 'close' = 'close';
   private _workerStartedAt: Date | null = null;
   private _connectedAt: Date | null = null;
+  private _hasSession = false;
+  private _qr: string | null = null;
 
   /**
    * Constructor for the class.
@@ -236,19 +239,33 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
     });
 
     this._worker.on('exit', () => {
+      this._worker?.removeAllListeners();
+      this._worker?.stderr?.removeAllListeners();
+      this._worker?.stdin?.removeAllListeners();
+      this._worker?.stdout?.removeAllListeners();
+      this._worker?.kill('SIGKILL');
       this._workerStartedAt = null;
+      this._connectedAt = null;
+      this._connectionState = 'close';
+      this._qr = null;
+      this._worker = null;
       this.event.emit('process.state', 'disconnected');
     });
 
-    this._worker.on('message', (res: any) => {
+    this._worker.on('message', async (res: any) => {
       switch (res.command) {
         case 'CONNECTION_UPDATED':
           this._connectionState = res.data.status;
-          this.event.emit('connection.update', this._connectionState);
           this._connectedAt =
             this._connectionState === 'open' ? new Date() : null;
+          this._hasSession = (await prisma.session.count()) > 0;
+          if (this._connectionState !== 'connecting') {
+            this._qr = null;
+          }
+          this.event.emit('connection.update', this._connectionState);
           break;
         case 'QR_UPDATED':
+          this._qr = res.data;
           this.event.emit('qr.update', res.data);
           break;
       }
@@ -276,9 +293,11 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
           this._worker?.stdout?.removeAllListeners();
           this._worker?.stderr?.removeAllListeners();
           this._worker?.removeAllListeners();
-          this._worker = null;
           this._workerStartedAt = null;
           this._connectedAt = null;
+          this._connectionState = 'close';
+          this._qr = null;
+          this.event.emit('process.state', 'disconnected');
           resolve(true);
         };
         this._worker.once('exit', callback);
@@ -354,5 +373,23 @@ export class WhatsappService implements OnModuleInit, OnModuleDestroy {
    */
   get workerStartedAt(): Date | null {
     return this._workerStartedAt;
+  }
+
+  /**
+   * Returns a boolean value indicating whether a session exists.
+   *
+   * @return {boolean} The value indicating whether a session exists.
+   */
+  get hasSession(): boolean {
+    return this._hasSession;
+  }
+
+  /**
+   * Get the value of qr.
+   *
+   * @return {boolean} The value of qr.
+   */
+  get qr(): string | null {
+    return this._qr;
   }
 }
