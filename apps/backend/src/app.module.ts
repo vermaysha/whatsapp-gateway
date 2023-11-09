@@ -9,8 +9,11 @@ import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 import { SystemModule } from './system/system.module';
+import { AuthModule } from './auth/auth.module';
 import AppConfig from './config/app';
 import ConfigSchema from './config/config.schema';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/auth.guard';
 
 @Module({
   imports: [
@@ -33,8 +36,15 @@ import ConfigSchema from './config/config.schema';
     MessageModule,
     EventModule,
     SystemModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}
