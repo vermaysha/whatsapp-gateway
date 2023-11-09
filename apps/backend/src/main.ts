@@ -13,7 +13,7 @@ async function bootstrap() {
 
   app.use(
     session({
-      secret: 'my-secret',
+      secret: config.getOrThrow<string>('encryption'),
       resave: false,
       rolling: true,
       saveUninitialized: false,

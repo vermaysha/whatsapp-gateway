@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prepare": "ts-patch install"
+    "prepare": "ts-patch install",
+    "keygen": "node -p \"require('crypto').randomBytes(16).toString('hex')\""
   },
   "dependencies": {
     "@fastify/static": "^6.12.0",
@@ -36,6 +37,7 @@
     "diskusage": "^1.2.0",
     "express-session": "^1.17.3",
     "fastify": "^4.24.3",
+    "joi": "^17.11.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "whatsapp": "workspace:^"

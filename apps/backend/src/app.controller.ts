@@ -8,9 +8,6 @@ export class AppController {
 
   @Get()
   getHello(@Req() req: Request): string {
-    // req.session.touch();
-    // req.session.userId = 'asdhsajkd';
-    console.log(req.session.user?.uuid);
     return this.appService.getHello();
   }
 }

@@ -10,6 +10,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 import { SystemModule } from './system/system.module';
 import AppConfig from './config/app';
+import ConfigSchema from './config/config.schema';
 
 @Module({
   imports: [
@@ -18,6 +19,11 @@ import AppConfig from './config/app';
       envFilePath: ['.env.local', '.env'],
       isGlobal: true,
       load: [AppConfig],
+      validationSchema: ConfigSchema,
+      validationOptions: {
+        allowUnknown: true,
+        abortEarly: true,
+      },
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
