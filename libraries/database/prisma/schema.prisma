@@ -8,14 +8,29 @@ generator client {
 }
 
 model Session {
-  id   String @id @default(uuid()) @db.Uuid
-  name String
-  data Json   @db.JsonB
+  id     String @id @default(uuid()) @db.Uuid
+  name   String
+  data   Json   @db.JsonB
+  userId String @db.Uuid
 
   updatedAt DateTime @updatedAt @db.Timestamptz()
   createdAt DateTime @default(now()) @db.Timestamptz()
 
+  user User @relation(fields: [userId], references: [id])
+
   @@unique([name])
+}
+
+model User {
+  id       String @id @default(uuid()) @db.Uuid
+  username String @unique
+  password String
+  fullname String
+
+  createdAt DateTime @db.Timestamptz()
+  updatedAt DateTime @updatedAt() @db.Timestamptz()
+
+  session Session[]
 }
 
 model UserSession {

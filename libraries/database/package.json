@@ -8,7 +8,16 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "db:seed": "prisma db seed",
+    "db:push": "prisma db push",
+    "db:pull": "prisma db pull",
+    "format": "prisma format",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:status": "prisma migrate status",
+    "migrate:reset": "prisma migrate reset",
+    "migrate:deploy": "prisma migrate deploy",
+    "generate": "prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -16,9 +25,14 @@
   "devDependencies": {
     "@types/node": "^20.8.7",
     "prisma": "^5.4.2",
+    "tsx": "^3.14.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@prisma/client": "^5.4.2"
+    "@prisma/client": "^5.4.2",
+    "argon2": "^0.31.2"
+  },
+  "prisma": {
+    "seed": "tsx ./src/seed.ts"
   }
 }
