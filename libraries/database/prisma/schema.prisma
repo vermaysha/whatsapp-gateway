@@ -1,18 +1,26 @@
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
+
 model Session {
-  id        String   @id @default(uuid()) @db.Uuid
-  name      String
-  data      Json     @db.JsonB
+  id   String @id @default(uuid()) @db.Uuid
+  name String
+  data Json   @db.JsonB
 
   updatedAt DateTime @updatedAt @db.Timestamptz()
   createdAt DateTime @default(now()) @db.Timestamptz()
 
   @@unique([name])
+}
+
+model UserSession {
+  id        String   @id @default(uuid()) @db.Uuid
+  sid       String   @unique
+  data      Json     @db.JsonB
+  expiresAt DateTime @db.Timestamptz()
 }
